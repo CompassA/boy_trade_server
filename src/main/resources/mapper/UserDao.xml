@@ -7,6 +7,7 @@
         <id column="user_id" jdbcType="INTEGER" property="userId"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="account" jdbcType="VARCHAR" property="account"/>
+        <result column="icon_url" jdbcType="VARCHAR" property="iconUrl"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>

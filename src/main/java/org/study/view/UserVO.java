@@ -1,19 +1,17 @@
-package org.study.data;
+package org.study.view;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.sql.Timestamp;
-
 /**
  * @author fanqie
- * @date 2019/12/8
+ * @date 2020/1/4
  */
 @Getter
 @Setter
 @Accessors(chain = true)
-public class UserDO {
+public class UserVO {
 
     private Integer userId;
 
@@ -23,19 +21,13 @@ public class UserDO {
 
     private String iconUrl;
 
-    private Timestamp createTime;
-
-    private Timestamp updateTime;
-
     @Override
     public String toString() {
-        return "UserDO{" +
+        return "UserVO{" +
                 "userId=" + userId +
                 ", account='" + account + '\'' +
                 ", name='" + name + '\'' +
                 ", iconUrl='" + iconUrl + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
                 '}';
     }
 }
