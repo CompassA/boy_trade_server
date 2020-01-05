@@ -33,7 +33,7 @@ public class UserController extends BaseController {
     private HttpServletRequest httpServletRequest;
 
     @GetMapping(value = ApiPath.LOGIN, consumes={CONSUMERS})
-    public ServerResponse getUserInfo(
+    public ServerResponse userLogin(
             @RequestParam(ACCOUNT) final String account,
             @RequestParam(PASSWORD) final String password)
             throws ServerException {

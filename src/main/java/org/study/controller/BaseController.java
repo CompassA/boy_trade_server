@@ -49,6 +49,7 @@ public class BaseController {
             exceptionData.put(ERROR_PROPERTY_NAME, exception.getErrCode());
             exceptionData.put(MSG_PROPERTY_NAME, exception.getErrMsg());
         } else {
+            exceptionData.put(ERROR_PROPERTY_NAME, 1);
             exceptionData.put(MSG_PROPERTY_NAME, ex.getMessage());
         }
         return ServerResponse.create(exceptionData, ServerResponse.FAIL_STATUS);
