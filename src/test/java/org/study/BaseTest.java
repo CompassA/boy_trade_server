@@ -13,5 +13,4 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @SpringBootTest
 @WebAppConfiguration
 public class BaseTest {
-
 }
