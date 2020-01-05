@@ -18,6 +18,12 @@ import java.util.Map;
  */
 public class BaseController {
 
+    protected static final String ACCOUNT = "account";
+
+    protected static final String PASSWORD = "password";
+
+    protected static final String CONSUMERS = "application/x-www-form-urlencoded";
+
     protected static final String USER_MODEL = "userModel";
 
     protected static final String LOGIN_MARK = "isLogin";

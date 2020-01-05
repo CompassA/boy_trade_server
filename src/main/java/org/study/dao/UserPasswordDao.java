@@ -1,5 +1,6 @@
 package org.study.dao;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.study.data.UserPasswordDO;
 
@@ -7,6 +8,7 @@ import org.study.data.UserPasswordDO;
  * @author fanqie
  * @date 2020/1/4
  */
+@Mapper
 public interface UserPasswordDao {
 
     /**

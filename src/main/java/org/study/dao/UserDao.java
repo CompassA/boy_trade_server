@@ -26,4 +26,11 @@ public interface UserDao {
      * @return 满足条件的user
      */
     List<UserDO> selectUser(@Param("user") final UserDO user);
+
+    /**
+     * 根据账号查找用户信息
+     * @param account 账号
+     * @return 用户信息
+     */
+    UserDO selectByAccount(@Param("account") final String account);
 }
