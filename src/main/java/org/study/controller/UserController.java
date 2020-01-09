@@ -10,7 +10,7 @@ import org.study.error.ServerException;
 import org.study.error.SystemExceptionBean;
 import org.study.model.UserModel;
 import org.study.response.ServerResponse;
-import org.study.service.api.UserServiceApi;
+import org.study.service.UserService;
 import org.study.util.ModelToViewUtil;
 import org.study.view.UserVO;
 
@@ -27,12 +27,12 @@ import java.util.Optional;
 public class UserController extends BaseController {
 
     @Autowired
-    private UserServiceApi userService;
+    private UserService userService;
 
     @Autowired
     private HttpServletRequest httpServletRequest;
 
-    @GetMapping(value = ApiPath.LOGIN, consumes={CONSUMERS})
+    @GetMapping(value = ApiPath.User.LOGIN, consumes={CONSUMERS})
     public ServerResponse userLogin(
             @RequestParam(ACCOUNT) final String account,
             @RequestParam(PASSWORD) final String password)

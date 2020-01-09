@@ -7,6 +7,8 @@ package org.study.error;
 public enum SystemExceptionBean implements SystemException {
     /** 参数异常 */
     PARAMETER_VALIDATION_EXCEPTION(10000, "参数不合法"),
+    /** 加密信息异常 */
+    ENCRYPT_DECRYPT_EXCEPTION(10001, "密钥异常"),
     /** 用户不存在 */
     USER_LOGIN_EXCEPTION(20000, "用户不存在或密码错误")
     ;

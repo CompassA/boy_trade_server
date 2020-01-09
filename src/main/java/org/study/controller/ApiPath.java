@@ -6,5 +6,11 @@ package org.study.controller;
  */
 public class ApiPath {
 
-    public static final String LOGIN = "/user/login";
+    public static class User {
+        public static final String LOGIN = "/user/login";
+    }
+
+    public static class Encrypt {
+        public static final String PUB_KEY = "/encrypt/public";
+    }
 }
