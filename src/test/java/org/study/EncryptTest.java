@@ -69,22 +69,22 @@ public class EncryptTest extends BaseTest {
                 "eawfawefewafewafweafewafewafdsavadvawefaewfwae" +
                 "ewfawefweafweafweafwfaewfawe" +
                 "dewafewffffffffffffffffffffff";
-        final String base64Text = MyStringUtil.encodeByBase64(text);
+        final String base64Text = MyStringUtil.utf8ToBase64(text);
         final String encryptStr = encryptServiceImpl.encryptByAesKey(base64Text, key);
         final String decryptStr = encryptServiceImpl.decryptByAesKey(encryptStr, key);
-        Assert.assertEquals(decryptStr, base64Text);
+        Assert.assertEquals(text, MyStringUtil.base64ToUtf8(decryptStr));
     }
 
     @Test
     public void rsaStringInterfaceTest() throws Exception {
         final String text = "fwaefawefewafeawefeawfweafwea";
-        final String base64Text = MyStringUtil.encodeByBase64(text);
+        final String base64Text = MyStringUtil.utf8ToBase64(text);
         final String encryptStr = encryptServiceImpl.encryptByPublicKey(base64Text);
         final String decryptStr = encryptServiceImpl.decryptByPrivateKey(encryptStr);
-        Assert.assertEquals(base64Text, decryptStr);
+        Assert.assertEquals(text, MyStringUtil.base64ToUtf8(decryptStr));
 
         final String encryptStr2 = encryptServiceImpl.encryptByPrivateKey(base64Text);
         final String decryptStr2 = encryptServiceImpl.decryptByPublicKey(encryptStr2);
-        Assert.assertEquals(base64Text, decryptStr2);
+        Assert.assertEquals(text, MyStringUtil.base64ToUtf8(decryptStr2));
     }
 }

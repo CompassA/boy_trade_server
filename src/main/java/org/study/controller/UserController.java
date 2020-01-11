@@ -10,8 +10,10 @@ import org.study.error.ServerException;
 import org.study.error.SystemExceptionBean;
 import org.study.model.UserModel;
 import org.study.response.ServerResponse;
+import org.study.service.EncryptService;
 import org.study.service.UserService;
 import org.study.util.ModelToViewUtil;
+import org.study.util.MyStringUtil;
 import org.study.view.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,18 +34,26 @@ public class UserController extends BaseController {
     @Autowired
     private HttpServletRequest httpServletRequest;
 
+    @Autowired
+    private EncryptService encryptService;
+
     @GetMapping(value = ApiPath.User.LOGIN, consumes={CONSUMERS})
     public ServerResponse userLogin(
             @RequestParam(ACCOUNT) final String account,
             @RequestParam(PASSWORD) final String password)
-            throws ServerException {
+            throws Exception {
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) {
             throw new ServerException(
                     SystemExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
         }
 
+        final String realAccount = MyStringUtil.base64ToUtf8(
+                encryptService.decryptByPrivateKey(account));
+        final String realPassword = MyStringUtil.base64ToUtf8(
+                encryptService.decryptByPrivateKey(password));
+
         final Optional<UserModel> userModel =
-                userService.login(account, password);
+                userService.login(realAccount, realPassword);
         if (!userModel.isPresent()) {
             throw new ServerException(SystemExceptionBean.USER_LOGIN_EXCEPTION);
         }
