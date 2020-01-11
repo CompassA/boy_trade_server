@@ -12,7 +12,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
 
-    <insert id="upsertUser" parameterType="org.study.data.UserDO">
+    <insert id="upsertUser" parameterType="org.study.data.UserDO" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="user.name != null">
