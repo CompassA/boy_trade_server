@@ -2,8 +2,8 @@ package org.study.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.study.dao.UserDao;
-import org.study.dao.UserPasswordDao;
+import org.study.dao.UserMapper;
+import org.study.dao.UserPasswordMapper;
 import org.study.data.UserDO;
 import org.study.data.UserPasswordDO;
 import org.study.model.UserModel;
@@ -21,10 +21,10 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserDao userDao;
+    private UserMapper userDao;
 
     @Autowired
-    private UserPasswordDao userPasswordDao;
+    private UserPasswordMapper userPasswordMapper;
 
     /**
      * 登录校验
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
         }
 
         //密码数据
-        final UserPasswordDO userPasswordDO = userPasswordDao
+        final UserPasswordDO userPasswordDO = userPasswordMapper
                 .selectPasswordById(userDO.getUserId());
 
         //校验密码

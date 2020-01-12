@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2019/12/8
  */
 @Mapper
-public interface UserDao {
+public interface UserMapper {
 
     /**
      * 插入或更新一个用户数据

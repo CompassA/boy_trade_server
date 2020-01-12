@@ -3,17 +3,15 @@ package org.study;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import org.study.dao.UserDao;
-import org.study.dao.UserPasswordDao;
+import org.study.dao.UserMapper;
+import org.study.dao.UserPasswordMapper;
 import org.study.data.UserDO;
 import org.study.data.UserPasswordDO;
 import org.study.model.UserModel;
 import org.study.util.DataToModelUtil;
-import org.study.util.ModelToViewUtil;
-import org.study.view.UserVO;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,43 +22,34 @@ import java.util.Optional;
 public class UserTest extends BaseTest {
 
     @Autowired
-    private UserDao userDAO;
+    private UserMapper userMapper;
 
     @Autowired
-    private UserPasswordDao userPasswordDao;
+    private UserPasswordMapper userPasswordMapper;
 
     @Test
     @Transactional
+    @Rollback
     public void userMapperTest() {
-        final UserDO user = new UserDO();
-        user.setName("哈哈哈");
-        user.setAccount("123456");
-        userDAO.upsertUser(user);
-        final UserDO selectUser = userDAO.selectUser(user).iterator().next();
-        System.out.println(selectUser);
-        Assert.assertTrue(Objects.nonNull(selectUser));
-    }
+        //插入用户
+        final UserDO userDO = new UserDO()
+                .setAccount("test")
+                .setName("test");
+        Assert.assertEquals(1, userMapper.upsertUser(userDO));
+        Assert.assertTrue(Objects.nonNull(userDO.getUserId()));
 
-    @Test
-    public void userPasswordSelectTest() {
-        final UserDO user = new UserDO()
-                .setUserId(3)
-                .setName("番茄")
-                .setAccount("admin");
+        //插入密码
+        final UserPasswordDO passwordDO = new UserPasswordDO()
+                .setPassword("xxxxx")
+                .setUserId(userDO.getUserId());
+        Assert.assertEquals(1, userPasswordMapper.insertPassword(passwordDO));
 
-        final List<UserDO> selectUserDOResult = userDAO.selectUser(user);
-        Assert.assertEquals(1, selectUserDOResult.size());
+        //查询用户
+        final UserDO user = userMapper.selectByAccount(userDO.getAccount());
+        final UserPasswordDO password = userPasswordMapper.selectPasswordById(user.getUserId());
+        final Optional<UserModel> userModel = DataToModelUtil.getUserModel(user, password);
 
-        final UserPasswordDO selectUserPasswordResult =
-                userPasswordDao.selectPasswordById(user.getUserId());
-
-        final Optional<UserModel> userModel = DataToModelUtil
-                .getUserModel(selectUserDOResult.get(0), selectUserPasswordResult);
         Assert.assertTrue(userModel.isPresent());
-        System.out.println(userModel.get().toString());
-
-        final Optional<UserVO> userVO = ModelToViewUtil.getUserVO(userModel.get());
-        Assert.assertTrue(userVO.isPresent());
-        System.out.println(userVO.get().toString());
+        System.out.println("用户领域模型： " + userModel);
     }
 }

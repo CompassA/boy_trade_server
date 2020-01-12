@@ -2,6 +2,7 @@ package org.study.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
 
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
  */
 @Getter
 @Setter
+@Accessors(chain = true)
 public class UserPasswordDO {
 
     private Integer userId;

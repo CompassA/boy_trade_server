@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.study.dao.UserDao" >
+<mapper namespace="org.study.dao.UserMapper" >
     <resultMap id="UserMap" type="org.study.data.UserDO">
         <id column="user_id" jdbcType="INTEGER" property="userId"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
@@ -12,7 +12,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
     </resultMap>
 
-    <insert id="upsertUser" parameterType="org.study.data.UserDO" useGeneratedKeys="true" keyProperty="userId">
+    <insert id="upsertUser" parameterType="org.study.data.UserDO" useGeneratedKeys="true" keyProperty="user.userId">
         INSERT INTO user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="user.name != null">
@@ -49,7 +49,7 @@
             <if test="user.name != null"> AND name = #{user.name} </if>
             <if test="user.account != null"> AND account = #{user.account}</if>
             <if test="user.createTime != null"> AND create_time = #{user.create_time} </if>
-            <if test="user.updateTime != null"> AND updateTime = #{user.update_time} </if>
+            <if test="user.updateTime != null"> AND update_time = #{user.update_time} </if>
         </where>
     </select>
 
