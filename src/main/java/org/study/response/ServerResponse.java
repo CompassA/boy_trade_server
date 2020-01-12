@@ -19,13 +19,13 @@ public class ServerResponse {
 
     private String status;
 
-    private Object data;
+    private Object body;
 
-    public static ServerResponse create(final Object data) {
-        return create(data, SUCCESS_STATUS);
+    public static ServerResponse create(final Object body) {
+        return create(body, SUCCESS_STATUS);
     }
 
-    public static ServerResponse create(final Object data, final String status) {
-        return new ServerResponse().setData(data).setStatus(status);
+    public static ServerResponse create(final Object body, final String status) {
+        return new ServerResponse().setBody(body).setStatus(status);
     }
 }
