@@ -26,4 +26,11 @@ public interface ProductMapper {
      * @return 符合条件的商品集合
      */
     List<ProductDO> selectProduct(@Param("product") final ProductDO product);
+
+    /**
+     * 查询单个商品
+     * @param id 商品主键
+     * @return 符合条件的商品
+     */
+    ProductDO selectByPrimaryKey(@Param("id") final Integer id);
 }

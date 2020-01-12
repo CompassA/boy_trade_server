@@ -10,7 +10,9 @@ public enum SystemExceptionBean implements SystemException {
     /** 加密信息异常 */
     ENCRYPT_DECRYPT_EXCEPTION(10001, "密钥异常"),
     /** 用户不存在 */
-    USER_LOGIN_EXCEPTION(20000, "用户不存在或密码错误")
+    USER_LOGIN_EXCEPTION(20000, "用户不存在或密码错误"),
+    /** 商品创建失败 */
+    PRODUCT_CREATE_EXCEPTION(30000, "商品创建失败");
     ;
 
     private final Integer errCode;

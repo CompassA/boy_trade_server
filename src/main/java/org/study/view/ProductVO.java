@@ -1,22 +1,19 @@
-package org.study.model;
+package org.study.view;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 /**
  * @author fanqie
- * @date 2020/1/11
+ * @date 2020/1/12
  */
 @Getter
 @Setter
 @Accessors(chain = true)
-public class ProductModel {
+public class ProductVO {
 
     private Integer productId;
 
@@ -24,15 +21,10 @@ public class ProductModel {
 
     private Integer categoryId;
 
-    @NotNull(message = "销量不能为空")
-    @Min(value = 0, message = "销量数字非法")
     private Integer sales;
 
-    @NotNull(message = "库存不能为空")
-    @Min(value = 1, message = "库存不能为空")
     private Integer stock;
 
-    @NotNull(message = "价格不能为空")
     private BigDecimal price;
 
     private String productName;
@@ -41,13 +33,9 @@ public class ProductModel {
 
     private String iconUrl;
 
-    private Timestamp createTime;
-
-    private Timestamp updateTime;
-
     @Override
     public String toString() {
-        return "ProductModel{" +
+        return "ProductVO{" +
                 "productId=" + productId +
                 ", payStatus=" + payStatus +
                 ", categoryId=" + categoryId +
@@ -57,8 +45,6 @@ public class ProductModel {
                 ", productName='" + productName + '\'' +
                 ", description='" + description + '\'' +
                 ", iconUrl='" + iconUrl + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
                 '}';
     }
 }

@@ -26,4 +26,11 @@ public interface ProductSaleMapper {
      * @return 商品销量信息
      */
     List<ProductSaleDO> selectProductSale(@Param("productIdCollection") final List<Integer> productId);
+
+    /**
+     * 单个查询
+     * @param productId 商品id
+     * @return 商品销量信息
+     */
+    ProductSaleDO selectSale(@Param("productId") final Integer productId);
 }

@@ -55,4 +55,8 @@
             <if test="product.updateTime != null"> AND update_time = #{product.updateTime} </if>
         </where>
     </select>
+
+    <select id="selectByPrimaryKey" resultMap="ProductMap">
+        SELECT * FROM product WHERE id = #{id}
+    </select>
 </mapper>

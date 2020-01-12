@@ -13,4 +13,8 @@ public class ApiPath {
     public static class Encrypt {
         public static final String PUB_KEY = "/encrypt/public";
     }
+
+    public static class Product {
+        public static final String CREATE = "/product/create";
+    }
 }

@@ -23,4 +23,8 @@
             #{productId}
         </foreach>
     </select>
+
+    <select id="selectSale" resultMap="ProductSaleMap">
+        SELECT * FROM product_sale WHERE product_id = #{productId}
+    </select>
 </mapper>

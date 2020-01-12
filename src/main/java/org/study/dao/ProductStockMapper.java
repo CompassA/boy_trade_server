@@ -24,4 +24,11 @@ public interface ProductStockMapper {
      * @return 库存信息
      */
     List<ProductStockDO> selectProductStock(@Param("productIdCollection") final List<Integer> productId);
+
+    /**
+     * 单个查询
+     * @param productId 商品id
+     * @return 库存信息
+     */
+    ProductStockDO selectStock(@Param("productId") final Integer productId);
 }
