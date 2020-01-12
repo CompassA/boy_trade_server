@@ -2,11 +2,11 @@ package org.study.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.study.error.ServerException;
-import org.study.error.SystemExceptionBean;
+import org.study.error.ServerExceptionBean;
 import org.study.model.ProductModel;
 import org.study.response.ServerResponse;
 import org.study.service.ProductService;
@@ -27,7 +27,7 @@ public class ProductController extends BaseController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping(value = ApiPath.Product.CREATE)
+    @PutMapping(value = ApiPath.Product.CREATE)
     public ServerResponse createProduct(
             @RequestParam("categoryId") final Integer categoryId,
             @RequestParam("stock") final Integer stock,
@@ -44,7 +44,7 @@ public class ProductController extends BaseController {
         ProductModel modelStatus = productService.create(productModel);
         final Optional<ProductVO> productVO = ModelToViewUtil.getProductVO(modelStatus);
         if (!productVO.isPresent()) {
-            throw new ServerException(SystemExceptionBean.PRODUCT_CREATE_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
         }
         return ServerResponse.create(productVO.get());
     }

@@ -10,7 +10,7 @@ import org.study.data.ProductDO;
 import org.study.data.ProductSaleDO;
 import org.study.data.ProductStockDO;
 import org.study.error.ServerException;
-import org.study.error.SystemExceptionBean;
+import org.study.error.ServerExceptionBean;
 import org.study.model.ProductModel;
 import org.study.service.ProductService;
 import org.study.util.DataToModelUtil;
@@ -46,14 +46,14 @@ public class ProductServiceImpl implements ProductService {
         //校验
         final ValidationResult result = validator.validate(productModel);
         if (result.hasErrors() || MyMathUtil.isZeroOrNegative(productModel.getPrice())) {
-            throw new ServerException(SystemExceptionBean.PRODUCT_CREATE_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
         }
 
         //入库
         final Optional<ProductDO> productDO = ModelToDataUtil.getProductDO(productModel);
         final Optional<ProductStockDO> stockDO = ModelToDataUtil.getStockDO(productModel);
         if (!productDO.isPresent() || !stockDO.isPresent()) {
-            throw new ServerException(SystemExceptionBean.PRODUCT_CREATE_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
         }
         final ProductDO product = productDO.get();
         productMapper.upsertProduct(product);
@@ -71,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
         if (productStatus.isPresent()) {
             return productStatus.get();
         }
-        throw new ServerException(SystemExceptionBean.PRODUCT_CREATE_EXCEPTION);
+        throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
     }
 
     @Override

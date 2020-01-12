@@ -2,7 +2,7 @@ package org.study.service.impl;
 
 import org.springframework.stereotype.Component;
 import org.study.error.ServerException;
-import org.study.error.SystemExceptionBean;
+import org.study.error.ServerExceptionBean;
 import org.study.service.EncryptService;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -116,7 +116,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(SystemExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -131,7 +131,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(SystemExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -151,7 +151,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(SystemExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -171,7 +171,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(SystemExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -185,7 +185,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(SystemExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -199,7 +199,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(SystemExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 

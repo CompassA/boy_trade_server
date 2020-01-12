@@ -1,13 +1,11 @@
 package org.study.controller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.study.error.ServerException;
-import org.study.error.SystemExceptionBean;
+import org.study.error.ServerExceptionBean;
 import org.study.model.UserModel;
 import org.study.response.ServerResponse;
 import org.study.service.EncryptService;
@@ -38,13 +36,13 @@ public class UserController extends BaseController {
     private EncryptService encryptService;
 
     @GetMapping(value = ApiPath.User.LOGIN, consumes={CONSUMERS})
-    public ServerResponse userLogin(
+    public ServerResponse login(
             @RequestParam(ACCOUNT) final String account,
             @RequestParam(PASSWORD) final String password)
             throws Exception {
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) {
             throw new ServerException(
-                    SystemExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
+                    ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
         }
 
         final String realAccount = MyStringUtil.base64ToUtf8(
@@ -55,7 +53,7 @@ public class UserController extends BaseController {
         final Optional<UserModel> userModel =
                 userService.login(realAccount, realPassword);
         if (!userModel.isPresent()) {
-            throw new ServerException(SystemExceptionBean.USER_LOGIN_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);
         }
 
         final Optional<UserVO> userVO = ModelToViewUtil.getUserVO(userModel.get());
@@ -65,7 +63,20 @@ public class UserController extends BaseController {
             session.setAttribute(USER_MODEL, userModel);
             return ServerResponse.create(userVO.get());
         } else {
-            throw new ServerException(SystemExceptionBean.USER_LOGIN_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);
         }
+    }
+
+    @PutMapping(ApiPath.User.REGISTRY)
+    public ServerResponse registry(
+            @Param("name") final String name,
+            @Param("password") final String password,
+            @Param("account") final String account) {
+        //TODO
+        final UserModel registryData = new UserModel()
+                .setAccount(account)
+                .setName(name)
+                .setPassword(password);
+        return null;
     }
 }
