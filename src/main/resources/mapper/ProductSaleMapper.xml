@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.study.dao.ProductSaleMapper">
+    <resultMap id="ProductSaleMap" type="org.study.data.ProductSaleDO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="product_id" property="productId" jdbcType="INTEGER"/>
+        <result column="sales" property="sales" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="initProductSale" parameterType="org.study.data.ProductSaleDO" useGeneratedKeys="true" keyProperty="productSale.id">
+        INSERT INTO product_sale(product_id)
+        VALUES (#{productSale.productId})
+    </insert>
+
+    <select id="selectProductSale" resultMap="ProductSaleMap">
+        SELECT * FROM product_sale
+        WHERE product_id IN
+        <foreach collection="productIdCollection" item="productId" index="index" open="(" separator="," close=")">
+            #{productId}
+        </foreach>
+    </select>
+</mapper>

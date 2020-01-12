@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="org.study.dao.ProductDao">
+<mapper namespace="org.study.dao.ProductMapper">
     <resultMap id="ProductMap" type="org.study.data.ProductDO">
         <id column="id" property="id" jdbcType="INTEGER"/>
         <result column="price" property="price" jdbcType="DECIMAL"/>
@@ -15,7 +15,7 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
-    <insert id="upsertProduct" parameterType="org.study.data.ProductDO">
+    <insert id="upsertProduct" parameterType="org.study.data.ProductDO" useGeneratedKeys="true" keyProperty="product.id">
         INSERT INTO product
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="product.name != null">name, </if>
@@ -44,4 +44,15 @@
             <if test="product.status != null">status = #{product.status}, </if>
         </trim>
     </insert>
+
+    <select id="selectProduct" parameterType="org.study.data.ProductDO" resultMap="ProductMap">
+        SELECT * FROM product
+        <where>
+            <if test="product.id != null">AND id = #{product.id}</if>
+            <if test="product.name != null">AND name = #{product.name}</if>
+            <if test="product.categoryId != null">AND category_id = #{product.categoryId}</if>
+            <if test="product.createTime != null"> AND create_time = #{product.createTime} </if>
+            <if test="product.updateTime != null"> AND update_time = #{product.updateTime} </if>
+        </where>
+    </select>
 </mapper>
