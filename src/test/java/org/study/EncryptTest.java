@@ -1,13 +1,21 @@
 package org.study;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mysql.jdbc.util.Base64Decoder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.study.error.ServerException;
+import org.study.response.ServerRequest;
 import org.study.service.impl.EncryptServiceImpl;
 import org.study.util.MyStringUtil;
+import org.study.view.UserVO;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 /**
  * @author fanqie
@@ -86,5 +94,26 @@ public class EncryptTest extends BaseTest {
         final String encryptStr2 = encryptServiceImpl.encryptByPrivateKey(base64Text);
         final String decryptStr2 = encryptServiceImpl.decryptByPublicKey(encryptStr2);
         Assert.assertEquals(text, MyStringUtil.base64ToUtf8(decryptStr2));
+    }
+
+    @Test
+    public void serverRequestTest() throws Exception {
+        final String userJson = "{\n" +
+                "  \"userId\": 12,\n" +
+                "  \"account\": \"admin\",\n" +
+                "  \"name\": \"番茄\",\n" +
+                "  \"iconUrl\": \"asdawdawd\"\n" +
+                "}";
+        final byte[] aesKey = encryptServiceImpl.generateAesKey();
+
+        final String encryptJson = encryptServiceImpl.encryptByAesKey(
+                MyStringUtil.utf8ToBase64(userJson), aesKey);
+        final String key = new BASE64Encoder().encode(
+                encryptServiceImpl.encryptByPublicKey(aesKey));
+
+        final ServerRequest mock = new ServerRequest(key, encryptJson);
+        final UserVO userVO = mock.deserialize(encryptServiceImpl, UserVO.class);
+        Assert.assertTrue(Objects.nonNull(userVO));
+        System.out.println(userVO);
     }
 }

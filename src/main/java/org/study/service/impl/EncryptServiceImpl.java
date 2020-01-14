@@ -8,6 +8,7 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
@@ -206,5 +207,12 @@ public class EncryptServiceImpl implements EncryptService {
     @Override
     public String getPublicKey() {
         return new BASE64Encoder().encode(publicKey);
+    }
+
+    public byte[] generateAesKey() throws NoSuchAlgorithmException {
+        final KeyGenerator generator = KeyGenerator.getInstance("AES");
+        generator.init(128);
+        SecretKey sk = generator.generateKey();
+        return sk.getEncoded();
     }
 }
