@@ -28,7 +28,7 @@ public class ValidatorImpl implements InitializingBean {
         final ValidationResult result = new ValidationResult();
         final Set<ConstraintViolation<Object>> constraintViolations =
                 validator.validate(bean);
-        if (CollectionUtils.isEmpty(constraintViolations)) {
+        if (!CollectionUtils.isEmpty(constraintViolations)) {
             result.setHasErrorsTrue();
             constraintViolations.forEach(constraintViolation ->
                     result.addErrMsg(

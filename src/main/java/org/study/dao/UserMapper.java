@@ -33,4 +33,11 @@ public interface UserMapper {
      * @return 用户信息
      */
     UserDO selectByAccount(@Param("account") final String account);
+
+    /**
+     * 根据用户名查找用户是否存在
+     * @param name 用户名
+     * @return 符合查询条件的用户数量
+     */
+    int selectExistsByName(@Param("name") final String name);
 }

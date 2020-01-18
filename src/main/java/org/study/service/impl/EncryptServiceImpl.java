@@ -11,6 +11,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -29,6 +30,8 @@ public class EncryptServiceImpl implements EncryptService {
     private static final String RSA_ALGORITHM = "RSA";
 
     private static final String AES_ALGORITHM = "AES";
+
+    private static final String MD5_ALGORITHM = "MD5";
 
     private static final String AES_MODE = "AES/ECB/PKCS5Padding";
 
@@ -209,8 +212,22 @@ public class EncryptServiceImpl implements EncryptService {
         return new BASE64Encoder().encode(publicKey);
     }
 
+    @Override
+    public String encryptByMd5(final String data) throws ServerException {
+        try {
+            final MessageDigest md5 = MessageDigest.getInstance(MD5_ALGORITHM);
+            final BASE64Encoder base64en = new BASE64Encoder();
+            return base64en.encode(
+                    md5.digest(
+                            data.getBytes(StandardCharsets.UTF_8)));
+        } catch (final Exception e) {
+            e.printStackTrace();
+            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+        }
+    }
+
     public byte[] generateAesKey() throws NoSuchAlgorithmException {
-        final KeyGenerator generator = KeyGenerator.getInstance("AES");
+        final KeyGenerator generator = KeyGenerator.getInstance(AES_ALGORITHM);
         generator.init(128);
         SecretKey sk = generator.generateKey();
         return sk.getEncoded();

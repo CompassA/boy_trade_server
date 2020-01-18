@@ -45,7 +45,7 @@ public class BaseController {
             final HttpServletRequest request, final Exception ex) {
         final Map<String, Object> exceptionData = Maps.newHashMap();
         if (ex instanceof ServerException) {
-            final SystemException exception = ((ServerException) ex).getSystemException();
+            final SystemException exception = ((ServerException) ex);
             exceptionData.put(ERROR_PROPERTY_NAME, exception.getErrCode());
             exceptionData.put(MSG_PROPERTY_NAME, exception.getErrMsg());
         } else {

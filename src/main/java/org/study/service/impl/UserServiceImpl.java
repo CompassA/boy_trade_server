@@ -26,6 +26,8 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final long ACCOUNT_BASE_NUM = 1000000;
+
     @Autowired
     private UserMapper userMapper;
 
@@ -73,6 +75,11 @@ public class UserServiceImpl implements UserService {
                     ServerExceptionBean.USER_REGISTRY_EXCEPTION,
                     result.getErrorMsg());
         }
+        if (this.isUserNameExists(userModel.getName())) {
+            throw new ServerException(
+                    ServerExceptionBean.USER_REGISTRY_EXCEPTION,
+                    "用户名已存在!");
+        }
         final Optional<UserDO> userDO = ModelToDataUtil.getUserDO(userModel);
         final Optional<UserPasswordDO> userPasswordDO = ModelToDataUtil.getUserPasswordDO(userModel);
         if (!userDO.isPresent() || !userPasswordDO.isPresent()) {
@@ -82,7 +89,11 @@ public class UserServiceImpl implements UserService {
         //信息入库
         final UserDO userData = userDO.get();
         userMapper.upsertUser(userData);
+
+        //生成用户账号
         final Integer insertedUserId = userData.getUserId();
+        userData.setAccount(String.valueOf(ACCOUNT_BASE_NUM + insertedUserId));
+        userMapper.upsertUser(userData);
 
         final UserPasswordDO passwordData = userPasswordDO.get();
         passwordData.setUserId(insertedUserId);
@@ -96,5 +107,10 @@ public class UserServiceImpl implements UserService {
             return userStatus.get();
         }
         throw new ServerException(ServerExceptionBean.USER_REGISTRY_EXCEPTION);
+    }
+
+    @Override
+    public boolean isUserNameExists(final String name) {
+        return userMapper.selectExistsByName(name) == 1;
     }
 }

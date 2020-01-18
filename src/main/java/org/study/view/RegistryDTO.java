@@ -17,8 +17,6 @@ import lombok.experimental.Accessors;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RegistryDTO {
 
-    private String account;
-
     private String name;
 
     private String password;
@@ -26,8 +24,7 @@ public class RegistryDTO {
     @Override
     public String toString() {
         return "RegistryDTO{" +
-                "account='" + account + '\'' +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

@@ -1,5 +1,7 @@
 package org.study.service;
 
+import org.study.error.ServerException;
+
 /**
  * @author fanqie
  * @date 2020/1/8
@@ -111,4 +113,11 @@ public interface EncryptService {
      * @return 公钥的字符串形式
      */
     String getPublicKey();
+
+    /**
+     * MD5加密数据
+     * @param data 待加密字符串
+     * @return 加密后用BASE64编码的数据
+     */
+    String encryptByMd5(final String data) throws ServerException;
 }

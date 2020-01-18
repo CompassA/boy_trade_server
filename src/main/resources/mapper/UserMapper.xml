@@ -56,4 +56,8 @@
     <select id="selectByAccount" parameterType="java.lang.String" resultMap="UserMap">
         SELECT * FROM user WHERE account = #{account}
     </select>
+
+    <select id="selectExistsByName" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT COUNT(name) FROM user WHERE name = #{name}
+    </select>
 </mapper>

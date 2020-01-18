@@ -2,10 +2,7 @@ package org.study.controller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.model.UserModel;
@@ -55,7 +52,7 @@ public class UserController extends BaseController {
                     ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
         }
         final Optional<UserModel> userModel = userService.login(
-                loginDTO.getAccount(), loginDTO.getPassword());
+                loginDTO.getAccount(), encryptService.encryptByMd5(loginDTO.getPassword()));
         if (!userModel.isPresent()) {
             throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);
         }
@@ -80,14 +77,25 @@ public class UserController extends BaseController {
             throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
         }
         final UserModel registryModel = new UserModel()
-                .setAccount(registryDTO.getAccount())
                 .setName(registryDTO.getName())
-                .setPassword(registryDTO.getPassword());
-        //final UserModel userModel = userService.registry(registryModel);
-        //final Optional<UserVO> userVO = ModelToViewUtil.getUserVO(userModel);
-        //if (userVO.isPresent()) {
-        //    return ServerResponse.create(userVO.get());
-        //}
+                .setPassword(encryptService.encryptByMd5(registryDTO.getPassword()));
+        final UserModel userModel = userService.registry(registryModel);
+        final Optional<UserVO> userVO = ModelToViewUtil.getUserVO(userModel);
+        if (userVO.isPresent()) {
+            final HttpSession session = httpServletRequest.getSession();
+            session.setAttribute(LOGIN_MARK, true);
+            session.setAttribute(USER_MODEL, userModel);
+            return ServerResponse.create(userVO.get());
+        }
         throw new ServerException(ServerExceptionBean.USER_REGISTRY_EXCEPTION);
+    }
+
+    @GetMapping(value = ApiPath.User.EXIST, consumes = { CONSUMERS })
+    public ServerResponse checkUserName(
+            @RequestParam("name") final String name) throws ServerException {
+        if (StringUtils.isBlank(name)) {
+            throw new ServerException(ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
+        }
+        return ServerResponse.create(userService.isUserNameExists(name));
     }
 }
