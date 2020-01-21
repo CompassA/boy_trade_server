@@ -1,7 +1,5 @@
 package org.study;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mysql.jdbc.util.Base64Decoder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +8,9 @@ import org.study.response.ServerRequest;
 import org.study.service.impl.EncryptServiceImpl;
 import org.study.util.MyStringUtil;
 import org.study.view.UserVO;
-import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 /**

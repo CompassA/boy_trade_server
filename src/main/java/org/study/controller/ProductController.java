@@ -41,7 +41,7 @@ public class ProductController extends BaseController {
                 .setPrice(price)
                 .setProductName(productName)
                 .setDescription(description);
-        ProductModel modelStatus = productService.create(productModel);
+        final ProductModel modelStatus = productService.create(productModel);
         final Optional<ProductVO> productVO = ModelToViewUtil.getProductVO(modelStatus);
         if (!productVO.isPresent()) {
             throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);

@@ -12,6 +12,6 @@ public final class MyMathUtil {
     }
 
     public static boolean isZeroOrNegative(final BigDecimal num) {
-        return num.doubleValue() - 0 <= 0.000001;
+        return Math.abs(num.doubleValue() - 0) <= 0.000001;
     }
 }

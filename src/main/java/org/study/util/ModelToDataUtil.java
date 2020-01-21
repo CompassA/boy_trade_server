@@ -16,8 +16,7 @@ public final class ModelToDataUtil {
     private ModelToDataUtil() {
     }
 
-    public static Optional<ProductDO> getProductDO(
-            final ProductModel productModel) {
+    public static Optional<ProductDO> getProductDO(final ProductModel productModel) {
         if (Objects.isNull(productModel)) {
             return Optional.empty();
         }
@@ -32,8 +31,7 @@ public final class ModelToDataUtil {
                 .setCreateTime(productModel.getCreateTime()));
     }
 
-    public static Optional<ProductSaleDO> getSaleDO(
-            final ProductModel productModel) {
+    public static Optional<ProductSaleDO> getSaleDO(final ProductModel productModel) {
         if (Objects.isNull(productModel)) {
             return Optional.empty();
         }
@@ -44,8 +42,7 @@ public final class ModelToDataUtil {
                 .setUpdateTime(productModel.getUpdateTime()));
     }
 
-    public static Optional<ProductStockDO> getStockDO(
-            final ProductModel productModel) {
+    public static Optional<ProductStockDO> getStockDO(final ProductModel productModel) {
         if (Objects.isNull(productModel)) {
             return Optional.empty();
         }
@@ -56,8 +53,7 @@ public final class ModelToDataUtil {
                 .setUpdateTime(productModel.getUpdateTime()));
     }
 
-    public static Optional<UserDO> getUserDO(
-            final UserModel userModel) {
+    public static Optional<UserDO> getUserDO(final UserModel userModel) {
         if (Objects.isNull(userModel)) {
             return Optional.empty();
         }
@@ -68,8 +64,7 @@ public final class ModelToDataUtil {
                 .setIconUrl(userModel.getIconUrl()));
     }
 
-    public static Optional<UserPasswordDO> getUserPasswordDO(
-            final UserModel userModel) {
+    public static Optional<UserPasswordDO> getUserPasswordDO(final UserModel userModel) {
         if (Objects.isNull(userModel)) {
             return Optional.empty();
         }

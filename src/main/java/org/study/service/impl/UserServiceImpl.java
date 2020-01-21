@@ -56,8 +56,7 @@ public class UserServiceImpl implements UserService {
                 .selectPasswordById(userDO.getUserId());
 
         //校验密码
-        if (Objects.isNull(userPasswordDO) ||
-                !password.equals(userPasswordDO.getPassword())) {
+        if (Objects.isNull(userPasswordDO) || !password.equals(userPasswordDO.getPassword())) {
             return Optional.empty();
         }
 
@@ -72,17 +71,15 @@ public class UserServiceImpl implements UserService {
         final ValidationResult result = validator.validate(userModel);
         if (result.hasErrors()) {
             throw new ServerException(
-                    ServerExceptionBean.USER_REGISTRY_EXCEPTION,
-                    result.getErrorMsg());
+                    ServerExceptionBean.USER_REGISTRY_EXCEPTION, result.getErrorMsg());
         }
         if (this.isUserNameExists(userModel.getName())) {
             throw new ServerException(
-                    ServerExceptionBean.USER_REGISTRY_EXCEPTION,
-                    "用户名已存在!");
+                    ServerExceptionBean.USER_REGISTRY_EXCEPTION, "用户名已存在!");
         }
         final Optional<UserDO> userDO = ModelToDataUtil.getUserDO(userModel);
-        final Optional<UserPasswordDO> userPasswordDO = ModelToDataUtil.getUserPasswordDO(userModel);
-        if (!userDO.isPresent() || !userPasswordDO.isPresent()) {
+        final Optional<UserPasswordDO> passwordDO = ModelToDataUtil.getUserPasswordDO(userModel);
+        if (!userDO.isPresent() || !passwordDO.isPresent()) {
             throw new ServerException(ServerExceptionBean.USER_REGISTRY_EXCEPTION);
         }
 
@@ -95,7 +92,7 @@ public class UserServiceImpl implements UserService {
         userData.setAccount(String.valueOf(ACCOUNT_BASE_NUM + insertedUserId));
         userMapper.upsertUser(userData);
 
-        final UserPasswordDO passwordData = userPasswordDO.get();
+        final UserPasswordDO passwordData = passwordDO.get();
         passwordData.setUserId(insertedUserId);
         userPasswordMapper.insertPassword(passwordData);
 

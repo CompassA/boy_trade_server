@@ -15,8 +15,7 @@ public final class ViewToModelUtil {
     private ViewToModelUtil() {
     }
 
-    public static Optional<ProductModel> getProductModel(
-            final ProductVO productVO) {
+    public static Optional<ProductModel> getProductModel(final ProductVO productVO) {
         if (Objects.isNull(productVO)) {
             return Optional.empty();
         }

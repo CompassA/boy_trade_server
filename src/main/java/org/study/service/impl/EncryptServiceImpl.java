@@ -12,7 +12,13 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -37,6 +43,8 @@ public class EncryptServiceImpl implements EncryptService {
 
     /** 512位key size最多加密(512 / 8 - 11)字节数据*/
     private static final int KEY_SIZE = 512;
+
+    private static final int AES_KEY_SIZE = 128;
 
     private byte[] publicKey;
 
@@ -63,32 +71,28 @@ public class EncryptServiceImpl implements EncryptService {
     public String encryptByPrivateKey(final String data) throws Exception {
         final BASE64Decoder decoder = new BASE64Decoder();
         final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(
-                encryptByPrivateKey(decoder.decodeBuffer(data)));
+        return encoder.encode(encryptByPrivateKey(decoder.decodeBuffer(data)));
     }
 
     @Override
     public String decryptByPrivateKey(final String data) throws Exception {
         final BASE64Decoder decoder = new BASE64Decoder();
         final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(
-                decryptByPrivateKey(decoder.decodeBuffer(data)));
+        return encoder.encode(decryptByPrivateKey(decoder.decodeBuffer(data)));
     }
 
     @Override
     public String encryptByPublicKey(final String data) throws Exception {
         final BASE64Decoder decoder = new BASE64Decoder();
         final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(
-                encryptByPublicKey(decoder.decodeBuffer(data)));
+        return encoder.encode(encryptByPublicKey(decoder.decodeBuffer(data)));
     }
 
     @Override
     public String decryptByPublicKey(final String data) throws Exception {
         final BASE64Decoder decoder = new BASE64Decoder();
         final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(
-                decryptByPublicKey(decoder.decodeBuffer(data)));
+        return encoder.encode(decryptByPublicKey(decoder.decodeBuffer(data)));
     }
 
     @Override
@@ -96,8 +100,7 @@ public class EncryptServiceImpl implements EncryptService {
             throws Exception {
         final BASE64Decoder decoder = new BASE64Decoder();
         final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder
-                .encode(decryptByAesKey(decoder.decodeBuffer(data), aesKey));
+        return encoder.encode(decryptByAesKey(decoder.decodeBuffer(data), aesKey));
     }
 
     @Override
@@ -105,8 +108,7 @@ public class EncryptServiceImpl implements EncryptService {
             throws Exception {
         final BASE64Decoder decoder = new BASE64Decoder();
         final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(
-                encryptByAesKey(decoder.decodeBuffer(data), aesKey));
+        return encoder.encode(encryptByAesKey(decoder.decodeBuffer(data), aesKey));
     }
 
     @Override
@@ -144,13 +146,11 @@ public class EncryptServiceImpl implements EncryptService {
         try {
             //密钥材料转换
             final X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKey);
-
             //产生公钥
             final PublicKey pubKey = KeyFactory.getInstance(RSA_ALGORITHM)
                     .generatePublic(x509KeySpec);
-
             //数据解密
-            Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
+            final Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, pubKey);
             return cipher.doFinal(data);
         } catch (final Exception e) {
@@ -217,9 +217,7 @@ public class EncryptServiceImpl implements EncryptService {
         try {
             final MessageDigest md5 = MessageDigest.getInstance(MD5_ALGORITHM);
             final BASE64Encoder base64en = new BASE64Encoder();
-            return base64en.encode(
-                    md5.digest(
-                            data.getBytes(StandardCharsets.UTF_8)));
+            return base64en.encode(md5.digest(data.getBytes(StandardCharsets.UTF_8)));
         } catch (final Exception e) {
             e.printStackTrace();
             throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
@@ -228,8 +226,8 @@ public class EncryptServiceImpl implements EncryptService {
 
     public byte[] generateAesKey() throws NoSuchAlgorithmException {
         final KeyGenerator generator = KeyGenerator.getInstance(AES_ALGORITHM);
-        generator.init(128);
-        SecretKey sk = generator.generateKey();
+        generator.init(AES_KEY_SIZE);
+        final SecretKey sk = generator.generateKey();
         return sk.getEncoded();
     }
 }

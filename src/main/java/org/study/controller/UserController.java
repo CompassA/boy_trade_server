@@ -48,8 +48,7 @@ public class UserController extends BaseController {
 
         if (StringUtils.isBlank(loginDTO.getAccount())
                 || StringUtils.isBlank(loginDTO.getPassword())) {
-            throw new ServerException(
-                    ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
+            throw new ServerException(ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
         }
         final Optional<UserModel> userModel = userService.login(
                 loginDTO.getAccount(), encryptService.encryptByMd5(loginDTO.getPassword()));
@@ -62,9 +61,8 @@ public class UserController extends BaseController {
             session.setAttribute(LOGIN_MARK, true);
             session.setAttribute(USER_MODEL, userModel);
             return ServerResponse.create(userVO.get());
-        } else {
-            throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);
         }
+        throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);
     }
 
     @PostMapping(value = ApiPath.User.REGISTRY)

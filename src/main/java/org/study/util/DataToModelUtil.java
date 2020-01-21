@@ -32,9 +32,7 @@ public final class DataToModelUtil {
     }
 
     public static Optional<ProductModel> getProductModel(
-            final ProductDO product,
-            final ProductStockDO stock,
-            final ProductSaleDO sale) {
+            final ProductDO product, final ProductStockDO stock, final ProductSaleDO sale) {
         if (Objects.isNull(product) || Objects.isNull(stock)
                 || Objects.isNull(sale)) {
             return Optional.empty();

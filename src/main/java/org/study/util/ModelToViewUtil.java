@@ -28,8 +28,7 @@ public final class ModelToViewUtil {
                 .setIconUrl(userModel.getIconUrl()));
     }
 
-    public static Optional<ProductVO> getProductVO(
-            final ProductModel product) {
+    public static Optional<ProductVO> getProductVO(final ProductModel product) {
         if (Objects.isNull(product)) {
             return Optional.empty();
         }
