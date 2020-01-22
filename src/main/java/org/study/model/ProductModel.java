@@ -32,13 +32,19 @@ public class ProductModel {
     @Min(value = 1, message = "库存不能为空")
     private Integer stock;
 
+    @NotNull(message = "商品发布者信息缺失")
+    private Integer userId;
+
     @NotNull(message = "价格不能为空")
     private BigDecimal price;
 
+    @NotNull(message = "请输入商品名称")
     private String productName;
 
+    @NotNull(message = "请输入商品描述")
     private String description;
 
+    @NotNull(message = "必须上传商品图片")
     private String iconUrl;
 
     private Timestamp createTime;

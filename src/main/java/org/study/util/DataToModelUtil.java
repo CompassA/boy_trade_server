@@ -45,6 +45,7 @@ public final class DataToModelUtil {
             return Optional.empty();
         }
         return Optional.of(new ProductModel().setProductId(productId)
+                .setUserId(product.getUserId())
                 .setProductName(product.getName())
                 .setCategoryId(product.getCategoryId())
                 .setDescription(product.getDescription())

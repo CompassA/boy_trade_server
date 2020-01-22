@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.study.error.ServerException;
 import org.study.error.SystemException;
+import org.study.model.UserModel;
 import org.study.response.ServerResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author fanqie
@@ -46,9 +48,21 @@ public class BaseController {
             exceptionData.put(MSG_PROPERTY_NAME, exception.getErrMsg());
         } else {
             exceptionData.put(ERROR_PROPERTY_NAME, 1);
-            exceptionData.put(MSG_PROPERTY_NAME, ex.getMessage());
+            exceptionData.put(MSG_PROPERTY_NAME, "未知错误");
         }
         return ServerResponse.create(exceptionData, ServerResponse.FAIL_STATUS);
+    }
+
+    protected boolean isLogin(final HttpServletRequest httpServletRequest) {
+        return httpServletRequest.getSession().getAttribute(LOGIN_MARK).equals(true);
+    }
+
+    protected Optional<UserModel> getUserModel(final HttpServletRequest httpServletRequest) {
+        final Object userModel = httpServletRequest.getSession().getAttribute(USER_MODEL);
+        if (userModel == null) {
+            return Optional.empty();
+        }
+        return Optional.of((UserModel) userModel);
     }
 }
 ;

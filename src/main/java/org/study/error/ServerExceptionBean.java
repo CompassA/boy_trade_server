@@ -13,8 +13,12 @@ public enum ServerExceptionBean implements SystemException {
     USER_LOGIN_EXCEPTION(20000, "用户不存在或密码错误"),
     /** 注册失败 */
     USER_REGISTRY_EXCEPTION(20001, "注册失败"),
+    /** 登录凭证缺失*/
+    USER_NOT_LOGIN_EXCEPTION(20002, "用户未登录"),
     /** 商品创建失败 */
-    PRODUCT_CREATE_EXCEPTION(30000, "商品创建失败");
+    PRODUCT_CREATE_EXCEPTION(30000, "商品创建失败"),
+    /** 文件上传异常 */
+    FILE_EXCEPTION(40000, "文件上传失败");
     ;
 
     private final Integer errCode;

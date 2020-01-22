@@ -33,14 +33,15 @@ public class ProductController extends BaseController {
             @RequestParam("stock") final Integer stock,
             @RequestParam("price") final BigDecimal price,
             @RequestParam("productName") final String productName,
-            @RequestParam("description") final String description)
-            throws ServerException {
+            @RequestParam("description") final String description,
+            @RequestParam("iconUrl") final String iconUrl) throws ServerException {
         final ProductModel productModel = new ProductModel()
                 .setCategoryId(categoryId)
                 .setStock(stock)
                 .setPrice(price)
                 .setProductName(productName)
-                .setDescription(description);
+                .setDescription(description)
+                .setIconUrl(iconUrl);
         final ProductModel modelStatus = productService.create(productModel);
         final Optional<ProductVO> productVO = ModelToViewUtil.getProductVO(modelStatus);
         if (!productVO.isPresent()) {

@@ -59,7 +59,7 @@ public class UserController extends BaseController {
         if (userVO.isPresent()) {
             final HttpSession session = httpServletRequest.getSession();
             session.setAttribute(LOGIN_MARK, true);
-            session.setAttribute(USER_MODEL, userModel);
+            session.setAttribute(USER_MODEL, userModel.get());
             return ServerResponse.create(userVO.get());
         }
         throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);

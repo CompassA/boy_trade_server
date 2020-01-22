@@ -20,6 +20,8 @@ public class ProductDO {
 
     private Integer categoryId;
 
+    private Integer userId;
+
     private Byte status;
 
     private String name;

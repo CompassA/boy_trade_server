@@ -5,6 +5,7 @@
 <mapper namespace="org.study.dao.ProductMapper">
     <resultMap id="ProductMap" type="org.study.data.ProductDO">
         <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
         <result column="price" property="price" jdbcType="DECIMAL"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="description" property="description" jdbcType="VARCHAR"/>
@@ -24,6 +25,7 @@
             <if test="product.iconUrl != null">icon_url, </if>
             <if test="product.categoryId != null">category_id, </if>
             <if test="product.status != null">status, </if>
+            <if test="product.userId != null">user_id, </if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -33,6 +35,7 @@
             <if test="product.iconUrl != null"> #{product.iconUrl}, </if>
             <if test="product.categoryId != null"> #{product.categoryId}, </if>
             <if test="product.status != null"> #{product.status}, </if>
+            <if test="product.userId != null"> #{product.userId},</if>
         </trim>
         ON DUPLICATE KEY UPDATE
         <trim suffixOverrides=",">
@@ -42,6 +45,7 @@
             <if test="product.iconUrl != null">icon_url = #{product.iconUrl}, </if>
             <if test="product.categoryId != null">category_id = #{product.categoryId}, </if>
             <if test="product.status != null">status = #{product.status}, </if>
+            <if test="product.userId != null">user_id = #{product.userId}, </if>
         </trim>
     </insert>
 
@@ -53,6 +57,7 @@
             <if test="product.categoryId != null">AND category_id = #{product.categoryId}</if>
             <if test="product.createTime != null"> AND create_time = #{product.createTime} </if>
             <if test="product.updateTime != null"> AND update_time = #{product.updateTime} </if>
+            <if test="product.userId != null">AND user_id = #{product.userId} </if>
         </where>
     </select>
 
