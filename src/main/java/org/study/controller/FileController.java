@@ -23,7 +23,7 @@ import java.util.Optional;
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
 public class FileController extends BaseController {
 
-    private static final int maxSize = 3 * 1024 * 1024;
+    private static final int MAX_FILE_SIZE = 3 * 1024 * 1024;
 
     @Autowired
     private HttpServletRequest httpServletRequest;
@@ -35,7 +35,7 @@ public class FileController extends BaseController {
     public ServerResponse uploadFile(
             @RequestPart("imgFile") final MultipartFile file) throws ServerException {
         //登录校验
-        if (!this.isLogin(httpServletRequest) || file.getSize() > maxSize) {
+        if (!this.isLogin(httpServletRequest) || file.getSize() > MAX_FILE_SIZE) {
             throw new ServerException(ServerExceptionBean.FILE_EXCEPTION);
         }
         final Optional<UserModel> user = this.getUserModel(httpServletRequest);
