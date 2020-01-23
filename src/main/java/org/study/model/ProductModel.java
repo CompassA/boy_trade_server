@@ -24,8 +24,6 @@ public class ProductModel {
 
     private Integer categoryId;
 
-    @NotNull(message = "销量不能为空")
-    @Min(value = 0, message = "销量数字非法")
     private Integer sales;
 
     @NotNull(message = "库存不能为空")

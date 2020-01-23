@@ -3,17 +3,18 @@ package org.study.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.model.ProductModel;
+import org.study.model.UserModel;
 import org.study.response.ServerResponse;
 import org.study.service.ProductService;
 import org.study.util.ModelToViewUtil;
 import org.study.view.ProductVO;
 
-import java.math.BigDecimal;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**
@@ -27,21 +28,24 @@ public class ProductController extends BaseController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private HttpServletRequest request;
+
     @PutMapping(value = ApiPath.Product.CREATE)
     public ServerResponse createProduct(
-            @RequestParam("categoryId") final Integer categoryId,
-            @RequestParam("stock") final Integer stock,
-            @RequestParam("price") final BigDecimal price,
-            @RequestParam("productName") final String productName,
-            @RequestParam("description") final String description,
-            @RequestParam("iconUrl") final String iconUrl) throws ServerException {
+            @RequestBody final ProductVO product) throws ServerException {
+        final Optional<UserModel> userModel = this.getUserModel(request);
+        if (!this.isLogin(request) || !userModel.isPresent()) {
+            throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
+        }
         final ProductModel productModel = new ProductModel()
-                .setCategoryId(categoryId)
-                .setStock(stock)
-                .setPrice(price)
-                .setProductName(productName)
-                .setDescription(description)
-                .setIconUrl(iconUrl);
+                .setCategoryId(product.getCategoryId())
+                .setStock(product.getStock())
+                .setPrice(product.getPrice())
+                .setProductName(product.getProductName())
+                .setDescription(product.getDescription())
+                .setIconUrl(product.getIconUrl())
+                .setUserId(userModel.get().getUserId());
         final ProductModel modelStatus = productService.create(productModel);
         final Optional<ProductVO> productVO = ModelToViewUtil.getProductVO(modelStatus);
         if (!productVO.isPresent()) {
