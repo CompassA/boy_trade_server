@@ -7,7 +7,7 @@ spring:
       max-file-size: 3MB
       max-request-size: 3MB
       enabled: true
-      location: "F:\\tmp_images"
+      location: "F:\\tmp_images\\"
       resolve-lazily: false
   datasource:
     url: "jdbc:mysql://47.103.146.40:3306/trade?characterEncoding=utf-8"
@@ -20,4 +20,11 @@ mybatis:
   mapper-locations: "classpath:mapper/*.xml"
 
 file-load-setting:
-  image-dictionary: "F:\\images"
+  local-image-dictionary: "F:\\images\\"
+  ftp-host: "47.103.146.40"
+  ftp-port: 21
+  ftp-user: "virftp"
+  ftp-password: "helloworld"
+  ftp-work-path: "/image/"
+  ftp-timeout: 1000
+  nginx-resource-url: "http://47.103.146.40:8888"

@@ -1,4 +1,4 @@
-package org.study.service.impl;
+package org.study.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +16,19 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "file-load-setting", ignoreUnknownFields = true)
 public class FileServiceConfig {
 
-    private String imageDictionary;
+    private String localImageDictionary;
+
+    private String ftpHost;
+
+    private String ftpUser;
+
+    private String ftpPassword;
+
+    private String ftpWorkPath;
+
+    private String nginxResourceUrl;
+
+    private Integer ftpPort;
+
+    private Integer ftpTimeout;
 }

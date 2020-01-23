@@ -95,7 +95,12 @@
       <artifactId>hibernate-validator</artifactId>
       <version>6.0.17.Final</version>
     </dependency>
-
+    <!--FtpClient所在的包-->
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>3.6</version>
+    </dependency>
   </dependencies>
 
   <build>
