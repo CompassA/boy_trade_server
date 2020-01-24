@@ -93,8 +93,11 @@ public class ProductServiceImpl implements ProductService {
     @Deprecated
     @Override
     public List<ProductModel> getAllProduct() throws ServerException {
-        final ProductDO query = new ProductDO();
-        final List<ProductDO> products = productMapper.selectProduct(query);
+        return query(new ProductDO());
+    }
+
+    private List<ProductModel> query(final ProductDO condition) throws ServerException {
+        final List<ProductDO> products = productMapper.selectProduct(condition);
         if (CollectionUtils.isEmpty(products)) {
             throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
         }
@@ -113,6 +116,7 @@ public class ProductServiceImpl implements ProductService {
         if (models.isPresent()) {
             return models.get();
         }
+
         throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
     }
 }
