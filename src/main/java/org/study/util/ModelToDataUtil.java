@@ -21,6 +21,7 @@ public final class ModelToDataUtil {
             return Optional.empty();
         }
         return Optional.of(new ProductDO().setId(productModel.getProductId())
+                .setUserId(productModel.getUserId())
                 .setCategoryId(productModel.getCategoryId())
                 .setDescription(productModel.getDescription())
                 .setIconUrl(productModel.getIconUrl())

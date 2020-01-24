@@ -1,11 +1,15 @@
 package org.study.util;
 
+import org.springframework.util.CollectionUtils;
 import org.study.data.*;
 import org.study.model.ProductModel;
 import org.study.model.UserModel;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author fanqie
@@ -56,5 +60,31 @@ public final class DataToModelUtil {
                 .setStock(stock.getStock())
                 .setCreateTime(product.getCreateTime())
                 .setUpdateTime(product.getUpdateTime()));
+    }
+
+    public static Optional<List<ProductModel>> getProductModels(final List<ProductDO> products,
+            final List<ProductStockDO> stocks, final List<ProductSaleDO> sales) {
+        if (CollectionUtils.isEmpty(products) || CollectionUtils.isEmpty(stocks)
+                || CollectionUtils.isEmpty(sales)) {
+            return Optional.empty();
+        }
+
+        //查询商品销量, 库存
+        final Map<Integer, ProductStockDO> stockMap = stocks.stream().collect(Collectors.toMap(
+                        ProductStockDO::getProductId, item -> item, (oldVal, newVal) -> newVal));
+        final Map<Integer, ProductSaleDO> saleMap = sales.stream().collect(Collectors.toMap(
+                        ProductSaleDO::getProductId, item -> item, (oldVal, newVal) -> newVal));
+
+        //组装成商品领域模型
+        final List<ProductModel> models = products.stream()
+                .map(product -> DataToModelUtil.getProductModel(
+                        product, stockMap.get(product.getId()), saleMap.get(product.getId())))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(models)) {
+            return Optional.empty();
+        }
+        return Optional.of(models);
     }
 }

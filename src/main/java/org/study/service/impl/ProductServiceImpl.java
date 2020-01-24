@@ -3,6 +3,7 @@ package org.study.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.study.dao.ProductMapper;
 import org.study.dao.ProductSaleMapper;
 import org.study.dao.ProductStockMapper;
@@ -19,7 +20,9 @@ import org.study.util.MyMathUtil;
 import org.study.validation.ValidationResult;
 import org.study.validation.ValidatorImpl;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author fanqie
@@ -75,7 +78,41 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductModel selectByPrimaryKey(final int productId) {
-        return null;
+    public ProductModel selectByPrimaryKey(final int productId) throws ServerException {
+        final Optional<ProductModel> model = DataToModelUtil.getProductModel(
+                productMapper.selectByPrimaryKey(productId),
+                stockMapper.selectStock(productId),
+                saleMapper.selectSale(productId));
+        if (model.isPresent()) {
+            return model.get();
+        }
+        throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+    }
+
+    /** 获取所有商品， 仅测试用 */
+    @Deprecated
+    @Override
+    public List<ProductModel> getAllProduct() throws ServerException {
+        final ProductDO query = new ProductDO();
+        final List<ProductDO> products = productMapper.selectProduct(query);
+        if (CollectionUtils.isEmpty(products)) {
+            throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+        }
+
+        //获取所有商品id
+        final List<Integer> productIds = products.stream()
+                .map(ProductDO::getId).collect(Collectors.toList());
+
+        //查询商品销量, 库存
+        final List<ProductStockDO> stocks = stockMapper.selectProductStock(productIds);
+        final List<ProductSaleDO> sales = saleMapper.selectProductSale(productIds);
+
+        //组装成商品领域模型
+        final Optional<List<ProductModel>> models =
+                DataToModelUtil.getProductModels(products, stocks, sales);
+        if (models.isPresent()) {
+            return models.get();
+        }
+        throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
     }
 }

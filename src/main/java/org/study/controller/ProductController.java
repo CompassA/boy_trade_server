@@ -1,10 +1,7 @@
 package org.study.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.model.ProductModel;
@@ -38,6 +35,11 @@ public class ProductController extends BaseController {
         if (!this.isLogin(request) || !userModel.isPresent()) {
             throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
         }
+        final Integer userId = userModel.get().getUserId();
+        if (!userId.equals(product.getUserId())) {
+            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
+
         final ProductModel productModel = new ProductModel()
                 .setCategoryId(product.getCategoryId())
                 .setStock(product.getStock())
@@ -45,12 +47,17 @@ public class ProductController extends BaseController {
                 .setProductName(product.getProductName())
                 .setDescription(product.getDescription())
                 .setIconUrl(product.getIconUrl())
-                .setUserId(userModel.get().getUserId());
+                .setUserId(userId);
         final ProductModel modelStatus = productService.create(productModel);
         final Optional<ProductVO> productVO = ModelToViewUtil.getProductVO(modelStatus);
         if (!productVO.isPresent()) {
             throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
         }
         return ServerResponse.create(productVO.get());
+    }
+
+    @GetMapping(value = ApiPath.Product.INFO)
+    public ServerResponse getAllProduct() throws ServerException {
+        return ServerResponse.create(ModelToViewUtil.getProductViews(productService.getAllProduct()));
     }
 }

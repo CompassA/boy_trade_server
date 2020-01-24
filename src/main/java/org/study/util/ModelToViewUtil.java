@@ -1,12 +1,15 @@
 package org.study.util;
 
+import org.springframework.util.CollectionUtils;
 import org.study.model.ProductModel;
 import org.study.model.UserModel;
 import org.study.view.ProductVO;
 import org.study.view.UserVO;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author fanqie
@@ -33,6 +36,7 @@ public final class ModelToViewUtil {
             return Optional.empty();
         }
         return Optional.of(new ProductVO()
+                .setUserId(product.getUserId())
                 .setProductId(product.getProductId())
                 .setProductName(product.getProductName())
                 .setCategoryId(product.getCategoryId())
@@ -42,5 +46,17 @@ public final class ModelToViewUtil {
                 .setPrice(product.getPrice())
                 .setSales(product.getSales())
                 .setStock(product.getStock()));
+    }
+
+    public static Optional<List<ProductVO>> getProductViews(final List<ProductModel> products) {
+        final List<ProductVO> views = products.stream()
+                .map(ModelToViewUtil::getProductVO)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(views)) {
+            return Optional.empty();
+        }
+        return Optional.of(views);
     }
 }

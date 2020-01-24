@@ -18,6 +18,7 @@ public class ApiPath {
 
     public static class Product {
         public static final String CREATE = "/product/create";
+        public static final String INFO = "/product/info";
     }
 
     public static class LoadingFile {
