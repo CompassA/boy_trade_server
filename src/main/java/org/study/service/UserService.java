@@ -2,6 +2,7 @@ package org.study.service;
 
 import org.study.error.ServerException;
 import org.study.model.UserModel;
+import org.study.view.UserVO;
 
 import java.util.Optional;
 
@@ -26,6 +27,13 @@ public interface UserService {
      * @throws ServerException 注册失败异常
      */
     UserModel registry(final UserModel userModel) throws ServerException;
+
+    /**
+     * 根据用户主键查询用户的姓名、id、注册日期
+     * @param userId 用户主键
+     * @return 查询信息
+     */
+    Optional<UserVO> queryByPrimaryKey(final Integer userId);
 
     /**
      * 查询用户名是否存在

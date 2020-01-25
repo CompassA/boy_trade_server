@@ -25,6 +25,8 @@ public class UserVO {
 
     private String iconUrl;
 
+    private String createTime;
+
     @Override
     public String toString() {
         return "UserVO{" +

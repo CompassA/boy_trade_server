@@ -24,7 +24,10 @@ import java.util.Optional;
  * @date 2019/12/8
  */
 @RestController
-@CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
+@CrossOrigin(
+        allowCredentials = "true",
+        allowedHeaders = "*",
+        origins = {"http://localhost:8080"})
 public class UserController extends BaseController {
 
     @Autowired
@@ -95,5 +98,15 @@ public class UserController extends BaseController {
             throw new ServerException(ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
         }
         return ServerResponse.create(userService.isUserNameExists(name));
+    }
+
+    @GetMapping(value = ApiPath.User.PART_INFO)
+    public ServerResponse selectUserInfo(
+            @RequestParam("userId") final Integer userId) throws ServerException {
+        final Optional<UserVO> userInfo = userService.queryByPrimaryKey(userId);
+        if (userInfo.isPresent()) {
+            return ServerResponse.create(userInfo.get());
+        }
+        throw new ServerException(ServerExceptionBean.USER_QUERY_EXCEPTION);
     }
 }

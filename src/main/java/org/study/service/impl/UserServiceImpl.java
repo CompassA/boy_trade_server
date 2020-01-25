@@ -3,6 +3,7 @@ package org.study.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.study.dao.UserMapper;
 import org.study.dao.UserPasswordMapper;
 import org.study.data.UserDO;
@@ -15,7 +16,9 @@ import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
 import org.study.validation.ValidationResult;
 import org.study.validation.ValidatorImpl;
+import org.study.view.UserVO;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -109,5 +112,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isUserNameExists(final String name) {
         return userMapper.selectExistsByName(name) == 1;
+    }
+
+    @Override
+    public Optional<UserVO> queryByPrimaryKey(final Integer userId) {
+        final List<UserDO> result = userMapper.selectUser(new UserDO().setUserId(userId));
+        if (CollectionUtils.isEmpty(result) || result.size() != 1) {
+            return Optional.empty();
+        }
+        final UserDO userInfo = result.get(0);
+        return Optional.of(new UserVO()
+                .setCreateTime(userInfo.getCreateTime().toString())
+                .setUserId(userInfo.getUserId())
+                .setIconUrl(userInfo.getIconUrl())
+                .setName(userInfo.getName()));
     }
 }

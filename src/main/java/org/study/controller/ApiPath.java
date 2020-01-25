@@ -10,6 +10,7 @@ public class ApiPath {
         public static final String LOGIN = "/user/login";
         public static final String REGISTRY = "/user/registry";
         public static final String EXIST = "/user/exist";
+        public static final String PART_INFO = "/user/part_info";
     }
 
     public static class Encrypt {
