@@ -13,8 +13,8 @@
 
     <insert id="initProductSale" parameterType="org.study.data.ProductSaleDO" useGeneratedKeys="true" keyProperty="productSale.id">
         INSERT INTO product_sale(product_id)
-        VALUES (#{productSale.productId})
-    </insert>
+    VALUES (#{productSale.productId})
+</insert>
 
     <select id="selectProductSale" resultMap="ProductSaleMap">
         SELECT * FROM product_sale
@@ -27,4 +27,10 @@
     <select id="selectSale" resultMap="ProductSaleMap">
         SELECT * FROM product_sale WHERE product_id = #{productId}
     </select>
+
+    <update id="increaseSales">
+        UPDATE product_sale
+        SET sales = sales + #{amount}
+        WHERE product_id = #{productId}
+    </update>
 </mapper>

@@ -27,4 +27,10 @@
     <select id="selectStock" resultMap="ProductStockMap">
         SELECT * FROM product_stock WHERE product_id = #{productId}
     </select>
+
+    <update id="decreaseStock">
+        UPDATE product_stock
+        SET stock = stock - #{amount}
+        WHERE product_id = #{productId} and stock >= #{amount}
+    </update>
 </mapper>

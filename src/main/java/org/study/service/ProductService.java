@@ -34,4 +34,20 @@ public interface ProductService {
      */
     @Deprecated
     List<ProductModel> getAllProduct() throws ServerException;
+
+    /**
+     * 减库存
+     * @param productId 要减库存的商品的id
+     * @param amount 要减去的数量
+     * @return 减库存是否成功 true 成功； false 失败；
+     */
+    boolean decreaseStock(final Integer productId, final Integer amount);
+
+    /**
+     * 增加销量
+     * @param productId 要加销量的商品的id
+     * @param amount 增加的销量数
+     * @return 增加销量是否成功 true 成功； false 失败；
+     */
+    boolean increaseSales(final Integer productId, final Integer amount);
 }

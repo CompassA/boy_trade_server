@@ -31,4 +31,13 @@ public interface ProductStockMapper {
      * @return 库存信息
      */
     ProductStockDO selectStock(@Param("productId") final Integer productId);
+
+    /**
+     * 落单减库存
+     * @param productId 商品id
+     * @param amount 减去的数量
+     * @return 影响的sql语句
+     */
+    int decreaseStock(@Param("productId") final Integer productId,
+                      @Param("amount") final Integer amount);
 }

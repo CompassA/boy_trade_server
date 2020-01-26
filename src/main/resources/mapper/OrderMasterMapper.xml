@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.study.dao.OrderMasterMapper">
+    <resultMap id="OrderMasterMap" type="org.study.data.OrderMasterDO">
+        <id column="order_id" property="orderId" jdbcType="VARCHAR" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="user_phone" property="userPhone" jdbcType="VARCHAR" />
+        <result column="user_address" property="userAddress" jdbcType="VARCHAR" />
+        <result column="order_amount" property="orderAmount" jdbcType="DECIMAL" />
+        <result column="order_status" property="orderStatus" jdbcType="TINYINT" />
+        <result column="pay_status" property="payStatus" jdbcType="TINYINT" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <insert id="insertOrderMaster">
+        INSERT INTO order_master (order_id, user_id, user_name, user_phone, user_address,
+                                  order_amount, order_status, pay_status, create_time)
+        VALUES (#{orderMaster.orderId}, #{orderMaster.userId}, #{orderMaster.userName},
+                #{orderMaster.userPhone}, #{orderMaster.userAddress}, #{orderMaster.orderAmount}
+                #{orderMaster.orderStatus}, #{orderMaster.payStatus}, #{orderMaster.createTime})
+    </insert>
+</mapper>

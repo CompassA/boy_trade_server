@@ -89,6 +89,16 @@ public class ProductServiceImpl implements ProductService {
         throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
     }
 
+    @Override
+    public boolean decreaseStock(final Integer productId, final Integer amount) {
+        return stockMapper.decreaseStock(productId, amount) > 0;
+    }
+
+    @Override
+    public boolean increaseSales(final Integer productId, final Integer amount) {
+        return saleMapper.increaseSales(productId, amount) > 0;
+    }
+
     /** 获取所有商品， 仅测试用 */
     @Deprecated
     @Override

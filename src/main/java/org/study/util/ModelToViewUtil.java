@@ -1,10 +1,11 @@
 package org.study.util;
 
 import org.springframework.util.CollectionUtils;
+import org.study.model.OrderDetailModel;
+import org.study.model.OrderModel;
 import org.study.model.ProductModel;
 import org.study.model.UserModel;
-import org.study.view.ProductVO;
-import org.study.view.UserVO;
+import org.study.view.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -58,5 +59,43 @@ public final class ModelToViewUtil {
             return Optional.empty();
         }
         return Optional.of(views);
+    }
+
+    public static Optional<OrderVO> getOrderVO(final OrderModel orderModel) {
+        if (orderModel == null || orderModel.getOrderId() == null
+                || orderModel.getUserId() == null
+                || CollectionUtils.isEmpty(orderModel.getProductDetails())) {
+            return Optional.empty();
+        }
+        final List<OrderDetailVO> orderDetails = orderModel.getProductDetails().stream()
+                .map(ModelToViewUtil::getOrderDetailVO)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        return Optional.of(new OrderVO()
+                .setOrderId(orderModel.getOrderId())
+                .setOrderStatus(orderModel.getOrderStatus())
+                .setPayStatus(orderModel.getPayStatus())
+                .setOrderAmount(orderModel.getOrderAmount())
+                .setUserAddress(orderModel.getUserAddress())
+                .setUserId(orderModel.getUserId())
+                .setUserName(orderModel.getUserName())
+                .setUserPhone(orderModel.getUserPhone())
+                .setOrderDetails(orderDetails)
+                .setCreateTime(orderModel.getCreateTime()));
+    }
+
+    public static Optional<OrderDetailVO> getOrderDetailVO(final OrderDetailModel detailModel) {
+        if (detailModel == null) {
+            return Optional.empty();
+        }
+        return Optional.of(new OrderDetailVO()
+                .setOrderId(detailModel.getOrderId())
+                .setProductPrice(detailModel.getProductPrice())
+                .setProductAmount(detailModel.getProductAmount())
+                .setProductName(detailModel.getProductName())
+                .setProductId(detailModel.getProductId())
+                .setIconUrl(detailModel.getProductIcon())
+                .setDetailId(detailModel.getDetailId()));
     }
 }

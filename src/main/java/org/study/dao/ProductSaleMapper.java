@@ -33,4 +33,13 @@ public interface ProductSaleMapper {
      * @return 商品销量信息
      */
     ProductSaleDO selectSale(@Param("productId") final Integer productId);
+
+    /**
+     * 增加商品销量
+     * @param productId 商品id
+     * @param amount 要增加的数量
+     * @return sql影响行数
+     */
+    int increaseSales(@Param("productId") final Integer productId,
+                     @Param("amount") final Integer amount);
 }

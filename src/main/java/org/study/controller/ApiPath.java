@@ -25,4 +25,8 @@ public class ApiPath {
     public static class LoadingFile {
         public static final String UPLOAD = "/file/upload";
     }
+
+    public static class Order {
+        public static final String CREATE = "/order/create";
+    }
 }
