@@ -63,7 +63,8 @@ public class OrderServiceImpl implements OrderService {
         for (final OrderDetailModel productDetail : orderModel.getProductDetails()) {
             final Integer productId = productDetail.getProductId();
             final ProductModel productModel = productService.selectByPrimaryKey(productId);
-            if (productModel.getStock() < productDetail.getProductAmount()) {
+            final Integer amount = productDetail.getProductAmount();
+            if (productModel.getStock() < amount || amount < 1) {
                 throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_STOCK_EXCEPTION);
             }
             models.add(productModel);

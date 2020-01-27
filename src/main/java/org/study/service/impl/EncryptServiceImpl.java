@@ -4,23 +4,18 @@ import org.springframework.stereotype.Component;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.service.EncryptService;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 
 /**
  * RSA加密
@@ -69,46 +64,46 @@ public class EncryptServiceImpl implements EncryptService {
 
     @Override
     public String encryptByPrivateKey(final String data) throws Exception {
-        final BASE64Decoder decoder = new BASE64Decoder();
-        final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(encryptByPrivateKey(decoder.decodeBuffer(data)));
+        final Decoder decoder = Base64.getDecoder();
+        final Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(encryptByPrivateKey(decoder.decode(data)));
     }
 
     @Override
     public String decryptByPrivateKey(final String data) throws Exception {
-        final BASE64Decoder decoder = new BASE64Decoder();
-        final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(decryptByPrivateKey(decoder.decodeBuffer(data)));
+        final Decoder decoder = Base64.getDecoder();
+        final Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(decryptByPrivateKey(decoder.decode(data)));
     }
 
     @Override
     public String encryptByPublicKey(final String data) throws Exception {
-        final BASE64Decoder decoder = new BASE64Decoder();
-        final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(encryptByPublicKey(decoder.decodeBuffer(data)));
+        final Decoder decoder = Base64.getDecoder();
+        final Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(encryptByPublicKey(decoder.decode(data)));
     }
 
     @Override
     public String decryptByPublicKey(final String data) throws Exception {
-        final BASE64Decoder decoder = new BASE64Decoder();
-        final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(decryptByPublicKey(decoder.decodeBuffer(data)));
+        final Decoder decoder = Base64.getDecoder();
+        final Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(decryptByPublicKey(decoder.decode(data)));
     }
 
     @Override
     public String decryptByAesKey(final String data, final byte[] aesKey)
             throws Exception {
-        final BASE64Decoder decoder = new BASE64Decoder();
-        final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(decryptByAesKey(decoder.decodeBuffer(data), aesKey));
+        final Decoder decoder = Base64.getDecoder();
+        final Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(decryptByAesKey(decoder.decode(data), aesKey));
     }
 
     @Override
     public String encryptByAesKey(final String data, final byte[] aesKey)
             throws Exception {
-        final BASE64Decoder decoder = new BASE64Decoder();
-        final BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(encryptByAesKey(decoder.decodeBuffer(data), aesKey));
+        final Decoder decoder = Base64.getDecoder();
+        final Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(encryptByAesKey(decoder.decode(data), aesKey));
     }
 
     @Override
@@ -209,15 +204,15 @@ public class EncryptServiceImpl implements EncryptService {
 
     @Override
     public String getPublicKey() {
-        return new BASE64Encoder().encode(publicKey);
+        return Base64.getEncoder().encodeToString(publicKey);
     }
 
     @Override
     public String encryptByMd5(final String data) throws ServerException {
         try {
             final MessageDigest md5 = MessageDigest.getInstance(MD5_ALGORITHM);
-            final BASE64Encoder base64en = new BASE64Encoder();
-            return base64en.encode(md5.digest(data.getBytes(StandardCharsets.UTF_8)));
+            final Encoder encoder = Base64.getEncoder();
+            return encoder.encodeToString(md5.digest(data.getBytes(StandardCharsets.UTF_8)));
         } catch (final Exception e) {
             e.printStackTrace();
             throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);

@@ -30,7 +30,7 @@ public enum ServerExceptionBean implements SystemException {
     /** 文件上传异常 */
     FILE_EXCEPTION(40000, "文件上传失败"),
     /** 因库存不足导致下单失败 */
-    ORDER_FAIL_BY_STOCK_EXCEPTION(50000, "下单失败，商品库存已经不足"),
+    ORDER_FAIL_BY_STOCK_EXCEPTION(50000, "下单失败，商品数量不正确"),
     /** 后端异常导致下单失败 */
     ORDER_FAIL_BY_SYSTEM_EXCEPTION(50001, "系统内部异常"),
     ;

@@ -90,11 +90,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean decreaseStock(final Integer productId, final Integer amount) {
         return stockMapper.decreaseStock(productId, amount) > 0;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean increaseSales(final Integer productId, final Integer amount) {
         return saleMapper.increaseSales(productId, amount) > 0;
     }

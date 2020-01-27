@@ -7,7 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.study.service.EncryptService;
 import org.study.util.MyStringUtil;
-import sun.misc.BASE64Decoder;
+
+import java.util.Base64;
 
 /**
  * @author fanqie
@@ -41,7 +42,7 @@ public class ServerRequest {
             final Class<T> type) throws Exception {
         //私钥解密得到aes key
         final byte[] aesKey = encryptService.decryptByPrivateKey(
-                new BASE64Decoder().decodeBuffer(key));
+                Base64.getDecoder().decode(key));
         //利用aes key解密json数据
         final String dataStr = encryptService.decryptByAesKey(encryptData, aesKey);
         //反序列化

@@ -8,9 +8,9 @@ import org.study.response.ServerRequest;
 import org.study.service.impl.EncryptServiceImpl;
 import org.study.util.MyStringUtil;
 import org.study.view.UserVO;
-import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.Objects;
 
 /**
@@ -104,7 +104,7 @@ public class EncryptTest extends BaseTest {
 
         final String encryptJson = encryptServiceImpl.encryptByAesKey(
                 MyStringUtil.utf8ToBase64(userJson), aesKey);
-        final String key = new BASE64Encoder().encode(
+        final String key = Base64.getEncoder().encodeToString(
                 encryptServiceImpl.encryptByPublicKey(aesKey));
 
         final ServerRequest mock = new ServerRequest(key, encryptJson);

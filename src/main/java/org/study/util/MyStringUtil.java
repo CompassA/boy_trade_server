@@ -1,10 +1,7 @@
 package org.study.util;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * 字符转码工具
@@ -22,18 +19,15 @@ public final class MyStringUtil {
      * @return BASE64编码的字符串
      */
     public static String utf8ToBase64(final String data) {
-        return new BASE64Encoder()
-                .encode(data.getBytes(StandardCharsets.UTF_8));
+        return Base64.getEncoder().encodeToString(data.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
      * BASE64 -> UTF-8
      * @param data BASE64编码的字符串
      * @return UTF-8编码的字符串
-     * @throws IOException IO异常
      */
-    public static String base64ToUtf8(final String data) throws IOException {
-        return new String(
-                new BASE64Decoder().decodeBuffer(data), StandardCharsets.UTF_8);
+    public static String base64ToUtf8(final String data) {
+        return new String(Base64.getDecoder().decode(data), StandardCharsets.UTF_8);
     }
 }
