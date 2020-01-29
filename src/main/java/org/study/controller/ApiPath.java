@@ -11,6 +11,8 @@ public class ApiPath {
         public static final String REGISTRY = "/user/registry";
         public static final String EXIST = "/user/exist";
         public static final String PART_INFO = "/user/part_info";
+        public static final String SESSION_CHECKING = "/user/session_status";
+        public static final String LOGOUT = "/user/logout";
     }
 
     public static class Encrypt {

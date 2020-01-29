@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
@@ -14,7 +15,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class UserModel {
+public class UserModel implements Serializable {
 
     private Integer userId;
 

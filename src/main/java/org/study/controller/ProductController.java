@@ -8,10 +8,10 @@ import org.study.model.ProductModel;
 import org.study.model.UserModel;
 import org.study.response.ServerResponse;
 import org.study.service.ProductService;
+import org.study.service.SessionService;
 import org.study.util.ModelToViewUtil;
 import org.study.view.ProductVO;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**
@@ -20,19 +20,20 @@ import java.util.Optional;
  */
 @RestController
 @CrossOrigin(allowedHeaders = "*", allowCredentials = "true")
-public class ProductController extends BaseController {
+public class ProductController {
 
     @Autowired
     private ProductService productService;
 
     @Autowired
-    private HttpServletRequest request;
+    private SessionService sessionService;
 
     @PutMapping(value = ApiPath.Product.CREATE)
     public ServerResponse createProduct(
             @RequestBody final ProductVO product) throws ServerException {
-        final Optional<UserModel> userModel = this.getUserModel(request);
-        if (!this.isLogin(request) || !userModel.isPresent()) {
+        //登录态方可创建
+        final Optional<UserModel> userModel = sessionService.getUserModel();
+        if (!sessionService.isLogin() || !userModel.isPresent()) {
             throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
         }
         final Integer userId = userModel.get().getUserId();

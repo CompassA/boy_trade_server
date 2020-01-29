@@ -13,7 +13,7 @@ import org.study.service.EncryptService;
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
-public class EncryptController extends BaseController {
+public class EncryptController {
 
     @Autowired
     private EncryptService encryptService;

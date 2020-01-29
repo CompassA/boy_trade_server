@@ -11,8 +11,8 @@ import org.study.error.ServerExceptionBean;
 import org.study.model.UserModel;
 import org.study.response.ServerResponse;
 import org.study.service.FileService;
+import org.study.service.SessionService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**
@@ -21,12 +21,12 @@ import java.util.Optional;
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
-public class FileController extends BaseController {
+public class FileController {
 
     private static final int MAX_FILE_SIZE = 3 * 1024 * 1024;
 
     @Autowired
-    private HttpServletRequest httpServletRequest;
+    private SessionService sessionService;
 
     @Autowired
     private FileService fileService;
@@ -35,10 +35,10 @@ public class FileController extends BaseController {
     public ServerResponse uploadFile(
             @RequestPart("imgFile") final MultipartFile file) throws ServerException {
         //登录校验
-        if (!this.isLogin(httpServletRequest) || file.getSize() > MAX_FILE_SIZE) {
+        if (!sessionService.isLogin() || file.getSize() > MAX_FILE_SIZE) {
             throw new ServerException(ServerExceptionBean.FILE_EXCEPTION);
         }
-        final Optional<UserModel> user = this.getUserModel(httpServletRequest);
+        final Optional<UserModel> user = sessionService.getUserModel();
         if (!user.isPresent()) {
             throw new ServerException(ServerExceptionBean.FILE_EXCEPTION);
         }

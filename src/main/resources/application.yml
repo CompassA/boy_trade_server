@@ -15,7 +15,18 @@ spring:
     password: "Root@2019"
     driver-class-name: "com.mysql.jdbc.Driver"
     type: "com.alibaba.druid.pool.DruidDataSource"
-
+  redis:
+    host: "101.133.161.59"
+    port: 6379
+    database: 1
+    jedis:
+      pool:
+        max-active: 50
+        min-idle: 20
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
 mybatis:
   mapper-locations: "classpath:mapper/*.xml"
 

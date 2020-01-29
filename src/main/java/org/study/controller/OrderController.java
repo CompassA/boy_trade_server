@@ -10,6 +10,7 @@ import org.study.response.ServerRequest;
 import org.study.response.ServerResponse;
 import org.study.service.EncryptService;
 import org.study.service.OrderService;
+import org.study.service.SessionService;
 import org.study.util.ModelToViewUtil;
 import org.study.util.ViewToModelUtil;
 import org.study.view.OrderDTO;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
-public class OrderController extends BaseController {
+public class OrderController {
 
     @Autowired
     private EncryptService encryptService;
@@ -33,10 +34,18 @@ public class OrderController extends BaseController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private SessionService sessionService;
+
     @PostMapping(value = ApiPath.Order.CREATE)
     public ServerResponse createOrder(
             @RequestBody final ServerRequest encryptData) throws ServerException {
         try {
+            //未登录不可下单
+            if (!sessionService.isLogin()) {
+                throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+            }
+
             //反序列化并校验
             final OrderDTO orderDTO = encryptData.deserialize(encryptService, OrderDTO.class);
             final Optional<OrderModel> orderModel = ViewToModelUtil.getOrderModel(orderDTO);
@@ -79,6 +88,6 @@ public class OrderController extends BaseController {
         return ModelToViewUtil.getOrderVO(orderService.selectOrderById(orderId).get())
                 .map(ServerResponse::create)
                 .orElse(ServerResponse.create(
-                        ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION, "fail"));
+                        ServerExceptionBean.ORDER_NOT_EXIST_EXCEPTION, "fail"));
     }
 }

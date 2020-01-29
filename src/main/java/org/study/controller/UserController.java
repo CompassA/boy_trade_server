@@ -9,14 +9,13 @@ import org.study.model.UserModel;
 import org.study.response.ServerRequest;
 import org.study.response.ServerResponse;
 import org.study.service.EncryptService;
+import org.study.service.SessionService;
 import org.study.service.UserService;
 import org.study.util.ModelToViewUtil;
 import org.study.view.LoginDTO;
 import org.study.view.RegistryDTO;
 import org.study.view.UserVO;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 /**
@@ -25,13 +24,13 @@ import java.util.Optional;
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
-public class UserController extends BaseController {
+public class UserController {
 
     @Autowired
     private UserService userService;
 
     @Autowired
-    private HttpServletRequest httpServletRequest;
+    private SessionService sessionService;
 
     @Autowired
     private EncryptService encryptService;
@@ -57,9 +56,7 @@ public class UserController extends BaseController {
         }
         final Optional<UserVO> userVO = ModelToViewUtil.getUserVO(userModel.get());
         if (userVO.isPresent()) {
-            final HttpSession session = httpServletRequest.getSession();
-            session.setAttribute(LOGIN_MARK, true);
-            session.setAttribute(USER_MODEL, userModel.get());
+            sessionService.putUserModel(userModel.get());
             return ServerResponse.create(userVO.get());
         }
         throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);
@@ -80,15 +77,13 @@ public class UserController extends BaseController {
         final UserModel userModel = userService.registry(registryModel);
         final Optional<UserVO> userVO = ModelToViewUtil.getUserVO(userModel);
         if (userVO.isPresent()) {
-            final HttpSession session = httpServletRequest.getSession();
-            session.setAttribute(LOGIN_MARK, true);
-            session.setAttribute(USER_MODEL, userModel);
+            sessionService.putUserModel(userModel);
             return ServerResponse.create(userVO.get());
         }
         throw new ServerException(ServerExceptionBean.USER_REGISTRY_EXCEPTION);
     }
 
-    @GetMapping(value = ApiPath.User.EXIST, consumes = { CONSUMERS })
+    @GetMapping(value = ApiPath.User.EXIST)
     public ServerResponse checkUserName(
             @RequestParam("name") final String name) throws ServerException {
         if (StringUtils.isBlank(name)) {
@@ -105,5 +100,22 @@ public class UserController extends BaseController {
             return ServerResponse.create(userInfo.get());
         }
         throw new ServerException(ServerExceptionBean.USER_QUERY_EXCEPTION);
+    }
+
+    @GetMapping(value = ApiPath.User.SESSION_CHECKING)
+    public ServerResponse getSessionStatus() {
+        if (sessionService.isLogin()) {
+            final Optional<UserModel> userInfo = sessionService.getUserModel();
+            if (userInfo.isPresent()) {
+                return ServerResponse.create(userInfo.get());
+            }
+        }
+        return ServerResponse.create(null);
+    }
+
+    @GetMapping(value = ApiPath.User.LOGOUT)
+    public ServerResponse logout() {
+        sessionService.logout();
+        return ServerResponse.create(null);
     }
 }
