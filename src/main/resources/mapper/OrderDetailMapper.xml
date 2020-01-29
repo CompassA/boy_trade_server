@@ -26,4 +26,9 @@
             )
         </foreach>
     </insert>
+
+    <select id="selectDetailByOrderId" resultMap="OrderDetailMap">
+        SELECT * FROM order_detail
+        WHERE order_id = #{orderId}
+    </select>
 </mapper>

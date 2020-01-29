@@ -3,6 +3,7 @@ package org.study.service;
 import org.study.error.ServerException;
 import org.study.model.ProductModel;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -50,4 +51,11 @@ public interface ProductService {
      * @return 增加销量是否成功 true 成功； false 失败；
      */
     boolean increaseSales(final Integer productId, final Integer amount);
+
+    /**
+     * 计算商品价格
+     * @param productModel 商品领域模型
+     * @return 商品当前的实际价格
+     */
+    BigDecimal getProductPrice(final ProductModel productModel);
 }

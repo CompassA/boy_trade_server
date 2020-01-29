@@ -2,6 +2,8 @@ package org.study.util;
 
 import org.springframework.util.CollectionUtils;
 import org.study.data.*;
+import org.study.model.OrderDetailModel;
+import org.study.model.OrderModel;
 import org.study.model.ProductModel;
 import org.study.model.UserModel;
 
@@ -86,5 +88,39 @@ public final class DataToModelUtil {
             return Optional.empty();
         }
         return Optional.of(models);
+    }
+
+    public static Optional<OrderModel> getOrderModel(
+            final OrderMasterDO master, final List<OrderDetailDO> details) {
+        if (master == null || CollectionUtils.isEmpty(details)) {
+            return Optional.empty();
+        }
+        return Optional.of(new OrderModel()
+                .setUpdateTime(master.getUpdateTime())
+                .setOrderAmount(master.getOrderAmount())
+                .setCreateTime(master.getCreateTime())
+                .setProductDetails(DataToModelUtil.getDetailModels(details))
+                .setOrderStatus(master.getOrderStatus())
+                .setPayStatus(master.getPayStatus())
+                .setUserAddress(master.getUserAddress())
+                .setUserPhone(master.getUserPhone())
+                .setUserName(master.getUserName())
+                .setUserId(master.getUserId())
+                .setOrderId(master.getOrderId()));
+    }
+
+    public static List<OrderDetailModel> getDetailModels(final List<OrderDetailDO> details) {
+        return details.stream()
+                .map(detailDO -> new OrderDetailModel()
+                        .setDetailId(detailDO.getDetailId())
+                        .setOrderId(detailDO.getOrderId())
+                        .setProductIcon(detailDO.getProductIcon())
+                        .setProductAmount(detailDO.getProductAmount())
+                        .setProductPrice(detailDO.getProductPrice())
+                        .setProductName(detailDO.getProductName())
+                        .setProductId(detailDO.getProductId())
+                        .setCreateTime(detailDO.getCreateTime())
+                        .setUpdateTime(detailDO.getUpdateTime())
+                ).collect(Collectors.toList());
     }
 }

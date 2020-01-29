@@ -5,7 +5,10 @@ import org.study.model.OrderDetailModel;
 import org.study.model.OrderModel;
 import org.study.model.ProductModel;
 import org.study.model.UserModel;
-import org.study.view.*;
+import org.study.view.OrderDetailVO;
+import org.study.view.OrderVO;
+import org.study.view.ProductVO;
+import org.study.view.UserVO;
 
 import java.util.List;
 import java.util.Objects;
@@ -82,7 +85,7 @@ public final class ModelToViewUtil {
                 .setUserName(orderModel.getUserName())
                 .setUserPhone(orderModel.getUserPhone())
                 .setOrderDetails(orderDetails)
-                .setCreateTime(orderModel.getCreateTime()));
+                .setCreateTime(TimeUtil.toString(orderModel.getCreateTime())));
     }
 
     public static Optional<OrderDetailVO> getOrderDetailVO(final OrderDetailModel detailModel) {

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.dao.OrderDetailMapper;
 import org.study.dao.OrderMasterMapper;
+import org.study.data.OrderMasterDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.model.OrderDetailModel;
@@ -16,16 +17,18 @@ import org.study.service.OrderService;
 import org.study.service.ProductService;
 import org.study.service.SequenceService;
 import org.study.service.UserService;
+import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
+import org.study.util.TimeUtil;
 import org.study.view.UserVO;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author fanqie
@@ -57,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
         if (!userVO.isPresent()) {
             throw new ServerException(ServerExceptionBean.USER_QUERY_EXCEPTION);
         }
-        //这里查询失败会抛异常
+        //从数据库查询商品信息进行校验，这里查询失败会抛异常
         final List<ProductModel> models = Lists.newArrayList();
         final Map<Integer, OrderDetailModel> productDetails = Maps.newHashMap();
         for (final OrderDetailModel productDetail : orderModel.getProductDetails()) {
@@ -71,7 +74,7 @@ public class OrderServiceImpl implements OrderService {
             productDetails.put(productModel.getProductId(), productDetail);
         }
 
-        //落单减库存
+        //落单减库存并计算订单总金额
         BigDecimal orderAmount = new BigDecimal(0);
         for (final ProductModel model : models) {
             final Integer productId = model.getProductId();
@@ -82,20 +85,22 @@ public class OrderServiceImpl implements OrderService {
                 throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_STOCK_EXCEPTION);
             }
             orderAmount = orderAmount.add(
-                    productDetail.getProductPrice().multiply(new BigDecimal(productAmount)));
+                    productService.getProductPrice(model).multiply(new BigDecimal(productAmount)));
         }
 
-        //订单入库
+        //生成订单编号
         final String orderId = LocalDateTime.now()
                 .format(DateTimeFormatter.ISO_DATE).replace("-", "")
                 + sequenceService.generateNewSequence(SequenceService.DEFAULT_SEQUENCE_ID)
                 + this.userIdMod(orderModel.getUserId());
+
+        //订单入库
         orderModel.setOrderId(orderId)
+                .setOrderAmount(orderAmount)
                 .setPayStatus((byte) 0)
                 .setOrderStatus((byte) 0)
-                .setCreateTime(Timestamp.valueOf(LocalDateTime.now()));
-        ModelToDataUtil.getOrderMaster(orderModel)
-                .ifPresent(orderMasterMapper::insertOrderMaster);
+                .setCreateTime(TimeUtil.getCurrentTimestamp());
+        ModelToDataUtil.getOrderMaster(orderModel).ifPresent(orderMasterMapper::insertOrderMaster);
         ModelToDataUtil.getOrderDetails(orderModel.getProductDetails(), orderId)
                 .ifPresent(orderDetailMapper::insertOrderDetails);
 
@@ -103,6 +108,34 @@ public class OrderServiceImpl implements OrderService {
         return orderModel;
     }
 
+    @Override
+    public List<OrderModel> selectOrdersByUserId(final Integer userId) throws ServerException {
+        final List<OrderMasterDO> orderMasters = orderMasterMapper.selectOrdersByUserId(userId);
+        final List<OrderModel> models = orderMasters.stream()
+                .map(orderMasterDO -> DataToModelUtil.getOrderModel(
+                        orderMasterDO,
+                        orderDetailMapper.selectDetailByOrderId(orderMasterDO.getOrderId())))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        if (models.size() == orderMasters.size()) {
+            return models;
+        }
+        throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+    }
+
+    @Override
+    public Optional<OrderModel> selectOrderById(final String orderId) {
+        return DataToModelUtil.getOrderModel(
+                orderMasterMapper.selectOrderById(orderId),
+                orderDetailMapper.selectDetailByOrderId(orderId));
+    }
+
+    /**
+     * 根据用户编号生成分库分表位
+     * @param userId 用户编号
+     * @return 高16位低16位相异或并模100
+     */
     private String userIdMod(final Integer userId) {
         return String.format("%02d", ((userId) ^ (userId >>> 16)) % 100);
     }

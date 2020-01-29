@@ -33,6 +33,8 @@ public enum ServerExceptionBean implements SystemException {
     ORDER_FAIL_BY_STOCK_EXCEPTION(50000, "下单失败，商品数量不正确"),
     /** 后端异常导致下单失败 */
     ORDER_FAIL_BY_SYSTEM_EXCEPTION(50001, "系统内部异常"),
+    /** select结果为空 */
+    ORDER_NOT_EXIST_EXCEPTION(50002, "订单不存在"),
     ;
 
     private final Integer errCode;

@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -35,7 +34,7 @@ public class OrderVO {
 
     private List<OrderDetailVO> orderDetails;
 
-    private Timestamp createTime;
+    private String createTime;
 
     @Override
     public String toString() {

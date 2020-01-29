@@ -19,4 +19,11 @@ public interface OrderDetailMapper {
      * @return 受影响的sql行数
      */
     int insertOrderDetails(@Param("details") final List<OrderDetailDO> details);
+
+    /**
+     * 根据订单号查询订单元素
+     * @param orderId 订单编号
+     * @return 订单元素列表
+     */
+    List<OrderDetailDO> selectDetailByOrderId(@Param("orderId") final String orderId);
 }

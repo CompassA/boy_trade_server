@@ -20,6 +20,7 @@ import org.study.util.MyMathUtil;
 import org.study.validation.ValidationResult;
 import org.study.validation.ValidatorImpl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -130,5 +131,10 @@ public class ProductServiceImpl implements ProductService {
         }
 
         throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+    }
+
+    @Override
+    public BigDecimal getProductPrice(final ProductModel productModel) {
+        return productModel.getPrice();
     }
 }

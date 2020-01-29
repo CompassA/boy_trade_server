@@ -24,10 +24,7 @@ import java.util.Optional;
  * @date 2019/12/8
  */
 @RestController
-@CrossOrigin(
-        allowCredentials = "true",
-        allowedHeaders = "*",
-        origins = {"http://localhost:8080"})
+@CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
 public class UserController extends BaseController {
 
     @Autowired

@@ -17,10 +17,27 @@
     </resultMap>
 
     <insert id="insertOrderMaster">
-        INSERT INTO order_master (order_id, user_id, user_name, user_phone, user_address,
-                                  order_amount, order_status, pay_status, create_time)
-        VALUES (#{orderMaster.orderId}, #{orderMaster.userId}, #{orderMaster.userName},
-                #{orderMaster.userPhone}, #{orderMaster.userAddress}, #{orderMaster.orderAmount}
-                #{orderMaster.orderStatus}, #{orderMaster.payStatus}, #{orderMaster.createTime})
+        INSERT INTO order_master
+        (
+        order_id, user_id, user_name, user_phone, user_address,
+        order_amount, order_status, pay_status, create_time
+        )
+        VALUES
+        (
+        #{orderMaster.orderId}, #{orderMaster.userId}, #{orderMaster.userName},
+        #{orderMaster.userPhone}, #{orderMaster.userAddress}, #{orderMaster.orderAmount},
+        #{orderMaster.orderStatus}, #{orderMaster.payStatus},
+        #{orderMaster.createTime, jdbcType=TIMESTAMP}
+        )
     </insert>
+
+    <select id="selectOrderById" resultMap="OrderMasterMap">
+        SELECT * FROM order_master
+        WHERE order_id = #{orderId}
+    </select>
+
+    <select id="selectOrdersByUserId" resultMap="OrderMasterMap">
+        SELECT * FROM order_master
+        WHERE user_id = #{userId}
+    </select>
 </mapper>
