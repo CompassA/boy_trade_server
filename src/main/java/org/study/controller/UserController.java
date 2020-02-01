@@ -9,6 +9,7 @@ import org.study.model.UserModel;
 import org.study.response.ServerRequest;
 import org.study.response.ServerResponse;
 import org.study.service.EncryptService;
+import org.study.service.RedisService;
 import org.study.service.SessionService;
 import org.study.service.UserService;
 import org.study.util.ModelToViewUtil;
@@ -34,6 +35,9 @@ public class UserController {
 
     @Autowired
     private EncryptService encryptService;
+
+    @Autowired
+    private RedisService redisService;
 
     @PostMapping(value = ApiPath.User.LOGIN)
     public ServerResponse login(
@@ -95,8 +99,17 @@ public class UserController {
     @GetMapping(value = ApiPath.User.PART_INFO)
     public ServerResponse selectUserInfo(
             @RequestParam("userId") final Integer userId) throws ServerException {
+        //获取缓存
+        final String key = this.generateUserKey(userId);
+        final Optional<UserVO> cache = redisService.getCache(key, UserVO.class);
+        if (cache.isPresent()) {
+            return ServerResponse.create(cache.get());
+        }
+
+        //查询数据库
         final Optional<UserVO> userInfo = userService.queryByPrimaryKey(userId);
         if (userInfo.isPresent()) {
+            redisService.cacheData(key, userInfo.get());
             return ServerResponse.create(userInfo.get());
         }
         throw new ServerException(ServerExceptionBean.USER_QUERY_EXCEPTION);
@@ -117,5 +130,9 @@ public class UserController {
     public ServerResponse logout() {
         sessionService.logout();
         return ServerResponse.create(null);
+    }
+
+    private String generateUserKey(final Integer userId) {
+        return String.format("user:%d", userId);
     }
 }

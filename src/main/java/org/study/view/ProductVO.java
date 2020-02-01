@@ -39,6 +39,10 @@ public class ProductVO {
 
     private Integer userId;
 
+    private String createTime;
+
+    private String updateTime;
+
     @Override
     public String toString() {
         return "ProductVO{" +
@@ -52,6 +56,8 @@ public class ProductVO {
                 ", description='" + description + '\'' +
                 ", iconUrl='" + iconUrl + '\'' +
                 ", userId=" + userId +
+                ", createTime='" + createTime + '\'' +
+                ", updateTime='" + updateTime + '\'' +
                 '}';
     }
 }

@@ -24,4 +24,8 @@ public final class TimeUtil {
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
         return Timestamp.valueOf(LocalDateTime.now().format(formatter));
     }
+
+    public static Timestamp parseStr(final String dateStr) {
+        return Timestamp.valueOf(dateStr);
+    }
 }

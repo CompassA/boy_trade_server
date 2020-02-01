@@ -8,6 +8,7 @@ import org.study.model.ProductModel;
 import org.study.model.UserModel;
 import org.study.response.ServerResponse;
 import org.study.service.ProductService;
+import org.study.service.RedisService;
 import org.study.service.SessionService;
 import org.study.util.ModelToViewUtil;
 import org.study.view.ProductVO;
@@ -27,6 +28,9 @@ public class ProductController {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private RedisService redisService;
 
     @PutMapping(value = ApiPath.Product.CREATE)
     public ServerResponse createProduct(
@@ -60,5 +64,29 @@ public class ProductController {
     @GetMapping(value = ApiPath.Product.INFO)
     public ServerResponse getAllProduct() throws ServerException {
         return ServerResponse.create(ModelToViewUtil.getProductViews(productService.getAllProduct()));
+    }
+
+    @GetMapping(value = ApiPath.Product.DETAIL)
+    public ServerResponse getProductInfo(
+            @RequestParam("productId") final Integer productId) throws ServerException {
+        //取缓存
+        final String key = this.generateProductKey(productId);
+        final Optional<ProductVO> cache = redisService.getCache(key, ProductVO.class);
+        if (cache.isPresent()) {
+            return ServerResponse.create(cache.get());
+        }
+
+        //查询数据库
+        final ProductModel productModel = productService.selectByPrimaryKey(productId);
+        final Optional<ProductVO> productVO = ModelToViewUtil.getProductVO(productModel);
+        if (productVO.isPresent()) {
+            redisService.cacheData(key, productVO.get());
+            return ServerResponse.create(productVO.get());
+        }
+        throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+    }
+
+    private String generateProductKey(final Integer productId) {
+        return String.format("product:%d", productId);
     }
 }

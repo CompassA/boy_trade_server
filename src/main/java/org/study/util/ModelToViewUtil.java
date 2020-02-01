@@ -49,7 +49,9 @@ public final class ModelToViewUtil {
                 .setPayStatus(product.getPayStatus())
                 .setPrice(product.getPrice())
                 .setSales(product.getSales())
-                .setStock(product.getStock()));
+                .setStock(product.getStock())
+                .setCreateTime(TimeUtil.toString(product.getCreateTime()))
+                .setUpdateTime(TimeUtil.toString(product.getUpdateTime())));
     }
 
     public static Optional<List<ProductVO>> getProductViews(final List<ProductModel> products) {

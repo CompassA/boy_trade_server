@@ -60,8 +60,6 @@ public class OrderController {
                 return ServerResponse.create(view.get());
             }
             throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
-        } catch (final ServerException e) {
-            throw e;
         } catch (final Exception e) {
             e.printStackTrace();
             throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
