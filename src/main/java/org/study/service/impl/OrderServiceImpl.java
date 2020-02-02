@@ -10,13 +10,13 @@ import org.study.dao.OrderMasterMapper;
 import org.study.data.OrderMasterDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.service.model.OrderDetailModel;
-import org.study.service.model.OrderModel;
-import org.study.service.model.ProductModel;
 import org.study.service.OrderService;
 import org.study.service.ProductService;
 import org.study.service.SequenceService;
 import org.study.service.UserService;
+import org.study.service.model.OrderDetailModel;
+import org.study.service.model.OrderModel;
+import org.study.service.model.ProductModel;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
 import org.study.util.TimeUtil;
@@ -129,6 +129,20 @@ public class OrderServiceImpl implements OrderService {
         return DataToModelUtil.getOrderModel(
                 orderMasterMapper.selectOrderById(orderId),
                 orderDetailMapper.selectDetailByOrderId(orderId));
+    }
+
+    @Override
+    public List<OrderModel> selectByUserIdAndStatus(
+            final Integer userId, final Byte status) throws ServerException {
+        return selectOrdersByUserId(userId).stream()
+                .filter(orderModel -> orderModel.getOrderStatus().equals(status))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public int updateOrderStatus(
+            final String orderId, final Byte orderStatus, final Byte payStatus) {
+        return orderMasterMapper.updateStatus(orderId, orderStatus, payStatus);
     }
 
     /**

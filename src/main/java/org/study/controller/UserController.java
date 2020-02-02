@@ -72,17 +72,22 @@ public class UserController {
     @PostMapping(value = ApiPath.User.REGISTRY)
     public ServerResponse registry(
             @RequestBody final ServerRequest data) throws ServerException {
+        //反序列化
         final RegistryDTO registryDTO;
         try {
             registryDTO = data.deserialize(encryptService, RegistryDTO.class);
         } catch (final Exception ex) {
             throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
         }
+
+        //插入用户注册数据
         final UserModel registryModel = new UserModel()
                 .setName(registryDTO.getName())
                 .setPassword(encryptService.encryptByMd5(registryDTO.getPassword()));
         final UserModel userModel = userService.registry(registryModel);
         final Optional<UserVO> userOpt = ModelToViewUtil.getUserVO(userModel);
+
+        //保存session，进入登录态，并返沪前端
         if (userOpt.isPresent()) {
             final String token = sessionService.putUserModel(userModel);
             final UserVO userView = userOpt.get();

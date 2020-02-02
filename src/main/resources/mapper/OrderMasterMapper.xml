@@ -31,6 +31,15 @@
         )
     </insert>
 
+    <update id="updateStatus">
+        UPDATE order_master
+        <set>
+            <if test="orderStatus != null">order_status = #{orderStatus},</if>
+            <if test="payStatus != null">pay_status = #{payStatus},</if>
+        </set>
+        WHERE order_id = #{orderId}
+    </update>
+
     <select id="selectOrderById" resultMap="OrderMasterMap">
         SELECT * FROM order_master
         WHERE order_id = #{orderId}

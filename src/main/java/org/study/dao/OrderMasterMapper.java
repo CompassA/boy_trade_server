@@ -33,4 +33,15 @@ public interface OrderMasterMapper {
      * @return 所有的订单
      */
     List<OrderMasterDO> selectOrdersByUserId(@Param("userId") final Integer userId);
+
+    /**
+     * 更新商品状态
+     * @param orderId 订单编号
+     * @param orderStatus 要更新的订单状态
+     * @param payStatus 要更新的支付状态
+     * @return 影响的SQL行数
+     */
+    int updateStatus(@Param("orderId") final String orderId,
+                     @Param("orderStatus") final Byte orderStatus,
+                     @Param("payStatus") final Byte payStatus);
 }

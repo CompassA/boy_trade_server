@@ -33,5 +33,7 @@ public class ApiPath {
         public static final String CREATE = "/order/create";
         public static final String QUERY_BY_USER_ID = "/order/query_user";
         public static final String QUERY_BY_ORDER_ID = "/order/query_id";
+        public static final String QUERY_BY_STATUS = "/order/query_status";
+        public static final String TRADE_PAY = "/order/trade_pay";
     }
 }

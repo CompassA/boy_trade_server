@@ -1,16 +1,17 @@
 package org.study.controller;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
-import org.study.service.model.OrderModel;
 import org.study.controller.response.ServerRequest;
 import org.study.controller.response.ServerResponse;
+import org.study.error.ServerException;
+import org.study.error.ServerExceptionBean;
 import org.study.service.EncryptService;
 import org.study.service.OrderService;
 import org.study.service.SessionService;
+import org.study.service.model.OrderModel;
+import org.study.service.model.OrderStatus;
+import org.study.service.model.UserModel;
 import org.study.util.ModelToViewUtil;
 import org.study.util.ViewToModelUtil;
 import org.study.view.OrderDTO;
@@ -76,10 +77,46 @@ public class OrderController {
     }
 
     @GetMapping(value = ApiPath.Order.QUERY_BY_ORDER_ID)
-    public ServerResponse getOrderById(@Param("orderId") final String orderId) {
+    public ServerResponse getOrderById(@RequestParam("orderId") final String orderId) {
         return ModelToViewUtil.getOrderVO(orderService.selectOrderById(orderId).get())
                 .map(ServerResponse::create)
                 .orElse(ServerResponse.create(
                         ServerExceptionBean.ORDER_NOT_EXIST_EXCEPTION, "fail"));
+    }
+
+    @GetMapping(value = ApiPath.Order.QUERY_BY_STATUS)
+    public ServerResponse getOrderByStatus(
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("status") final Byte status) throws ServerException {
+        return ServerResponse.create(orderService.selectByUserIdAndStatus(userId, status).stream()
+                .map(ModelToViewUtil::getOrderVO)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList()));
+    }
+
+    @PostMapping(value = ApiPath.Order.TRADE_PAY)
+    public ServerResponse trade(
+            @RequestParam("token") final String token,
+            @RequestBody final ServerRequest request) throws Exception {
+        final OrderVO orderVO = request.deserialize(encryptService, OrderVO.class);
+        final Optional<UserModel> modelOpt = sessionService.getUserModel(token);
+        //校验用户登录态
+        if (!modelOpt.isPresent()) {
+            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
+        //校验用户id
+        final UserModel userModel = modelOpt.get();
+        if (!userModel.getUserId().equals(orderVO.getUserId())) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
+
+        //支付
+        ;;;
+
+        //更改订单状态
+        final Byte paidValue = OrderStatus.PAID.getValue();
+        orderService.updateOrderStatus(orderVO.getOrderId(), paidValue, paidValue);
+        return ServerResponse.create(null);
     }
 }

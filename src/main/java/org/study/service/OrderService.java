@@ -34,4 +34,23 @@ public interface OrderService {
      * @return 订单
      */
     Optional<OrderModel> selectOrderById(final String orderId);
+
+    /**
+     * 根据用户的订单状态查询订单
+     * @param userId 用户id
+     * @param status 订单状态
+     * @return 订单信息
+     * @throws ServerException 查询失败
+     */
+    List<OrderModel> selectByUserIdAndStatus(
+            final Integer userId, final Byte status) throws ServerException;
+
+    /**
+     * 更新订单状态
+     * @param orderId 订单编号
+     * @param orderStatus 要更新的订单状态
+     * @param payStatus 要更新的支付状态
+     * @return 影响的SQL行数
+     */
+    int updateOrderStatus(final String orderId, final Byte orderStatus, final Byte payStatus);
 }
