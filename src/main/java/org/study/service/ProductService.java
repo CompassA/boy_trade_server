@@ -1,7 +1,7 @@
 package org.study.service;
 
 import org.study.error.ServerException;
-import org.study.model.ProductModel;
+import org.study.service.model.ProductModel;
 
 import java.math.BigDecimal;
 import java.util.List;

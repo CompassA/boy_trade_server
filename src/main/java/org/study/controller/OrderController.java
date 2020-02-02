@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.model.OrderModel;
-import org.study.response.ServerRequest;
-import org.study.response.ServerResponse;
+import org.study.service.model.OrderModel;
+import org.study.controller.response.ServerRequest;
+import org.study.controller.response.ServerResponse;
 import org.study.service.EncryptService;
 import org.study.service.OrderService;
 import org.study.service.SessionService;
@@ -55,11 +55,9 @@ public class OrderController {
 
         //创建订单并返回前端订单状态
         final OrderModel result = orderService.createOrder(orderModel.get());
-        final Optional<OrderVO> view = ModelToViewUtil.getOrderVO(result);
-        if (view.isPresent()) {
-            return ServerResponse.create(view.get());
-        }
-        throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+        return ModelToViewUtil.getOrderVO(result)
+                .map(ServerResponse::create)
+                .orElse(ServerResponse.fail(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION));
     }
 
     @GetMapping(value = ApiPath.Order.QUERY_BY_USER_ID)

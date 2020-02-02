@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.study.error.ServerException;
-import org.study.response.ServerRequest;
+import org.study.controller.response.ServerRequest;
 import org.study.service.impl.EncryptServiceImpl;
 import org.study.util.MyStringUtil;
 import org.study.view.UserVO;

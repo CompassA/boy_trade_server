@@ -30,4 +30,8 @@ public final class MyStringUtil {
     public static String base64ToUtf8(final String data) {
         return new String(Base64.getDecoder().decode(data), StandardCharsets.UTF_8);
     }
+
+    public static String generateCacheKey(final Integer id, final String cacheType) {
+        return String.format("%s:%d", cacheType, id);
+    }
 }

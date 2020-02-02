@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.model.UserModel;
-import org.study.response.ServerResponse;
+import org.study.service.model.UserModel;
+import org.study.controller.response.ServerResponse;
 import org.study.service.FileService;
 import org.study.service.SessionService;
 

@@ -9,7 +9,7 @@ import org.study.dao.UserMapper;
 import org.study.dao.UserPasswordMapper;
 import org.study.data.UserDO;
 import org.study.data.UserPasswordDO;
-import org.study.model.UserModel;
+import org.study.service.model.UserModel;
 import org.study.util.DataToModelUtil;
 
 import java.util.Objects;

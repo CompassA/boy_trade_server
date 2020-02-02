@@ -2,7 +2,7 @@ package org.study.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.study.model.UserModel;
+import org.study.service.model.UserModel;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
 

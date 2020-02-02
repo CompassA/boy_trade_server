@@ -1,9 +1,9 @@
 package org.study.util;
 
 import org.springframework.util.CollectionUtils;
-import org.study.model.OrderDetailModel;
-import org.study.model.OrderModel;
-import org.study.model.ProductModel;
+import org.study.service.model.OrderDetailModel;
+import org.study.service.model.OrderModel;
+import org.study.service.model.ProductModel;
 import org.study.view.OrderDTO;
 import org.study.view.OrderDetailDTO;
 import org.study.view.ProductVO;

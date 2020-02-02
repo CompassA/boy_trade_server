@@ -1,7 +1,7 @@
 package org.study.service;
 
 import org.study.error.ServerException;
-import org.study.model.UserModel;
+import org.study.service.model.UserModel;
 import org.study.view.UserVO;
 
 import java.util.Optional;

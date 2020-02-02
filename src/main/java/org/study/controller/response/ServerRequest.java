@@ -1,4 +1,4 @@
-package org.study.response;
+package org.study.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

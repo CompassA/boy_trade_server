@@ -10,7 +10,7 @@ import org.study.data.UserDO;
 import org.study.data.UserPasswordDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.model.UserModel;
+import org.study.service.model.UserModel;
 import org.study.service.UserService;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;

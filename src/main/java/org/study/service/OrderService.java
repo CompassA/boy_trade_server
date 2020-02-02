@@ -1,7 +1,7 @@
 package org.study.service;
 
 import org.study.error.ServerException;
-import org.study.model.OrderModel;
+import org.study.service.model.OrderModel;
 
 import java.util.List;
 import java.util.Optional;

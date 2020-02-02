@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.study.config.FileServiceConfig;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.model.UserModel;
+import org.study.service.model.UserModel;
 import org.study.service.FileService;
 
 import java.io.File;

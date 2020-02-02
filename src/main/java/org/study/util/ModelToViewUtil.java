@@ -1,10 +1,10 @@
 package org.study.util;
 
 import org.springframework.util.CollectionUtils;
-import org.study.model.OrderDetailModel;
-import org.study.model.OrderModel;
-import org.study.model.ProductModel;
-import org.study.model.UserModel;
+import org.study.service.model.OrderDetailModel;
+import org.study.service.model.OrderModel;
+import org.study.service.model.ProductModel;
+import org.study.service.model.UserModel;
 import org.study.view.OrderDetailVO;
 import org.study.view.OrderVO;
 import org.study.view.ProductVO;

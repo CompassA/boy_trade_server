@@ -11,7 +11,7 @@ import org.study.dao.ProductStockMapper;
 import org.study.data.ProductDO;
 import org.study.data.ProductSaleDO;
 import org.study.data.ProductStockDO;
-import org.study.model.ProductModel;
+import org.study.service.model.ProductModel;
 import org.study.util.DataToModelUtil;
 
 import java.math.BigDecimal;

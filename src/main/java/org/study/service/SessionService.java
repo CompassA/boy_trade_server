@@ -1,6 +1,6 @@
 package org.study.service;
 
-import org.study.model.UserModel;
+import org.study.service.model.UserModel;
 
 import java.util.Optional;
 

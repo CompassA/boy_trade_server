@@ -12,7 +12,7 @@ import org.study.data.ProductSaleDO;
 import org.study.data.ProductStockDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.model.ProductModel;
+import org.study.service.model.ProductModel;
 import org.study.service.ProductService;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;

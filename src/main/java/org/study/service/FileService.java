@@ -2,7 +2,7 @@ package org.study.service;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.study.error.ServerException;
-import org.study.model.UserModel;
+import org.study.service.model.UserModel;
 
 /**
  * @author fanqie

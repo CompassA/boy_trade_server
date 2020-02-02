@@ -1,4 +1,4 @@
-package org.study.model;
+package org.study.service.model;
 
 import lombok.Getter;
 import lombok.Setter;

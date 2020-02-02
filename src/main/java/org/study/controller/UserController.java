@@ -3,16 +3,17 @@ package org.study.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.study.controller.response.ServerRequest;
+import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.model.UserModel;
-import org.study.response.ServerRequest;
-import org.study.response.ServerResponse;
 import org.study.service.EncryptService;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
 import org.study.service.UserService;
+import org.study.service.model.UserModel;
 import org.study.util.ModelToViewUtil;
+import org.study.util.MyStringUtil;
 import org.study.view.LoginDTO;
 import org.study.view.RegistryDTO;
 import org.study.view.UserVO;
@@ -104,7 +105,7 @@ public class UserController {
     public ServerResponse selectUserInfo(
             @RequestParam("userId") final Integer userId) throws ServerException {
         //获取缓存
-        final String key = this.generateUserKey(userId);
+        final String key = MyStringUtil.generateCacheKey(userId, "user");
         final Optional<UserVO> cache = redisService.getCache(key, UserVO.class);
         if (cache.isPresent()) {
             return ServerResponse.create(cache.get());
@@ -130,9 +131,5 @@ public class UserController {
     public ServerResponse logout(@RequestParam("token") final String token) {
         sessionService.logout(token);
         return ServerResponse.create(null);
-    }
-
-    private String generateUserKey(final Integer userId) {
-        return String.format("user:%d", userId);
     }
 }

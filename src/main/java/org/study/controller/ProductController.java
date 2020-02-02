@@ -2,15 +2,16 @@ package org.study.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.model.ProductModel;
-import org.study.model.UserModel;
-import org.study.response.ServerResponse;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
+import org.study.service.model.ProductModel;
+import org.study.service.model.UserModel;
 import org.study.util.ModelToViewUtil;
+import org.study.util.MyStringUtil;
 import org.study.view.ProductVO;
 
 import java.util.Optional;
@@ -71,7 +72,7 @@ public class ProductController {
     public ServerResponse getProductInfo(
             @RequestParam("productId") final Integer productId) throws ServerException {
         //取缓存
-        final String key = this.generateProductKey(productId);
+        final String key = MyStringUtil.generateCacheKey(productId, "product");
         final Optional<ProductVO> cache = redisService.getCache(key, ProductVO.class);
         if (cache.isPresent()) {
             return ServerResponse.create(cache.get());
@@ -85,9 +86,5 @@ public class ProductController {
             return ServerResponse.create(productVO.get());
         }
         throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
-    }
-
-    private String generateProductKey(final Integer productId) {
-        return String.format("product:%d", productId);
     }
 }
