@@ -1,10 +1,13 @@
 package org.study.service.impl;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.study.service.RedisService;
 
+import javax.annotation.PostConstruct;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -15,11 +18,23 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class RedisServiceImpl implements RedisService {
 
+    private Cache<String, Object> localCache;
+
+    @PostConstruct
+    public void init() {
+        localCache = CacheBuilder.newBuilder()
+                .initialCapacity(10)
+                .maximumSize(100)
+                .expireAfterWrite(30, TimeUnit.SECONDS)
+                .build();
+    }
+
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
     @Override
     public <T> void cacheData(final String key, final T data) {
+        localCache.put(key, data);
         redisTemplate.opsForValue().set(key, data);
         redisTemplate.expire(key, 10, TimeUnit.MINUTES);
     }
@@ -27,8 +42,16 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public <T> Optional<T> getCache(final String key, final Class<T> type) {
         try {
-            final Object value = redisTemplate.opsForValue().get(key);
+            //先获取本地内存
+            Object value = localCache.getIfPresent(key);
             if (value != null && type.equals(value.getClass())) {
+                return Optional.of((T) value);
+            }
+            //本地内存不存在 获取redis缓存
+            value = redisTemplate.opsForValue().get(key);
+            if (value != null && type.equals(value.getClass())) {
+                //更新本地缓存
+                localCache.put(key, value);
                 return Optional.of((T) value);
             }
             return Optional.empty();
