@@ -3,6 +3,7 @@ package org.study.response;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.study.error.ServerExceptionBean;
 
 /**
  * @author fanqie
@@ -23,6 +24,10 @@ public class ServerResponse {
 
     public static ServerResponse create(final Object body) {
         return create(body, SUCCESS_STATUS);
+    }
+
+    public static ServerResponse fail(final ServerExceptionBean errorInfo) {
+        return create(errorInfo, FAIL_STATUS);
     }
 
     public static ServerResponse create(final Object body, final String status) {

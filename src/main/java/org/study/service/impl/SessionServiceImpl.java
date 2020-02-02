@@ -3,11 +3,12 @@ package org.study.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.study.model.UserModel;
+import org.study.service.RedisService;
 import org.study.service.SessionService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author fanqie
@@ -16,38 +17,29 @@ import java.util.Optional;
 @Service
 public class SessionServiceImpl implements SessionService {
 
-    protected static final String USER_MODEL = "userModel";
-
-    protected static final String LOGIN_MARK = "isLogin";
-
     @Autowired
-    private HttpServletRequest servletRequest;
+    private RedisService service;
 
     @Override
-    public boolean isLogin() {
-        return servletRequest.getSession().getAttribute(LOGIN_MARK).equals(true);
+    public boolean isLogin(final String token) {
+        return service.getCache(token, UserModel.class).isPresent();
     }
 
     @Override
-    public Optional<UserModel> getUserModel() {
-        final Object userModel = servletRequest.getSession().getAttribute(USER_MODEL);
-        if (userModel == null) {
-            return Optional.empty();
-        }
-        return Optional.of((UserModel) userModel);
+    public Optional<UserModel> getUserModel(final String token) {
+        return service.getCache(token, UserModel.class);
     }
 
     @Override
-    public void putUserModel(final UserModel userModel) {
-        final HttpSession session = servletRequest.getSession();
-        session.setAttribute(LOGIN_MARK, true);
-        session.setAttribute(USER_MODEL, userModel);
+    public String putUserModel(final UserModel userModel) {
+        final String token = UUID.randomUUID().toString().replace("-", "");
+        service.cacheData(token, userModel);
+        service.expire(token, 1, TimeUnit.HOURS);
+        return token;
     }
 
     @Override
-    public void logout() {
-        final HttpSession session = servletRequest.getSession();
-        session.setAttribute(LOGIN_MARK, false);
-        session.setAttribute(USER_MODEL, null);
+    public void logout(final String token) {
+        service.deleteCache(token);
     }
 }

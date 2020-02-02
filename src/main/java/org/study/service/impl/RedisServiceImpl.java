@@ -36,4 +36,14 @@ public class RedisServiceImpl implements RedisService {
             return Optional.empty();
         }
     }
+
+    @Override
+    public void expire(final String key, final long timeout, final TimeUnit unit) {
+        redisTemplate.expire(key, timeout, unit);
+    }
+
+    @Override
+    public void deleteCache(final String key) {
+        redisTemplate.delete(key);
+    }
 }

@@ -58,10 +58,12 @@ public class UserController {
         if (!userModel.isPresent()) {
             throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);
         }
-        final Optional<UserVO> userVO = ModelToViewUtil.getUserVO(userModel.get());
-        if (userVO.isPresent()) {
-            sessionService.putUserModel(userModel.get());
-            return ServerResponse.create(userVO.get());
+        final Optional<UserVO> userOpt = ModelToViewUtil.getUserVO(userModel.get());
+        if (userOpt.isPresent()) {
+            final String token = sessionService.putUserModel(userModel.get());
+            final UserVO userView = userOpt.get();
+            userView.setToken(token);
+            return ServerResponse.create(userView);
         }
         throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);
     }
@@ -79,10 +81,12 @@ public class UserController {
                 .setName(registryDTO.getName())
                 .setPassword(encryptService.encryptByMd5(registryDTO.getPassword()));
         final UserModel userModel = userService.registry(registryModel);
-        final Optional<UserVO> userVO = ModelToViewUtil.getUserVO(userModel);
-        if (userVO.isPresent()) {
-            sessionService.putUserModel(userModel);
-            return ServerResponse.create(userVO.get());
+        final Optional<UserVO> userOpt = ModelToViewUtil.getUserVO(userModel);
+        if (userOpt.isPresent()) {
+            final String token = sessionService.putUserModel(userModel);
+            final UserVO userView = userOpt.get();
+            userView.setToken(token);
+            return ServerResponse.create(userView);
         }
         throw new ServerException(ServerExceptionBean.USER_REGISTRY_EXCEPTION);
     }
@@ -116,19 +120,15 @@ public class UserController {
     }
 
     @GetMapping(value = ApiPath.User.SESSION_CHECKING)
-    public ServerResponse getSessionStatus() {
-        if (sessionService.isLogin()) {
-            final Optional<UserModel> userInfo = sessionService.getUserModel();
-            if (userInfo.isPresent()) {
-                return ServerResponse.create(userInfo.get());
-            }
-        }
-        return ServerResponse.create(null);
+    public ServerResponse getSessionStatus(@RequestParam("token") final String token) {
+        return sessionService.getUserModel(token)
+                .map(ServerResponse::create)
+                .orElse(ServerResponse.create(null));
     }
 
     @GetMapping(value = ApiPath.User.LOGOUT)
-    public ServerResponse logout() {
-        sessionService.logout();
+    public ServerResponse logout(@RequestParam("token") final String token) {
+        sessionService.logout(token);
         return ServerResponse.create(null);
     }
 

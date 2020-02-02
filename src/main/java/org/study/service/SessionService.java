@@ -11,25 +11,29 @@ import java.util.Optional;
 public interface SessionService {
 
     /**
-     * 判断用户是否登录
+     * 根据令牌判断用户是否登录
+     * @param token 用户令牌
      * @return 登录 true；未登录 false
      */
-    boolean isLogin();
+    boolean isLogin(final String token);
 
     /**
-     * 获取当前sessionId对应的用户信息
+     * 根据令牌获取用户登录信息
+     * @param token 用户令牌
      * @return 返回用户信息
      */
-    Optional<UserModel> getUserModel();
+    Optional<UserModel> getUserModel(final String token);
 
     /**
      * 将用户信息放入服务端session
      * @param userModel 用户信息
+     * @return 用户token
      */
-    void putUserModel(final UserModel userModel);
+    String putUserModel(final UserModel userModel);
 
     /**
-     * 登出
+     * 将用户令牌销毁
+     * @param token 用户令牌
      */
-    void logout();
+    void logout(final String token);
 }

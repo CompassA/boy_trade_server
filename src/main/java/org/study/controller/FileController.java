@@ -1,10 +1,7 @@
 package org.study.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
@@ -33,12 +30,13 @@ public class FileController {
 
     @PostMapping(value = ApiPath.LoadingFile.UPLOAD)
     public ServerResponse uploadFile(
+            @RequestParam("token") final String token,
             @RequestPart("imgFile") final MultipartFile file) throws ServerException {
         //登录校验
-        if (!sessionService.isLogin() || file.getSize() > MAX_FILE_SIZE) {
+        if (!sessionService.isLogin(token) || file.getSize() > MAX_FILE_SIZE) {
             throw new ServerException(ServerExceptionBean.FILE_EXCEPTION);
         }
-        final Optional<UserModel> user = sessionService.getUserModel();
+        final Optional<UserModel> user = sessionService.getUserModel(token);
         if (!user.isPresent()) {
             throw new ServerException(ServerExceptionBean.FILE_EXCEPTION);
         }

@@ -27,6 +27,8 @@ public class UserVO {
 
     private String createTime;
 
+    private String token;
+
     @Override
     public String toString() {
         return "UserVO{" +
@@ -34,6 +36,8 @@ public class UserVO {
                 ", account='" + account + '\'' +
                 ", name='" + name + '\'' +
                 ", iconUrl='" + iconUrl + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", token='" + token + '\'' +
                 '}';
     }
 }

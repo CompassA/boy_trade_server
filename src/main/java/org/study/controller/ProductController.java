@@ -34,10 +34,11 @@ public class ProductController {
 
     @PutMapping(value = ApiPath.Product.CREATE)
     public ServerResponse createProduct(
+            @RequestParam("token") final String token,
             @RequestBody final ProductVO product) throws ServerException {
         //登录态方可创建
-        final Optional<UserModel> userModel = sessionService.getUserModel();
-        if (!sessionService.isLogin() || !userModel.isPresent()) {
+        final Optional<UserModel> userModel = sessionService.getUserModel(token);
+        if (!userModel.isPresent()) {
             throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
         }
         final Integer userId = userModel.get().getUserId();

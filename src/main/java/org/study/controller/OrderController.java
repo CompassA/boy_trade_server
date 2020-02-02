@@ -39,31 +39,27 @@ public class OrderController {
 
     @PostMapping(value = ApiPath.Order.CREATE)
     public ServerResponse createOrder(
-            @RequestBody final ServerRequest encryptData) throws ServerException {
-        try {
-            //未登录不可下单
-            if (!sessionService.isLogin()) {
-                throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
-            }
+            @RequestParam("token") final String token,
+            @RequestBody final ServerRequest encryptData) throws Exception {
+        //未登录不可下单
+        if (!sessionService.isLogin(token)) {
+            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
 
-            //反序列化并校验
-            final OrderDTO orderDTO = encryptData.deserialize(encryptService, OrderDTO.class);
-            final Optional<OrderModel> orderModel = ViewToModelUtil.getOrderModel(orderDTO);
-            if (!orderModel.isPresent()) {
-                throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
-            }
-
-            //创建订单并返回前端订单状态
-            final OrderModel result = orderService.createOrder(orderModel.get());
-            final Optional<OrderVO> view = ModelToViewUtil.getOrderVO(result);
-            if (view.isPresent()) {
-                return ServerResponse.create(view.get());
-            }
-            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
-        } catch (final Exception e) {
-            e.printStackTrace();
+        //反序列化并校验
+        final OrderDTO orderDTO = encryptData.deserialize(encryptService, OrderDTO.class);
+        final Optional<OrderModel> orderModel = ViewToModelUtil.getOrderModel(orderDTO);
+        if (!orderModel.isPresent()) {
             throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
         }
+
+        //创建订单并返回前端订单状态
+        final OrderModel result = orderService.createOrder(orderModel.get());
+        final Optional<OrderVO> view = ModelToViewUtil.getOrderVO(result);
+        if (view.isPresent()) {
+            return ServerResponse.create(view.get());
+        }
+        throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
     }
 
     @GetMapping(value = ApiPath.Order.QUERY_BY_USER_ID)

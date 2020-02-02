@@ -1,6 +1,7 @@
 package org.study.service;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author fanqie
@@ -24,4 +25,18 @@ public interface RedisService {
      * @return
      */
     <T> Optional<T> getCache(final String key, final Class<T> type);
+
+    /**
+     * 为键值设置过期时间
+     * @param key 键值
+     * @param timeout 过期时间
+     * @param unit 过期单位
+     */
+    void expire(final String key, final long timeout, final TimeUnit unit);
+
+    /**
+     * 删除缓存
+     * @param key 要删除的键
+     */
+    void deleteCache(final String key);
 }
