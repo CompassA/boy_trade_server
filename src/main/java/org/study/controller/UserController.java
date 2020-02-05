@@ -41,32 +41,26 @@ public class UserController {
     private RedisService redisService;
 
     @PostMapping(value = ApiPath.User.LOGIN)
-    public ServerResponse login(
-            @RequestBody final ServerRequest serverRequest) throws ServerException {
-        final LoginDTO loginDTO;
-        try {
-            loginDTO = serverRequest.deserialize(encryptService, LoginDTO.class);
-        } catch (final Exception ex) {
-            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
-        }
-
-        if (StringUtils.isBlank(loginDTO.getAccount())
-                || StringUtils.isBlank(loginDTO.getPassword())) {
+    public ServerResponse login(@RequestBody final ServerRequest serverRequest) throws Exception {
+        //反序列化判空
+        final LoginDTO loginDTO = serverRequest.deserialize(encryptService, LoginDTO.class);
+        final String account = loginDTO.getAccount();
+        final String password = loginDTO.getPassword();
+        if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) {
             throw new ServerException(ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
         }
-        final Optional<UserModel> userModel = userService.login(
-                loginDTO.getAccount(), encryptService.encryptByMd5(loginDTO.getPassword()));
-        if (!userModel.isPresent()) {
-            throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);
-        }
-        final Optional<UserVO> userOpt = ModelToViewUtil.getUserVO(userModel.get());
-        if (userOpt.isPresent()) {
-            final String token = sessionService.putUserModel(userModel.get());
-            final UserVO userView = userOpt.get();
-            userView.setToken(token);
-            return ServerResponse.create(userView);
-        }
-        throw new ServerException(ServerExceptionBean.USER_LOGIN_EXCEPTION);
+        final String encryptPassword = encryptService.encryptByMd5(password);
+
+        //登录并返回前端
+        return userService.login(loginDTO.getAccount(), encryptPassword)
+                .flatMap(userModel -> ModelToViewUtil.getUserVO(userModel)
+                        .map(userVO -> {
+                            final String token = sessionService.putUserModel(userModel);
+                            userVO.setToken(token);
+                            return userVO;
+                        }))
+                .map(ServerResponse::create)
+                .orElse(ServerResponse.fail(ServerExceptionBean.USER_LOGIN_EXCEPTION));
     }
 
     @PostMapping(value = ApiPath.User.REGISTRY)
