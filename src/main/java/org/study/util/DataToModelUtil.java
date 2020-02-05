@@ -96,6 +96,7 @@ public final class DataToModelUtil {
             return Optional.empty();
         }
         return Optional.of(new OrderModel()
+                .setSellerId(master.getSellerId())
                 .setUpdateTime(master.getUpdateTime())
                 .setOrderAmount(master.getOrderAmount())
                 .setCreateTime(master.getCreateTime())
@@ -112,6 +113,7 @@ public final class DataToModelUtil {
     public static List<OrderDetailModel> getDetailModels(final List<OrderDetailDO> details) {
         return details.stream()
                 .map(detailDO -> new OrderDetailModel()
+                        .setOwnerId(detailDO.getOwnerId())
                         .setDetailId(detailDO.getDetailId())
                         .setOrderId(detailDO.getOrderId())
                         .setProductIcon(detailDO.getProductIcon())

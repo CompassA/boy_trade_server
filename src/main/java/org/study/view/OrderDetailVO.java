@@ -29,4 +29,16 @@ public class OrderDetailVO {
 
     private String iconUrl;
 
+    @Override
+    public String toString() {
+        return "OrderDetailVO{" +
+                "detailId=" + detailId +
+                ", orderId='" + orderId + '\'' +
+                ", productId=" + productId +
+                ", productName='" + productName + '\'' +
+                ", productPrice=" + productPrice +
+                ", productAmount=" + productAmount +
+                ", iconUrl='" + iconUrl + '\'' +
+                '}';
+    }
 }

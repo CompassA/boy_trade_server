@@ -35,6 +35,17 @@ public interface OrderMasterMapper {
     List<OrderMasterDO> selectOrdersByUserId(@Param("userId") final Integer userId);
 
     /**
+     * 根据卖家id查询卖家的所有订单
+     * @param sellerId 卖家Id
+     * @param orderStatus 订单状态
+     * @param payStatus 支付状态
+     * @return 卖家订单信息
+     */
+    List<OrderMasterDO> selectBySellerId(@Param("sellerId") final Integer sellerId,
+                                         @Param("orderStatus") final Byte orderStatus,
+                                         @Param("payStatus") final Byte payStatus);
+
+    /**
      * 更新商品状态
      * @param orderId 订单编号
      * @param orderStatus 要更新的订单状态

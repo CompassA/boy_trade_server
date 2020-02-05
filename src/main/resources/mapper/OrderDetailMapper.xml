@@ -6,6 +6,7 @@
     <resultMap id="OrderDetailMap" type="org.study.data.OrderDetailDO">
         <id column="detail_id" property="detailId" jdbcType="INTEGER" />
         <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+        <result column="owner_id" property="ownerId" jdbcType="INTEGER" />
         <result column="product_id" property="productId" jdbcType="INTEGER" />
         <result column="product_name" property="productName" jdbcType="VARCHAR" />
         <result column="product_price" property="productPrice" jdbcType="DECIMAL" />
@@ -17,11 +18,11 @@
 
     <insert id="insertOrderDetails">
         INSERT INTO order_detail
-        (order_id, product_id, product_name, product_price, product_amount, product_icon)
+        (order_id, owner_id, product_id, product_name, product_price, product_amount, product_icon)
         VALUES
         <foreach collection="details" item="detail" index="index" separator=",">
             (
-            #{detail.orderId}, #{detail.productId}, #{detail.productName},
+            #{detail.orderId}, #{detail.ownerId}, #{detail.productId}, #{detail.productName},
             #{detail.productPrice}, #{detail.productAmount}, #{detail.productIcon}
             )
         </foreach>

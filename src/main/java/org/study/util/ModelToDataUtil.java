@@ -85,6 +85,7 @@ public final class ModelToDataUtil {
         }
         return Optional.of(new OrderMasterDO()
                 .setUserId(orderModel.getUserId())
+                .setSellerId(orderModel.getSellerId())
                 .setUserName(orderModel.getUserName())
                 //TODO  接入手机号和用户地址
                 .setUserPhone("")
@@ -119,6 +120,7 @@ public final class ModelToDataUtil {
         }
         model.setOrderId(orderId);
         return Optional.of(new OrderDetailDO()
+                .setOwnerId(model.getOwnerId())
                 .setProductIcon(model.getProductIcon())
                 .setProductPrice(model.getProductPrice())
                 .setProductAmount(model.getProductAmount())

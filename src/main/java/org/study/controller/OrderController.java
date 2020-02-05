@@ -88,11 +88,35 @@ public class OrderController {
     public ServerResponse getOrderByStatus(
             @RequestParam("userId") final Integer userId,
             @RequestParam("status") final Byte status) throws ServerException {
-        return ServerResponse.create(orderService.selectByUserIdAndStatus(userId, status).stream()
-                .map(ModelToViewUtil::getOrderVO)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList()));
+        return ServerResponse.create(
+                this.convertCore(orderService.selectByUserIdAndStatus(userId, status)));
+    }
+
+    @GetMapping(value = ApiPath.Order.PAID_ORDER_WITH_SELLER)
+    public ServerResponse getPaidOrderWithSeller(
+            @RequestParam("sellerId") final Integer sellerId,
+            @RequestParam("token") final String token) throws ServerException {
+        this.validateToken(sellerId, token);
+        return ServerResponse.create(
+                this.convertCore(orderService.selectPaidOrderWithSeller(sellerId)));
+    }
+
+    @GetMapping(value = ApiPath.Order.SENT_ORDER_WITH_SELLER)
+    public ServerResponse getSentOrderWithSeller(
+            @RequestParam("sellerId") final Integer sellerId,
+            @RequestParam("token") final String token) throws ServerException {
+        this.validateToken(sellerId, token);
+        return ServerResponse.create(
+                this.convertCore(orderService.selectSentOrderWithSeller(sellerId)));
+    }
+
+    @GetMapping(value = ApiPath.Order.FINISHED_ORDER_WITH_SELLER)
+    public ServerResponse getFinishedOrderWithSeller(
+            @RequestParam("sellerId") final Integer sellerId,
+            @RequestParam("token") final String token) throws ServerException {
+        this.validateToken(sellerId, token);
+        return ServerResponse.create(
+                this.convertCore(orderService.selectFinishedOrderWithSeller(sellerId)));
     }
 
     @PostMapping(value = ApiPath.Order.TRADE_PAY)
@@ -116,7 +140,23 @@ public class OrderController {
 
         //更改订单状态
         final Byte paidValue = OrderStatus.PAID.getValue();
-        orderService.updateOrderStatus(orderVO.getOrderId(), paidValue, paidValue);
-        return ServerResponse.create(null);
+        return orderService.updateOrderStatus(orderVO.getOrderId(), paidValue, paidValue) > 0
+                ? ServerResponse.create(null)
+                : ServerResponse.fail(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+    }
+
+    private List<OrderVO> convertCore(final List<OrderModel> models) {
+        return models.stream()
+                .map(ModelToViewUtil::getOrderVO)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    private void validateToken(final Integer sellerId, final String token) throws ServerException {
+        final Optional<UserModel> userInfoOpt = sessionService.getUserModel(token);
+        if (!userInfoOpt.isPresent() || !sellerId.equals(userInfoOpt.get().getUserId())) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
     }
 }

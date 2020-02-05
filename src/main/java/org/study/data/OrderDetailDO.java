@@ -20,6 +20,8 @@ public class OrderDetailDO {
 
     private String orderId;
 
+    private Integer ownerId;
+
     private Integer productId;
 
     private String productName;
@@ -39,6 +41,7 @@ public class OrderDetailDO {
         return "OrderDetailDO{" +
                 "detailId=" + detailId +
                 ", orderId='" + orderId + '\'' +
+                ", ownerId=" + ownerId +
                 ", productId=" + productId +
                 ", productName='" + productName + '\'' +
                 ", productPrice=" + productPrice +

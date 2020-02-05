@@ -16,6 +16,7 @@ import org.study.service.SequenceService;
 import org.study.service.UserService;
 import org.study.service.model.OrderDetailModel;
 import org.study.service.model.OrderModel;
+import org.study.service.model.OrderStatus;
 import org.study.service.model.ProductModel;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
@@ -55,20 +56,25 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public OrderModel createOrder(final OrderModel orderModel) throws ServerException {
-        //校验用户存在性、商品存在性、商品数量合法性
+        //校验用户存在性
         final Optional<UserVO> userVO = userService.queryByPrimaryKey(orderModel.getUserId());
         if (!userVO.isPresent()) {
             throw new ServerException(ServerExceptionBean.USER_QUERY_EXCEPTION);
         }
-        //从数据库查询商品信息进行校验，这里查询失败会抛异常
+        //从数据库查询商品信息进行校验
         final List<ProductModel> models = Lists.newArrayList();
         final Map<Integer, OrderDetailModel> productDetails = Maps.newHashMap();
         for (final OrderDetailModel productDetail : orderModel.getProductDetails()) {
             final Integer productId = productDetail.getProductId();
-            final ProductModel productModel = productService.selectByPrimaryKey(productId);
-            final Integer amount = productDetail.getProductAmount();
-            if (productModel.getStock() < amount || amount < 1) {
-                throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_STOCK_EXCEPTION);
+            //未查询到商品会抛异常
+            final ProductModel productModel = productService.selectWithoutStockAndSales(productId);
+            //验证购买数量
+            if (productDetail.getProductAmount() < 1) {
+                throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_AMOUNT_EXCEPTION);
+            }
+            //验证商品持有者
+            if (!productModel.getUserId().equals(productDetail.getOwnerId())) {
+                throw new ServerException(ServerExceptionBean.PRODUCT_OWNER_EXCEPTION);
             }
             models.add(productModel);
             productDetails.put(productModel.getProductId(), productDetail);
@@ -82,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
             final Integer productAmount = productDetail.getProductAmount();
             if (!productService.decreaseStock(productId, productAmount) ||
                     !productService.increaseSales(productId, productAmount)) {
-                throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_STOCK_EXCEPTION);
+                throw new ServerException(ServerExceptionBean.PRODUCT_STOCK_NOT_ENOUGH_EXCEPTION);
             }
             orderAmount = orderAmount.add(
                     productService.getProductPrice(model).multiply(new BigDecimal(productAmount)));
@@ -97,8 +103,8 @@ public class OrderServiceImpl implements OrderService {
         //订单入库
         orderModel.setOrderId(orderId)
                 .setOrderAmount(orderAmount)
-                .setPayStatus((byte) 0)
-                .setOrderStatus((byte) 0)
+                .setPayStatus(OrderStatus.CREATED.getValue())
+                .setOrderStatus(OrderStatus.CREATED.getValue())
                 .setCreateTime(TimeUtil.getCurrentTimestamp());
         ModelToDataUtil.getOrderMaster(orderModel).ifPresent(orderMasterMapper::insertOrderMaster);
         ModelToDataUtil.getOrderDetails(orderModel.getProductDetails(), orderId)
@@ -110,18 +116,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderModel> selectOrdersByUserId(final Integer userId) throws ServerException {
-        final List<OrderMasterDO> orderMasters = orderMasterMapper.selectOrdersByUserId(userId);
-        final List<OrderModel> models = orderMasters.stream()
-                .map(orderMasterDO -> DataToModelUtil.getOrderModel(
-                        orderMasterDO,
-                        orderDetailMapper.selectDetailByOrderId(orderMasterDO.getOrderId())))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-        if (models.size() == orderMasters.size()) {
-            return models;
-        }
-        throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+        return this.convertCore(orderMasterMapper.selectOrdersByUserId(userId));
     }
 
     @Override
@@ -145,6 +140,27 @@ public class OrderServiceImpl implements OrderService {
         return orderMasterMapper.updateStatus(orderId, orderStatus, payStatus);
     }
 
+    @Override
+    public List<OrderModel> selectPaidOrderWithSeller(
+            final Integer sellerId) throws ServerException {
+        return this.convertCore(orderMasterMapper.selectBySellerId(
+                sellerId, OrderStatus.PAID.getValue(), OrderStatus.PAID.getValue()));
+    }
+
+    @Override
+    public List<OrderModel> selectSentOrderWithSeller(
+            final Integer sellerId) throws ServerException {
+        return this.convertCore(orderMasterMapper.selectBySellerId(
+                sellerId, OrderStatus.SENT.getValue(), OrderStatus.PAID.getValue()));
+    }
+
+    @Override
+    public List<OrderModel> selectFinishedOrderWithSeller(
+            final Integer sellerId) throws ServerException {
+        return this.convertCore(orderMasterMapper.selectBySellerId(sellerId,
+                OrderStatus.FINISHED.getValue(), OrderStatus.PAID.getValue()));
+    }
+
     /**
      * 根据用户编号生成分库分表位
      * @param userId 用户编号
@@ -152,5 +168,20 @@ public class OrderServiceImpl implements OrderService {
      */
     private String userIdMod(final Integer userId) {
         return String.format("%02d", ((userId) ^ (userId >>> 16)) % 100);
+    }
+
+    private List<OrderModel> convertCore(
+            final List<OrderMasterDO> orderMasters) throws ServerException {
+        final List<OrderModel> models = orderMasters.stream()
+                .map(orderMasterDO -> DataToModelUtil.getOrderModel(
+                        orderMasterDO,
+                        orderDetailMapper.selectDetailByOrderId(orderMasterDO.getOrderId())))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        if (models.size() == orderMasters.size()) {
+            return models;
+        }
+        throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
     }
 }

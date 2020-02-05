@@ -20,6 +20,8 @@ public class OrderMasterDO {
 
     private Integer userId;
 
+    private Integer sellerId;
+
     private String userName;
 
     private String userPhone;
@@ -41,6 +43,7 @@ public class OrderMasterDO {
         return "OrderMasterDO{" +
                 "orderId='" + orderId + '\'' +
                 ", userId=" + userId +
+                ", sellerId=" + sellerId +
                 ", userName='" + userName + '\'' +
                 ", userPhone='" + userPhone + '\'' +
                 ", userAddress='" + userAddress + '\'' +

@@ -78,6 +78,7 @@ public final class ModelToViewUtil {
                 .map(Optional::get)
                 .collect(Collectors.toList());
         return Optional.of(new OrderVO()
+                .setSellerId(orderModel.getSellerId())
                 .setOrderId(orderModel.getOrderId())
                 .setOrderStatus(orderModel.getOrderStatus())
                 .setPayStatus(orderModel.getPayStatus())

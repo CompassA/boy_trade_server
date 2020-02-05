@@ -23,6 +23,9 @@ public class OrderModel {
     /** 下单用户 */
     private Integer userId;
 
+    /** 卖家 */
+    private Integer sellerId;
+
     /** 用户名称 */
     private String userName;
 
@@ -44,7 +47,9 @@ public class OrderModel {
     /** 支付状态 */
     private Byte payStatus;
 
+    /** 订单创建时间 */
     private Timestamp createTime;
 
+    /** 订单更新时间 */
     private Timestamp updateTime;
 }

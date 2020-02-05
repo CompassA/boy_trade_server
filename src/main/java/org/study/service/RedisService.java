@@ -22,7 +22,7 @@ public interface RedisService {
      * @param key 缓存的键值
      * @param type 要缓存的数据
      * @param <T> 缓存数据类型
-     * @return
+     * @return 缓存数据
      */
     <T> Optional<T> getCache(final String key, final Class<T> type);
 

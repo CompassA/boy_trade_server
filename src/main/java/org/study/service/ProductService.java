@@ -29,6 +29,14 @@ public interface ProductService {
     ProductModel selectByPrimaryKey(final int productId) throws ServerException;
 
     /**
+     * 根据主键查询商品信息(不包含销量和库存)
+     * @param productId 商品主键
+     * @return 商品详情(不包含销量和库存)
+     * @throws ServerException 商品不存在
+     */
+    ProductModel selectWithoutStockAndSales(final int productId) throws ServerException;
+
+    /**
      * 仅测试用
      * @return 所有的商品
      * @throws ServerException 查询失败

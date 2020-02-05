@@ -20,6 +20,8 @@ public class OrderVO {
 
     private Integer userId;
 
+    private Integer sellerId;
+
     private String userName;
 
     private String userPhone;
@@ -41,6 +43,7 @@ public class OrderVO {
         return "OrderVO{" +
                 "orderId='" + orderId + '\'' +
                 ", userId=" + userId +
+                ", sellerId=" + sellerId +
                 ", userName='" + userName + '\'' +
                 ", userPhone='" + userPhone + '\'' +
                 ", userAddress='" + userAddress + '\'' +
@@ -48,7 +51,7 @@ public class OrderVO {
                 ", orderStatus=" + orderStatus +
                 ", orderAmount=" + orderAmount +
                 ", orderDetails=" + orderDetails +
-                ", createTime=" + createTime +
+                ", createTime='" + createTime + '\'' +
                 '}';
     }
 }

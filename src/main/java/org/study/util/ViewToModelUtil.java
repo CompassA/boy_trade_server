@@ -11,6 +11,7 @@ import org.study.view.ProductVO;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -42,8 +43,24 @@ public final class ViewToModelUtil {
         if (orderDTO == null) {
             return Optional.empty();
         }
+
+        //订单中的商品必须属于同一个卖家
+        final Set<Integer> sellerIdSet = orderDTO.getProductDetails().stream()
+                .map(OrderDetailDTO::getOwnerId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(sellerIdSet) || sellerIdSet.size() > 1) {
+            return Optional.empty();
+        }
+
+        //买家和卖家不能相同
+        final Integer sellerId = sellerIdSet.iterator().next();
+        if (sellerId.equals(orderDTO.getUserId())) {
+            return Optional.empty();
+        }
         return ViewToModelUtil.getOrderDetails(orderDTO.getProductDetails())
                 .map(orderDetailModels -> new OrderModel()
+                        .setSellerId(sellerId)
                         .setUserId(orderDTO.getUserId())
                         .setUserName(orderDTO.getUserName())
                         .setUserPhone(orderDTO.getUserPhone())
@@ -73,6 +90,7 @@ public final class ViewToModelUtil {
             return Optional.empty();
         }
         return Optional.of(new OrderDetailModel()
+                .setOwnerId(dto.getOwnerId())
                 .setProductId(dto.getProductId())
                 .setProductName(dto.getProductName())
                 .setProductPrice(dto.getProductPrice())

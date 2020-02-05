@@ -12,8 +12,9 @@ import org.study.data.ProductSaleDO;
 import org.study.data.ProductStockDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.service.model.ProductModel;
 import org.study.service.ProductService;
+import org.study.service.RedisService;
+import org.study.service.model.ProductModel;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
 import org.study.util.MyMathUtil;
@@ -44,6 +45,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ValidatorImpl validator;
 
+    @Autowired
+    private RedisService redisService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ProductModel create(final ProductModel productModel) throws ServerException {
@@ -62,9 +66,11 @@ public class ProductServiceImpl implements ProductService {
         final ProductDO product = productDO.get();
         productMapper.upsertProduct(product);
         final Integer productId = product.getId();
+
         final ProductStockDO stock = stockDO.get().setProductId(productId);
-        final ProductSaleDO sale = new ProductSaleDO().setProductId(productId);
         stockMapper.initProductStock(stock);
+
+        final ProductSaleDO sale = new ProductSaleDO().setProductId(productId);
         saleMapper.initProductSale(sale);
 
         //返回数据库状态
@@ -88,6 +94,34 @@ public class ProductServiceImpl implements ProductService {
             return model.get();
         }
         throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+    }
+
+    @Override
+    public ProductModel selectWithoutStockAndSales(int productId) throws ServerException {
+        ProductDO productInfo = null;
+
+        final String key = this.generateProductInfoKey(productId);
+        final Optional<ProductDO> cache = redisService.getCache(key, ProductDO.class);
+        if (cache.isPresent()) {
+            productInfo = cache.get();
+        } else {
+            productInfo = productMapper.selectByPrimaryKey(productId);
+            if (productInfo == null) {
+                throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+            }
+            redisService.cacheData(key, productInfo);
+        }
+
+        return new ProductModel().setProductId(productId)
+                .setUserId(productInfo.getUserId())
+                .setProductName(productInfo.getName())
+                .setCategoryId(productInfo.getCategoryId())
+                .setDescription(productInfo.getDescription())
+                .setIconUrl(productInfo.getIconUrl())
+                .setPayStatus(productInfo.getStatus())
+                .setPrice(productInfo.getPrice())
+                .setCreateTime(productInfo.getCreateTime())
+                .setUpdateTime(productInfo.getUpdateTime());
     }
 
     @Override
@@ -136,5 +170,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public BigDecimal getProductPrice(final ProductModel productModel) {
         return productModel.getPrice();
+    }
+
+    private String generateProductInfoKey(final Integer productId) {
+        return String.format("product_validation:%d", productId);
     }
 }

@@ -20,6 +20,8 @@ public class OrderDetailModel {
 
     private String orderId;
 
+    private Integer ownerId;
+
     private Integer productId;
 
     private String productName;

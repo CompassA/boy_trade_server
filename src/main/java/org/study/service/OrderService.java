@@ -53,4 +53,28 @@ public interface OrderService {
      * @return 影响的SQL行数
      */
     int updateOrderStatus(final String orderId, final Byte orderStatus, final Byte payStatus);
+
+    /**
+     * 查询卖家持有的订单中买方已经支付的部分
+     * @param sellerId 卖家id
+     * @return 订单信息
+     * @throws ServerException 查询失败或转化失败
+     */
+    List<OrderModel> selectPaidOrderWithSeller(final Integer sellerId) throws ServerException;
+
+    /**
+     * 查询卖家已经发货但买家还未收货的订单
+     * @param sellerId 卖家id
+     * @return 订单信息
+     * @throws ServerException 查询失败或转化失败
+     */
+    List<OrderModel> selectSentOrderWithSeller(final Integer sellerId) throws ServerException;
+
+    /**
+     * 查询已经完成交易的订单
+     * @param sellerId 卖家id
+     * @return 订单信息
+     * @throws ServerException 查询失败或转化失败
+     */
+    List<OrderModel> selectFinishedOrderWithSeller(final Integer sellerId) throws ServerException;
 }

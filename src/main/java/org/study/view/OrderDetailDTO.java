@@ -21,6 +21,8 @@ public class OrderDetailDTO {
 
     private Integer productId;
 
+    private Integer ownerId;
+
     private String productName;
 
     private Integer productAmount;
@@ -33,6 +35,7 @@ public class OrderDetailDTO {
     public String toString() {
         return "OrderDetailDTO{" +
                 "productId=" + productId +
+                ", ownerId=" + ownerId +
                 ", productName='" + productName + '\'' +
                 ", productAmount=" + productAmount +
                 ", productPrice=" + productPrice +

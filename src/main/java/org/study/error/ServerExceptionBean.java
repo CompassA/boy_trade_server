@@ -29,10 +29,12 @@ public enum ServerExceptionBean implements SystemException {
     PRODUCT_NOT_EXIST_EXCEPTION(30001, "商品不存在"),
     /* 库存不足 */
     PRODUCT_STOCK_NOT_ENOUGH_EXCEPTION(30002, "商品库存不足"),
+    /* 订单商品详情中的持有者与商品的持有者不同 */
+    PRODUCT_OWNER_EXCEPTION(30003, "商品信息非法"),
     /* 文件上传异常 */
     FILE_EXCEPTION(40000, "文件上传失败"),
     /* 因库存不足导致下单失败 */
-    ORDER_FAIL_BY_STOCK_EXCEPTION(50000, "下单失败，商品数量不正确"),
+    ORDER_FAIL_BY_AMOUNT_EXCEPTION(50000, "下单失败，商品数量不正确"),
     /* 后端异常导致下单失败 */
     ORDER_FAIL_BY_SYSTEM_EXCEPTION(50001, "系统内部异常"),
     /* select结果为空 */
