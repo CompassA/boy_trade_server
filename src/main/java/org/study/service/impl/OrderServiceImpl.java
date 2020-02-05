@@ -127,8 +127,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderModel> selectByUserIdAndStatus(
-            final Integer userId, final Byte status) throws ServerException {
+    public List<OrderModel> selectByUserIdAndStatus(final Integer userId, final Byte status)
+            throws ServerException {
         return selectOrdersByUserId(userId).stream()
                 .filter(orderModel -> orderModel.getOrderStatus().equals(status))
                 .collect(Collectors.toList());
@@ -141,22 +141,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderModel> selectPaidOrderWithSeller(
-            final Integer sellerId) throws ServerException {
+    public List<OrderModel> selectPaidOrderWithSeller(final Integer sellerId)
+            throws ServerException {
         return this.convertCore(orderMasterMapper.selectBySellerId(
                 sellerId, OrderStatus.PAID.getValue(), OrderStatus.PAID.getValue()));
     }
 
     @Override
-    public List<OrderModel> selectSentOrderWithSeller(
-            final Integer sellerId) throws ServerException {
+    public List<OrderModel> selectSentOrderWithSeller(final Integer sellerId)
+            throws ServerException {
         return this.convertCore(orderMasterMapper.selectBySellerId(
                 sellerId, OrderStatus.SENT.getValue(), OrderStatus.PAID.getValue()));
     }
 
     @Override
-    public List<OrderModel> selectFinishedOrderWithSeller(
-            final Integer sellerId) throws ServerException {
+    public List<OrderModel> selectFinishedOrderWithSeller(final Integer sellerId)
+            throws ServerException {
         return this.convertCore(orderMasterMapper.selectBySellerId(sellerId,
                 OrderStatus.FINISHED.getValue(), OrderStatus.PAID.getValue()));
     }
@@ -170,8 +170,8 @@ public class OrderServiceImpl implements OrderService {
         return String.format("%02d", ((userId) ^ (userId >>> 16)) % 100);
     }
 
-    private List<OrderModel> convertCore(
-            final List<OrderMasterDO> orderMasters) throws ServerException {
+    private List<OrderModel> convertCore(final List<OrderMasterDO> orderMasters)
+            throws ServerException {
         final List<OrderModel> models = orderMasters.stream()
                 .map(orderMasterDO -> DataToModelUtil.getOrderModel(
                         orderMasterDO,

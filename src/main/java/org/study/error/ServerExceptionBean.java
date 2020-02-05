@@ -1,14 +1,9 @@
 package org.study.error;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 /**
  * @author fanqie
  * @date 2020/1/4
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public enum ServerExceptionBean implements SystemException {
     /* 参数异常 */
     PARAMETER_VALIDATION_EXCEPTION(10000, "参数不合法"),
@@ -44,6 +39,8 @@ public enum ServerExceptionBean implements SystemException {
     ORDER_FAIL_BY_SYSTEM_EXCEPTION(50001, "系统内部异常"),
     /* select结果为空 */
     ORDER_NOT_EXIST_EXCEPTION(50002, "订单不存在"),
+    /* 修改订单状态出现异常或update语句影响的行数为0 */
+    ORDER_STATUS_EXCEPTION(50003, "修改订单状态失败"),
     ;
 
     private final Integer errorCode;

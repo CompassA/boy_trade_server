@@ -62,8 +62,8 @@ public class OrderController {
     }
 
     @GetMapping(value = ApiPath.Order.QUERY_BY_USER_ID)
-    public ServerResponse getOrderByUserId(
-            @RequestParam("userId") final Integer userId) throws ServerException {
+    public ServerResponse getOrderByUserId(@RequestParam("userId") final Integer userId)
+            throws ServerException {
         final List<OrderModel> orderModels = orderService.selectOrdersByUserId(userId);
         final List<OrderVO> orders = orderModels.stream()
                 .map(ModelToViewUtil::getOrderVO)
@@ -119,6 +119,30 @@ public class OrderController {
                 this.convertCore(orderService.selectFinishedOrderWithSeller(sellerId)));
     }
 
+    @GetMapping(value = ApiPath.Order.RECEIVED)
+    public ServerResponse changeToFinishedStatus(
+            @RequestParam("token") final String token,
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("orderId") final String orderId) throws ServerException {
+        this.validateToken(userId, token);
+        return orderService.updateOrderStatus(
+                orderId, OrderStatus.FINISHED.getValue(), null) > 0
+                ? ServerResponse.create(null)
+                : ServerResponse.fail(ServerExceptionBean.ORDER_STATUS_EXCEPTION);
+    }
+
+    @GetMapping(value = ApiPath.Order.SENT_STATUS)
+    public ServerResponse changeToSentStatus(
+            @RequestParam("token") final String token,
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("orderId") final String orderId) throws ServerException {
+        this.validateToken(userId, token);
+        return orderService.updateOrderStatus(
+                orderId, OrderStatus.SENT.getValue(), null) > 0
+                ? ServerResponse.create(null)
+                : ServerResponse.fail(ServerExceptionBean.ORDER_STATUS_EXCEPTION);
+    }
+
     @PostMapping(value = ApiPath.Order.TRADE_PAY)
     public ServerResponse trade(
             @RequestParam("token") final String token,
@@ -153,9 +177,9 @@ public class OrderController {
                 .collect(Collectors.toList());
     }
 
-    private void validateToken(final Integer sellerId, final String token) throws ServerException {
+    private void validateToken(final Integer userId, final String token) throws ServerException {
         final Optional<UserModel> userInfoOpt = sessionService.getUserModel(token);
-        if (!userInfoOpt.isPresent() || !sellerId.equals(userInfoOpt.get().getUserId())) {
+        if (!userInfoOpt.isPresent() || !userId.equals(userInfoOpt.get().getUserId())) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
     }

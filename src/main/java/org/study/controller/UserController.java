@@ -41,7 +41,8 @@ public class UserController {
     private RedisService redisService;
 
     @PostMapping(value = ApiPath.User.LOGIN)
-    public ServerResponse login(@RequestBody final ServerRequest serverRequest) throws Exception {
+    public ServerResponse login(@RequestBody final ServerRequest serverRequest)
+            throws ServerException {
         //反序列化判空
         final LoginDTO loginDTO = serverRequest.deserialize(encryptService, LoginDTO.class);
         final String account = loginDTO.getAccount();
@@ -64,36 +65,28 @@ public class UserController {
     }
 
     @PostMapping(value = ApiPath.User.REGISTRY)
-    public ServerResponse registry(
-            @RequestBody final ServerRequest data) throws ServerException {
+    public ServerResponse registry(@RequestBody final ServerRequest data) throws ServerException {
         //反序列化
-        final RegistryDTO registryDTO;
-        try {
-            registryDTO = data.deserialize(encryptService, RegistryDTO.class);
-        } catch (final Exception ex) {
-            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
-        }
+        final RegistryDTO registryDTO = data.deserialize(encryptService, RegistryDTO.class);
 
         //插入用户注册数据
         final UserModel registryModel = new UserModel()
                 .setName(registryDTO.getName())
                 .setPassword(encryptService.encryptByMd5(registryDTO.getPassword()));
         final UserModel userModel = userService.registry(registryModel);
-        final Optional<UserVO> userOpt = ModelToViewUtil.getUserVO(userModel);
 
         //保存session，进入登录态，并返沪前端
-        if (userOpt.isPresent()) {
-            final String token = sessionService.putUserModel(userModel);
-            final UserVO userView = userOpt.get();
-            userView.setToken(token);
-            return ServerResponse.create(userView);
-        }
-        throw new ServerException(ServerExceptionBean.USER_REGISTRY_EXCEPTION);
+        return ModelToViewUtil.getUserVO(userModel)
+                .map(userVO -> {
+                    final String token = sessionService.putUserModel(userModel);
+                    userVO.setToken(token);
+                    return ServerResponse.create(userVO);
+                }).orElse(ServerResponse.fail(ServerExceptionBean.USER_REGISTRY_EXCEPTION));
     }
 
     @GetMapping(value = ApiPath.User.EXIST)
-    public ServerResponse checkUserName(
-            @RequestParam("name") final String name) throws ServerException {
+    public ServerResponse checkUserName(@RequestParam("name") final String name)
+            throws ServerException {
         if (StringUtils.isBlank(name)) {
             throw new ServerException(ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
         }
@@ -101,8 +94,8 @@ public class UserController {
     }
 
     @GetMapping(value = ApiPath.User.PART_INFO)
-    public ServerResponse selectUserInfo(
-            @RequestParam("userId") final Integer userId) throws ServerException {
+    public ServerResponse selectUserInfo(@RequestParam("userId") final Integer userId)
+            throws ServerException {
         //获取缓存
         final String key = MyStringUtil.generateCacheKey(userId, "user");
         final Optional<UserVO> cache = redisService.getCache(key, UserVO.class);

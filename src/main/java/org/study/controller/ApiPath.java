@@ -38,5 +38,7 @@ public class ApiPath {
         public static final String PAID_ORDER_WITH_SELLER = "/order/paid_seller";
         public static final String SENT_ORDER_WITH_SELLER = "/order/sent_seller";
         public static final String FINISHED_ORDER_WITH_SELLER = "/order/finished_seller";
+        public static final String SENT_STATUS = "/order/status_sent";
+        public static final String RECEIVED = "/order/status_received";
     }
 }

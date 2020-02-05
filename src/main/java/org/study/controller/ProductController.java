@@ -65,12 +65,13 @@ public class ProductController {
 
     @GetMapping(value = ApiPath.Product.INFO)
     public ServerResponse getAllProduct() throws ServerException {
-        return ServerResponse.create(ModelToViewUtil.getProductViews(productService.getAllProduct()));
+        return ServerResponse.create(
+                ModelToViewUtil.getProductViews(productService.getAllProduct()));
     }
 
     @GetMapping(value = ApiPath.Product.DETAIL)
-    public ServerResponse getProductInfo(
-            @RequestParam("productId") final Integer productId) throws ServerException {
+    public ServerResponse getProductInfo(@RequestParam("productId") final Integer productId)
+            throws ServerException {
         //取缓存
         final String key = MyStringUtil.generateCacheKey(productId, "product");
         final Optional<ProductVO> cache = redisService.getCache(key, ProductVO.class);
