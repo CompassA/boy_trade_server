@@ -21,22 +21,21 @@ import java.util.Map;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-    private static final String ERROR_PROPERTY_NAME = "errorCode";
+    public static final String ERROR_PROPERTY_NAME = "errorCode";
 
-    private static final String MSG_PROPERTY_NAME = "message";
+    public static final String MSG_PROPERTY_NAME = "message";
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public ServerResponse handle(
-            final HttpServletRequest request,
-            final HttpServletResponse response,
-            final Exception ex) {
+    public ServerResponse handle(final HttpServletRequest request,
+                                 final HttpServletResponse response,
+                                 final Exception ex) {
         final Map<String, Object> exceptionData = Maps.newHashMap();
         //业务异常
         if (ex instanceof ServerException) {
             final SystemException exception = ((ServerException) ex);
-            exceptionData.put(ERROR_PROPERTY_NAME, exception.getErrCode());
-            exceptionData.put(MSG_PROPERTY_NAME, exception.getErrMsg());
+            exceptionData.put(ERROR_PROPERTY_NAME, exception.getErrorCode());
+            exceptionData.put(MSG_PROPERTY_NAME, exception.getMessage());
         }
         //405
         else if (ex instanceof ServletRequestBindingException) {

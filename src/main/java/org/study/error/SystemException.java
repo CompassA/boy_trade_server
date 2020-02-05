@@ -10,11 +10,11 @@ public interface SystemException {
      * 获取错误码
      * @return 错误码
      */
-    Integer getErrCode();
+    Integer getErrorCode();
 
     /**
      * 获取错误描述
      * @return 错误描述
      */
-    String getErrMsg();
+    String getMessage();
 }

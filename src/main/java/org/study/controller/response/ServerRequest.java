@@ -37,16 +37,13 @@ public class ServerRequest {
      * @return 反序列化对象
      * @throws Exception 反序列化或加解密异常
      */
-    public <T> T deserialize(
-            final EncryptService encryptService,
-            final Class<T> type) throws Exception {
+    public <T> T deserialize(final EncryptService encryptService, final Class<T> type)
+            throws Exception {
         //私钥解密得到aes key
-        final byte[] aesKey = encryptService.decryptByPrivateKey(
-                Base64.getDecoder().decode(key));
+        final byte[] aesKey = encryptService.decryptByPrivateKey(Base64.getDecoder().decode(key));
         //利用aes key解密json数据
         final String dataStr = encryptService.decryptByAesKey(encryptData, aesKey);
         //反序列化
-        final ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(MyStringUtil.base64ToUtf8(dataStr), type);
+        return new ObjectMapper().readValue(MyStringUtil.base64ToUtf8(dataStr), type);
     }
 }

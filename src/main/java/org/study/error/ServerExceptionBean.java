@@ -1,9 +1,14 @@
 package org.study.error;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * @author fanqie
  * @date 2020/1/4
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public enum ServerExceptionBean implements SystemException {
     /* 参数异常 */
     PARAMETER_VALIDATION_EXCEPTION(10000, "参数不合法"),
@@ -41,23 +46,22 @@ public enum ServerExceptionBean implements SystemException {
     ORDER_NOT_EXIST_EXCEPTION(50002, "订单不存在"),
     ;
 
-    private final Integer errCode;
+    private final Integer errorCode;
 
-    private final String errMsg;
+    private final String message;
 
-    ServerExceptionBean(final Integer errCode, final String errMsg) {
-        this.errCode = errCode;
-        this.errMsg = errMsg;
-    }
-
-
-    @Override
-    public Integer getErrCode() {
-        return errCode;
+    ServerExceptionBean(final Integer errorCode, final String message) {
+        this.errorCode = errorCode;
+        this.message = message;
     }
 
     @Override
-    public String getErrMsg() {
-        return errMsg;
+    public Integer getErrorCode() {
+        return errorCode;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
     }
 }

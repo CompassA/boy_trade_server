@@ -12,28 +12,28 @@ public class ServerException extends Exception implements SystemException {
 
     private final SystemException systemException;
 
-    private String errMsg = StringUtils.EMPTY;
+    private String message = StringUtils.EMPTY;
 
     public ServerException(final SystemException systemException) {
         super();
         this.systemException = systemException;
     }
 
-    public ServerException(final SystemException systemException, final String errMsg) {
+    public ServerException(final SystemException systemException, final String message) {
         super();
         this.systemException = systemException;
-        this.errMsg = errMsg;
+        this.message = message;
     }
 
     @Override
-    public Integer getErrCode() {
-        return systemException.getErrCode();
+    public Integer getErrorCode() {
+        return systemException.getErrorCode();
     }
 
     @Override
-    public String getErrMsg() {
-        return errMsg.equals(StringUtils.EMPTY)
-                ? systemException.getErrMsg()
-                : errMsg;
+    public String getMessage() {
+        return this.message.equals(StringUtils.EMPTY)
+                ? systemException.getMessage()
+                : this.message;
     }
 }

@@ -1,9 +1,13 @@
 package org.study.controller.response;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.study.controller.ControllerExceptionHandler;
 import org.study.error.ServerExceptionBean;
+
+import java.util.Map;
 
 /**
  * @author fanqie
@@ -27,7 +31,10 @@ public class ServerResponse {
     }
 
     public static ServerResponse fail(final ServerExceptionBean errorInfo) {
-        return create(errorInfo, FAIL_STATUS);
+        final Map<String, Object> errorInfoMap = Maps.newHashMap();
+        errorInfoMap.put(ControllerExceptionHandler.ERROR_PROPERTY_NAME, errorInfo.getErrorCode());
+        errorInfoMap.put(ControllerExceptionHandler.MSG_PROPERTY_NAME, errorInfo.getMessage());
+        return create(errorInfoMap, FAIL_STATUS);
     }
 
     public static ServerResponse create(final Object body, final String status) {
