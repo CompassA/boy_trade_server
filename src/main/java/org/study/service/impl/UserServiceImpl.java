@@ -77,8 +77,7 @@ public class UserServiceImpl implements UserService {
                     ServerExceptionBean.USER_REGISTRY_EXCEPTION, result.getErrorMsg());
         }
         if (this.isUserNameExists(userModel.getName())) {
-            throw new ServerException(
-                    ServerExceptionBean.USER_REGISTRY_EXCEPTION, "用户名已存在!");
+            throw new ServerException(ServerExceptionBean.USER_REGISTRY_EXCEPTION, "用户名已存在!");
         }
         final Optional<UserDO> userDO = ModelToDataUtil.getUserDO(userModel);
         final Optional<UserPasswordDO> passwordDO = ModelToDataUtil.getUserPasswordDO(userModel);

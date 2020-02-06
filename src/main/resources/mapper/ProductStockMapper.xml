@@ -33,4 +33,10 @@
         SET stock = stock - #{amount}
         WHERE product_id = #{productId} and stock >= #{amount}
     </update>
+
+    <update id="increaseStock">
+        UPDATE product_stock
+        SET stock = stock + #{amount}
+        WHERE product_id = #{productId}
+    </update>
 </mapper>

@@ -31,14 +31,18 @@ public class ApiPath {
 
     public static class Order {
         public static final String CREATE = "/order/create";
-        public static final String QUERY_BY_USER_ID = "/order/query_user";
         public static final String QUERY_BY_ORDER_ID = "/order/query_id";
-        public static final String QUERY_BY_STATUS = "/order/query_status";
         public static final String TRADE_PAY = "/order/trade_pay";
+        public static final String CREATED_ORDER_WITH_SELLER = "/order/created_seller";
         public static final String PAID_ORDER_WITH_SELLER = "/order/paid_seller";
         public static final String SENT_ORDER_WITH_SELLER = "/order/sent_seller";
         public static final String FINISHED_ORDER_WITH_SELLER = "/order/finished_seller";
+        public static final String CREATED_ORDER_WITH_BUYER = "/order/created_buyer";
+        public static final String PAID_ORDER_WITH_BUYER = "/order/paid_buyer";
+        public static final String SENT_ORDER_WITH_BUYER = "/order/sent_buyer";
+        public static final String FINISHED_ORDER_WITH_BUYER = "/order/finished_buyer";
         public static final String SENT_STATUS = "/order/status_sent";
         public static final String RECEIVED = "/order/status_received";
+        public static final String CANCEL = "/order/status_cancel";
     }
 }

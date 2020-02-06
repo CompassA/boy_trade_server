@@ -2,6 +2,7 @@ package org.study.service;
 
 import org.study.error.ServerException;
 import org.study.service.model.OrderModel;
+import org.study.service.model.OrderStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,10 +24,14 @@ public interface OrderService {
     /**
      * 根据用户Id查询用户持有的订单
      * @param userId 用户id
+     * @param orderStatus 订单状态
+     * @param payStatus 支付状态
      * @return 用户订单
      * @throws ServerException data层转model层失败
      */
-    List<OrderModel> selectOrdersByUserId(final Integer userId) throws ServerException;
+    List<OrderModel> selectByUserId(final Integer userId,
+                                    final OrderStatus orderStatus,
+                                    final OrderStatus payStatus) throws ServerException;
 
     /**
      * 根据订单编号查询订单查询订单
@@ -36,23 +41,23 @@ public interface OrderService {
     Optional<OrderModel> selectOrderById(final String orderId);
 
     /**
-     * 根据用户的订单状态查询订单
-     * @param userId 用户id
-     * @param status 订单状态
-     * @return 订单信息
-     * @throws ServerException 查询失败
-     */
-    List<OrderModel> selectByUserIdAndStatus(
-            final Integer userId, final Byte status) throws ServerException;
-
-    /**
      * 更新订单状态
      * @param orderId 订单编号
      * @param orderStatus 要更新的订单状态
      * @param payStatus 要更新的支付状态
      * @return 影响的SQL行数
      */
-    int updateOrderStatus(final String orderId, final Byte orderStatus, final Byte payStatus);
+    boolean updateOrderStatus(final String orderId,
+                              final OrderStatus orderStatus,
+                              final OrderStatus payStatus);
+
+    /**
+     * 查询卖家持有的订单中买方未支付的部分
+     * @param sellerId 卖家id
+     * @return 订单信息
+     * @throws ServerException 查询失败或转化失败
+     */
+    List<OrderModel> selectCreatedOrderWithSeller(final Integer sellerId) throws ServerException;
 
     /**
      * 查询卖家持有的订单中买方已经支付的部分
@@ -77,4 +82,12 @@ public interface OrderService {
      * @throws ServerException 查询失败或转化失败
      */
     List<OrderModel> selectFinishedOrderWithSeller(final Integer sellerId) throws ServerException;
+
+    /**
+     * 取消订单
+     * @param orderId 订单号
+     * @param userId 要取消订单的用户
+     * @throws ServerException 创建订单失败
+     */
+    void cancelOrder(final String orderId, final Integer userId) throws ServerException;
 }

@@ -14,10 +14,12 @@ import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
+import org.study.service.model.CacheType;
 import org.study.service.model.ProductModel;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
 import org.study.util.MyMathUtil;
+import org.study.util.MyStringUtil;
 import org.study.validation.ValidationResult;
 import org.study.validation.ValidatorImpl;
 
@@ -100,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductModel selectWithoutStockAndSales(int productId) throws ServerException {
         ProductDO productInfo = null;
 
-        final String key = this.generateProductInfoKey(productId);
+        final String key = MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT_VALIDATION);
         final Optional<ProductDO> cache = redisService.getCache(key, ProductDO.class);
         if (cache.isPresent()) {
             productInfo = cache.get();
@@ -127,13 +129,41 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean decreaseStock(final Integer productId, final Integer amount) {
-        return stockMapper.decreaseStock(productId, amount) > 0;
+        final boolean decreased = stockMapper.decreaseStock(productId, amount) > 0;
+        if (decreased) {
+            redisService.deleteCache(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+        }
+        return decreased;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean increaseStock(Integer productId, Integer amount) {
+        final boolean increased = stockMapper.increaseStock(productId, amount) > 0;
+        if (increased) {
+            redisService.deleteCache(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+        }
+        return increased;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean increaseSales(final Integer productId, final Integer amount) {
-        return saleMapper.increaseSales(productId, amount) > 0;
+        final boolean increased = saleMapper.increaseSales(productId, amount) > 0;
+        if (increased) {
+            redisService.deleteCache(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+        }
+        return increased;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean decreaseSales(Integer productId, Integer amount) {
+        final boolean decreased = stockMapper.decreaseStock(productId, amount) > 0;
+        if (decreased) {
+            redisService.deleteCache(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+        }
+        return decreased;
     }
 
     /** 获取所有商品， 仅测试用 */
@@ -170,9 +200,5 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public BigDecimal getProductPrice(final ProductModel productModel) {
         return productModel.getPrice();
-    }
-
-    private String generateProductInfoKey(final Integer productId) {
-        return String.format("product_validation:%d", productId);
     }
 }

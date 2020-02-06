@@ -46,9 +46,11 @@
         WHERE order_id = #{orderId}
     </select>
 
-    <select id="selectOrdersByUserId" resultMap="OrderMasterMap">
+    <select id="selectByUserId" resultMap="OrderMasterMap">
         SELECT * FROM order_master
         WHERE user_id = #{userId}
+              and order_status = #{orderStatus}
+              and pay_status = #{payStatus}
     </select>
 
     <select id="selectBySellerId" resultMap="OrderMasterMap">

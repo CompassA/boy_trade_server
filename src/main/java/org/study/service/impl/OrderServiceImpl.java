@@ -5,8 +5,10 @@ import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.study.dao.OrderDetailMapper;
 import org.study.dao.OrderMasterMapper;
+import org.study.data.OrderDetailDO;
 import org.study.data.OrderMasterDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
@@ -28,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -115,8 +118,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderModel> selectOrdersByUserId(final Integer userId) throws ServerException {
-        return this.convertCore(orderMasterMapper.selectOrdersByUserId(userId));
+    public List<OrderModel> selectByUserId(final Integer userId, final OrderStatus orderStatus,
+            final OrderStatus payStatus) throws ServerException {
+        return this.convertCore(
+                orderMasterMapper.selectByUserId(userId,
+                        orderStatus.getValue(), payStatus.getValue()));
     }
 
     @Override
@@ -127,24 +133,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderModel> selectByUserIdAndStatus(final Integer userId, final Byte status)
+    public List<OrderModel> selectCreatedOrderWithSeller(final Integer sellerId)
             throws ServerException {
-        return selectOrdersByUserId(userId).stream()
-                .filter(orderModel -> orderModel.getOrderStatus().equals(status))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public int updateOrderStatus(
-            final String orderId, final Byte orderStatus, final Byte payStatus) {
-        return orderMasterMapper.updateStatus(orderId, orderStatus, payStatus);
+        final Byte created = OrderStatus.CREATED.getValue();
+        return this.convertCore(orderMasterMapper.selectBySellerId(sellerId, created, created));
     }
 
     @Override
     public List<OrderModel> selectPaidOrderWithSeller(final Integer sellerId)
             throws ServerException {
-        return this.convertCore(orderMasterMapper.selectBySellerId(
-                sellerId, OrderStatus.PAID.getValue(), OrderStatus.PAID.getValue()));
+        final Byte paid = OrderStatus.PAID.getValue();
+        return this.convertCore(orderMasterMapper.selectBySellerId(sellerId, paid, paid));
     }
 
     @Override
@@ -159,6 +158,41 @@ public class OrderServiceImpl implements OrderService {
             throws ServerException {
         return this.convertCore(orderMasterMapper.selectBySellerId(sellerId,
                 OrderStatus.FINISHED.getValue(), OrderStatus.PAID.getValue()));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelOrder(final String orderId, final Integer userId) throws ServerException {
+        //获取订单并校验
+        final OrderMasterDO masterDO = orderMasterMapper.selectOrderById(orderId);
+        if (Objects.isNull(masterDO) || !masterDO.getUserId().equals(userId)) {
+            throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
+        }
+        final List<OrderDetailDO> details = orderDetailMapper.selectDetailByOrderId(orderId);
+        if (CollectionUtils.isEmpty(details)) {
+            throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
+        }
+
+        //更改订单状态
+        final Byte canceled = OrderStatus.CANCELED.getValue();
+        orderMasterMapper.updateStatus(orderId, canceled, canceled);
+
+        //增库存、减销量
+        for (final OrderDetailDO detail : details) {
+            final Integer productId = detail.getProductId();
+            final Integer productAmount = detail.getProductAmount();
+            if (!productService.increaseStock(productId, productAmount) ||
+                    !productService.decreaseSales(productId, productAmount)) {
+                throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
+            }
+        }
+    }
+
+    @Override
+    public boolean updateOrderStatus(
+            final String orderId, final OrderStatus orderStatus, final OrderStatus payStatus) {
+        return orderMasterMapper.updateStatus(
+                orderId, orderStatus.getValue(), payStatus.getValue()) > 0;
     }
 
     /**

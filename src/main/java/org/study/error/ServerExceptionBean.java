@@ -34,13 +34,15 @@ public enum ServerExceptionBean implements SystemException {
     /* 文件上传异常 */
     FILE_EXCEPTION(40000, "文件上传失败"),
     /* 因库存不足导致下单失败 */
-    ORDER_FAIL_BY_AMOUNT_EXCEPTION(50000, "下单失败，商品数量不正确"),
+    ORDER_FAIL_BY_AMOUNT_EXCEPTION(50000, "商品数量不正确"),
     /* 后端异常导致下单失败 */
     ORDER_FAIL_BY_SYSTEM_EXCEPTION(50001, "系统内部异常"),
     /* select结果为空 */
     ORDER_NOT_EXIST_EXCEPTION(50002, "订单不存在"),
     /* 修改订单状态出现异常或update语句影响的行数为0 */
     ORDER_STATUS_EXCEPTION(50003, "修改订单状态失败"),
+    /* 取消订单时SQL更新语句影响行数小于1 */
+    ORDER_CANCEL_EXCEPTION(50004, "暂时无法取消订单")
     ;
 
     private final Integer errorCode;

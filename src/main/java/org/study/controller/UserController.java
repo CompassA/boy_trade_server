@@ -11,6 +11,7 @@ import org.study.service.EncryptService;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
 import org.study.service.UserService;
+import org.study.service.model.CacheType;
 import org.study.service.model.UserModel;
 import org.study.util.ModelToViewUtil;
 import org.study.util.MyStringUtil;
@@ -53,7 +54,7 @@ public class UserController {
         final String encryptPassword = encryptService.encryptByMd5(password);
 
         //登录并返回前端
-        return userService.login(loginDTO.getAccount(), encryptPassword)
+        return userService.login(account, encryptPassword)
                 .flatMap(userModel -> ModelToViewUtil.getUserVO(userModel)
                         .map(userVO -> {
                             final String token = sessionService.putUserModel(userModel);
@@ -97,7 +98,7 @@ public class UserController {
     public ServerResponse selectUserInfo(@RequestParam("userId") final Integer userId)
             throws ServerException {
         //获取缓存
-        final String key = MyStringUtil.generateCacheKey(userId, "user");
+        final String key = MyStringUtil.generateCacheKey(userId, CacheType.USER_INFO);
         final Optional<UserVO> cache = redisService.getCache(key, UserVO.class);
         if (cache.isPresent()) {
             return ServerResponse.create(cache.get());

@@ -1,5 +1,7 @@
 package org.study.util;
 
+import org.study.service.model.CacheType;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -31,7 +33,13 @@ public final class MyStringUtil {
         return new String(Base64.getDecoder().decode(data), StandardCharsets.UTF_8);
     }
 
-    public static String generateCacheKey(final Integer id, final String cacheType) {
-        return String.format("%s:%d", cacheType, id);
+    /**
+     * 为缓存生成key
+     * @param id 数据主键
+     * @param type 数据类型
+     * @return 生成的缓存key
+     */
+    public static String generateCacheKey(final Integer id, final CacheType type) {
+        return String.format("%s:%d", type.getPrefix(), id);
     }
 }

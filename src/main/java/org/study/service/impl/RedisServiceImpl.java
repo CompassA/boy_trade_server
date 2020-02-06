@@ -40,6 +40,12 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public <T> void cacheDataWithoutLocalCache(String key, T data) {
+        redisTemplate.opsForValue().set(key, data);
+        redisTemplate.expire(key, 10, TimeUnit.MINUTES);
+    }
+
+    @Override
     public <T> Optional<T> getCache(final String key, final Class<T> type) {
         try {
             //先获取本地内存
@@ -58,6 +64,15 @@ public class RedisServiceImpl implements RedisService {
         } catch (final ClassCastException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public <T> Optional<T> getCacheWithoutLocalCache(String key, Class<T> type) {
+        final Object cache = redisTemplate.opsForValue().get(key);
+        if (cache != null && type.equals(cache.getClass())) {
+            return Optional.of((T) cache);
+        }
+        return Optional.empty();
     }
 
     @Override

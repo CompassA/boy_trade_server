@@ -20,20 +20,17 @@ public class ValidatorImpl implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        this.validator = Validation.buildDefaultValidatorFactory()
-                .getValidator();
+        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     public ValidationResult validate(final Object bean) {
         final ValidationResult result = new ValidationResult();
-        final Set<ConstraintViolation<Object>> constraintViolations =
-                validator.validate(bean);
+        final Set<ConstraintViolation<Object>> constraintViolations = validator.validate(bean);
         if (!CollectionUtils.isEmpty(constraintViolations)) {
             result.setHasErrorsTrue();
-            constraintViolations.forEach(constraintViolation ->
-                    result.addErrMsg(
-                            constraintViolation.getPropertyPath().toString(),
-                            constraintViolation.getMessage()));
+            constraintViolations.forEach(constraintViolation -> result.addErrMsg(
+                    constraintViolation.getPropertyPath().toString(),
+                    constraintViolation.getMessage()));
         }
         return result;
     }

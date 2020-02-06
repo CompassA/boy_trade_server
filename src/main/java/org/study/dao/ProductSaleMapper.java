@@ -41,5 +41,14 @@ public interface ProductSaleMapper {
      * @return sql影响行数
      */
     int increaseSales(@Param("productId") final Integer productId,
-                     @Param("amount") final Integer amount);
+                      @Param("amount") final Integer amount);
+
+    /**
+     * 减少商品销量
+     * @param productId 商品id
+     * @param amount 要减少的数量
+     * @return sql影响行数
+     */
+    int decreaseSales(@Param("productId") final Integer productId,
+                      @Param("amount") final Integer amount);
 }

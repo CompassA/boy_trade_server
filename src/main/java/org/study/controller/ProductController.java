@@ -8,6 +8,7 @@ import org.study.error.ServerExceptionBean;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
+import org.study.service.model.CacheType;
 import org.study.service.model.ProductModel;
 import org.study.service.model.UserModel;
 import org.study.util.ModelToViewUtil;
@@ -73,8 +74,9 @@ public class ProductController {
     public ServerResponse getProductInfo(@RequestParam("productId") final Integer productId)
             throws ServerException {
         //取缓存
-        final String key = MyStringUtil.generateCacheKey(productId, "product");
-        final Optional<ProductVO> cache = redisService.getCache(key, ProductVO.class);
+        final String key = MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT);
+        final Optional<ProductVO> cache =
+                redisService.getCacheWithoutLocalCache(key, ProductVO.class);
         if (cache.isPresent()) {
             return ServerResponse.create(cache.get());
         }
@@ -83,7 +85,7 @@ public class ProductController {
         final ProductModel productModel = productService.selectByPrimaryKey(productId);
         final Optional<ProductVO> productVO = ModelToViewUtil.getProductVO(productModel);
         if (productVO.isPresent()) {
-            redisService.cacheData(key, productVO.get());
+            redisService.cacheDataWithoutLocalCache(key, productVO.get());
             return ServerResponse.create(productVO.get());
         }
         throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);

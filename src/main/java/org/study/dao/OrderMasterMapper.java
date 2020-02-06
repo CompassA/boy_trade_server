@@ -28,11 +28,15 @@ public interface OrderMasterMapper {
     OrderMasterDO selectOrderById(@Param("orderId") final String orderId);
 
     /**
-     * 查询用户的所有订单
-     * @param userId 用户Id
-     * @return 所有的订单
+     * 根据买家id查询卖家的所有订单
+     * @param userId 卖家Id
+     * @param orderStatus 订单状态
+     * @param payStatus 支付状态
+     * @return 卖家订单信息
      */
-    List<OrderMasterDO> selectOrdersByUserId(@Param("userId") final Integer userId);
+    List<OrderMasterDO> selectByUserId(@Param("userId") final Integer userId,
+                                       @Param("orderStatus") final Byte orderStatus,
+                                       @Param("payStatus") final Byte payStatus);
 
     /**
      * 根据卖家id查询卖家的所有订单

@@ -33,4 +33,10 @@
         SET sales = sales + #{amount}
         WHERE product_id = #{productId}
     </update>
+
+    <update id="decreaseSales">
+        UPDATE product_sale
+        SET sales = sales - #{amount}
+        WHERE product_id = #{productId} AND sales >= #{amount}
+    </update>
 </mapper>

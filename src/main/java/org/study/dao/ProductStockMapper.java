@@ -40,4 +40,13 @@ public interface ProductStockMapper {
      */
     int decreaseStock(@Param("productId") final Integer productId,
                       @Param("amount") final Integer amount);
+
+    /**
+     * 增加库存
+     * @param productId 商品id
+     * @param amount 增加的数量
+     * @return 影响的sql语句
+     */
+    int increaseStock(@Param("productId") final Integer productId,
+                      @Param("amount") final Integer amount);
 }

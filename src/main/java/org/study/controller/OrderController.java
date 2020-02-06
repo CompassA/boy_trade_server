@@ -61,35 +61,21 @@ public class OrderController {
                 .orElse(ServerResponse.fail(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION));
     }
 
-    @GetMapping(value = ApiPath.Order.QUERY_BY_USER_ID)
-    public ServerResponse getOrderByUserId(@RequestParam("userId") final Integer userId)
-            throws ServerException {
-        final List<OrderModel> orderModels = orderService.selectOrdersByUserId(userId);
-        final List<OrderVO> orders = orderModels.stream()
-                .map(ModelToViewUtil::getOrderVO)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-        if (orders.size() != orderModels.size()) {
-            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
-        }
-        return ServerResponse.create(orders);
-    }
-
     @GetMapping(value = ApiPath.Order.QUERY_BY_ORDER_ID)
     public ServerResponse getOrderById(@RequestParam("orderId") final String orderId) {
-        return ModelToViewUtil.getOrderVO(orderService.selectOrderById(orderId).get())
+        return orderService.selectOrderById(orderId)
+                .flatMap(ModelToViewUtil::getOrderVO)
                 .map(ServerResponse::create)
-                .orElse(ServerResponse.create(
-                        ServerExceptionBean.ORDER_NOT_EXIST_EXCEPTION, "fail"));
+                .orElse(ServerResponse.fail(ServerExceptionBean.ORDER_NOT_EXIST_EXCEPTION));
     }
 
-    @GetMapping(value = ApiPath.Order.QUERY_BY_STATUS)
-    public ServerResponse getOrderByStatus(
-            @RequestParam("userId") final Integer userId,
-            @RequestParam("status") final Byte status) throws ServerException {
+    @GetMapping(value = ApiPath.Order.CREATED_ORDER_WITH_SELLER)
+    public ServerResponse getCreatedOrderWithSeller(
+            @RequestParam("sellerId") final Integer sellerId,
+            @RequestParam("token") final String token) throws ServerException {
+        this.validateToken(sellerId, token);
         return ServerResponse.create(
-                this.convertCore(orderService.selectByUserIdAndStatus(userId, status)));
+                this.convertCore(orderService.selectCreatedOrderWithSeller(sellerId)));
     }
 
     @GetMapping(value = ApiPath.Order.PAID_ORDER_WITH_SELLER)
@@ -119,14 +105,49 @@ public class OrderController {
                 this.convertCore(orderService.selectFinishedOrderWithSeller(sellerId)));
     }
 
+    @GetMapping(value = ApiPath.Order.CREATED_ORDER_WITH_BUYER)
+    public ServerResponse getCreatedOrderWithBuyer(
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("token") final String token) throws ServerException {
+        this.validateToken(userId, token);
+        return ServerResponse.create(this.convertCore(
+                orderService.selectByUserId(userId, OrderStatus.CREATED, OrderStatus.CREATED)));
+    }
+
+    @GetMapping(value = ApiPath.Order.PAID_ORDER_WITH_BUYER)
+    public ServerResponse getPaidOrderWithBuyer(
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("token") final String token) throws ServerException {
+        this.validateToken(userId, token);
+        return ServerResponse.create(this.convertCore(
+                orderService.selectByUserId(userId, OrderStatus.PAID, OrderStatus.PAID)));
+    }
+
+    @GetMapping(value = ApiPath.Order.SENT_ORDER_WITH_BUYER)
+    public ServerResponse getSentOrderWithBuyer(
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("token") final String token) throws ServerException {
+        this.validateToken(userId, token);
+        return ServerResponse.create(this.convertCore(
+                orderService.selectByUserId(userId, OrderStatus.SENT, OrderStatus.PAID)));
+    }
+
+    @GetMapping(value = ApiPath.Order.FINISHED_ORDER_WITH_BUYER)
+    public ServerResponse getFinishedOrderWithBuyer(
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("token") final String token) throws ServerException {
+        this.validateToken(userId, token);
+        return ServerResponse.create(this.convertCore(
+                orderService.selectByUserId(userId, OrderStatus.FINISHED, OrderStatus.PAID)));
+    }
+
     @GetMapping(value = ApiPath.Order.RECEIVED)
     public ServerResponse changeToFinishedStatus(
             @RequestParam("token") final String token,
             @RequestParam("userId") final Integer userId,
             @RequestParam("orderId") final String orderId) throws ServerException {
         this.validateToken(userId, token);
-        return orderService.updateOrderStatus(
-                orderId, OrderStatus.FINISHED.getValue(), null) > 0
+        return orderService.updateOrderStatus(orderId, OrderStatus.FINISHED, OrderStatus.PAID)
                 ? ServerResponse.create(null)
                 : ServerResponse.fail(ServerExceptionBean.ORDER_STATUS_EXCEPTION);
     }
@@ -137,10 +158,19 @@ public class OrderController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("orderId") final String orderId) throws ServerException {
         this.validateToken(userId, token);
-        return orderService.updateOrderStatus(
-                orderId, OrderStatus.SENT.getValue(), null) > 0
+        return orderService.updateOrderStatus(orderId, OrderStatus.SENT, OrderStatus.PAID)
                 ? ServerResponse.create(null)
                 : ServerResponse.fail(ServerExceptionBean.ORDER_STATUS_EXCEPTION);
+    }
+
+    @GetMapping(value = ApiPath.Order.CANCEL)
+    public ServerResponse changeToCancelStatus(
+            @RequestParam("token") final String token,
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("orderId") final String orderId) throws ServerException {
+        this.validateToken(userId, token);
+        orderService.cancelOrder(orderId, userId);
+        return ServerResponse.create(null);
     }
 
     @PostMapping(value = ApiPath.Order.TRADE_PAY)
@@ -163,8 +193,8 @@ public class OrderController {
         ;;;
 
         //更改订单状态
-        final Byte paidValue = OrderStatus.PAID.getValue();
-        return orderService.updateOrderStatus(orderVO.getOrderId(), paidValue, paidValue) > 0
+        return orderService.updateOrderStatus(
+                orderVO.getOrderId(), OrderStatus.PAID, OrderStatus.PAID)
                 ? ServerResponse.create(null)
                 : ServerResponse.fail(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
     }
