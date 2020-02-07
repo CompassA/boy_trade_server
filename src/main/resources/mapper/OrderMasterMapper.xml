@@ -41,6 +41,12 @@
         WHERE order_id = #{orderId}
     </update>
 
+    <update id="cancelOrder">
+        UPDATE order_master
+        SET order_status = -1, pay_status = -1
+        WHERE order_id = #{orderId} and order_status != -1 and pay_status != -1
+    </update>
+
     <select id="selectOrderById" resultMap="OrderMasterMap">
         SELECT * FROM order_master
         WHERE order_id = #{orderId}

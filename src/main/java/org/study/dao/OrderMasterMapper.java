@@ -59,4 +59,11 @@ public interface OrderMasterMapper {
     int updateStatus(@Param("orderId") final String orderId,
                      @Param("orderStatus") final Byte orderStatus,
                      @Param("payStatus") final Byte payStatus);
+
+    /**
+     * 取消订单
+     * @param orderId 订单id
+     * @return 影响的SQL行数
+     */
+    int cancelOrder(@Param("orderId") final String orderId);
 }

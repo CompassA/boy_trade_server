@@ -25,7 +25,8 @@ public interface ProductSaleMapper {
      * @param productId 待查询的商品id
      * @return 商品销量信息
      */
-    List<ProductSaleDO> selectProductSale(@Param("productIdCollection") final List<Integer> productId);
+    List<ProductSaleDO> selectProductSale(
+            @Param("productIdCollection") final List<Integer> productId);
 
     /**
      * 单个查询

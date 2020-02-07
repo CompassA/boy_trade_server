@@ -30,7 +30,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -163,39 +162,37 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void cancelOrder(final String orderId, final Integer userId) throws ServerException {
-        //获取订单并校验
-        final OrderMasterDO masterDO = orderMasterMapper.selectOrderById(orderId);
-        if (Objects.isNull(masterDO) || !masterDO.getUserId().equals(userId)) {
-            throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
-        }
+        //获取订单详情并校验
         final List<OrderDetailDO> details = orderDetailMapper.selectDetailByOrderId(orderId);
         if (CollectionUtils.isEmpty(details)) {
             throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
         }
 
         //更改订单状态
-        final Byte canceled = OrderStatus.CANCELED.getValue();
-        orderMasterMapper.updateStatus(orderId, canceled, canceled);
+        if (orderMasterMapper.cancelOrder(orderId) < 1) {
+            throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
+        }
 
         //增库存、减销量
         for (final OrderDetailDO detail : details) {
             final Integer productId = detail.getProductId();
             final Integer productAmount = detail.getProductAmount();
-            if (!productService.increaseStock(productId, productAmount) ||
-                    !productService.decreaseSales(productId, productAmount)) {
+            if (!productService.increaseStock(productId, productAmount)
+                    || !productService.decreaseSales(productId, productAmount)) {
                 throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
             }
         }
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean updateOrderStatus(
             final String orderId, final OrderStatus orderStatus, final OrderStatus payStatus) {
         return orderMasterMapper.updateStatus(
                 orderId, orderStatus.getValue(), payStatus.getValue()) > 0;
     }
 
-    /**
+    /**;
      * 根据用户编号生成分库分表位
      * @param userId 用户编号
      * @return 高16位低16位相异或并模100

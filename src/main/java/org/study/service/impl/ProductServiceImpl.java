@@ -138,7 +138,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean increaseStock(Integer productId, Integer amount) {
+    public boolean increaseStock(final Integer productId, final Integer amount) {
         final boolean increased = stockMapper.increaseStock(productId, amount) > 0;
         if (increased) {
             redisService.deleteCache(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
@@ -158,8 +158,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean decreaseSales(Integer productId, Integer amount) {
-        final boolean decreased = stockMapper.decreaseStock(productId, amount) > 0;
+    public boolean decreaseSales(final Integer productId, final Integer amount) {
+        final boolean decreased = saleMapper.decreaseSales(productId, amount) > 0;
         if (decreased) {
             redisService.deleteCache(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
         }

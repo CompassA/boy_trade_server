@@ -23,7 +23,8 @@ public interface ProductStockMapper {
      * @param productId 商品id集合
      * @return 库存信息
      */
-    List<ProductStockDO> selectProductStock(@Param("productIdCollection") final List<Integer> productId);
+    List<ProductStockDO> selectProductStock(
+            @Param("productIdCollection") final List<Integer> productId);
 
     /**
      * 单个查询
