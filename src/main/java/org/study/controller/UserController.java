@@ -11,7 +11,7 @@ import org.study.service.EncryptService;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
 import org.study.service.UserService;
-import org.study.service.model.CacheType;
+import org.study.service.model.enumdata.CacheType;
 import org.study.service.model.UserModel;
 import org.study.util.ModelToViewUtil;
 import org.study.util.MyStringUtil;

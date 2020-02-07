@@ -1,6 +1,6 @@
 package org.study.util;
 
-import org.study.service.model.CacheType;
+import org.study.service.model.enumdata.CacheType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

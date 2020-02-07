@@ -2,7 +2,7 @@ package org.study.service;
 
 import org.study.error.ServerException;
 import org.study.service.model.OrderModel;
-import org.study.service.model.OrderStatus;
+import org.study.service.model.enumdata.OrderStatus;
 
 import java.util.List;
 import java.util.Optional;

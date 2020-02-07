@@ -14,7 +14,7 @@ import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
-import org.study.service.model.CacheType;
+import org.study.service.model.enumdata.CacheType;
 import org.study.service.model.ProductModel;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;

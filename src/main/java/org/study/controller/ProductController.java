@@ -8,7 +8,7 @@ import org.study.error.ServerExceptionBean;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
-import org.study.service.model.CacheType;
+import org.study.service.model.enumdata.CacheType;
 import org.study.service.model.ProductModel;
 import org.study.service.model.UserModel;
 import org.study.util.ModelToViewUtil;

@@ -1,4 +1,4 @@
-package org.study.service.model;
+package org.study.service.model.enumdata;
 
 import lombok.Getter;
 

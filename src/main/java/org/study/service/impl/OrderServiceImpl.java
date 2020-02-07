@@ -18,7 +18,7 @@ import org.study.service.SequenceService;
 import org.study.service.UserService;
 import org.study.service.model.OrderDetailModel;
 import org.study.service.model.OrderModel;
-import org.study.service.model.OrderStatus;
+import org.study.service.model.enumdata.OrderStatus;
 import org.study.service.model.ProductModel;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
