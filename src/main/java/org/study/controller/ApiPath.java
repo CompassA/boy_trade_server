@@ -45,4 +45,11 @@ public class ApiPath {
         public static final String RECEIVED = "/order/status_received";
         public static final String CANCEL = "/order/status_cancel";
     }
+
+    public static class AddressInfo {
+        public static final String GET_USER_ADDRESS_INFO = "/address/get";
+        public static final String INSERT_USER_ADDRESS_INFO = "/address/insert";
+        public static final String UPDATE_USER_ADDRESS_INFO = "/address/update";
+        public static final String DELETE_USER_ADDRESS_INFO = "/address/delete";
+    }
 }

@@ -2,15 +2,9 @@ package org.study.util;
 
 import org.springframework.util.CollectionUtils;
 import org.study.data.*;
-import org.study.service.model.OrderDetailModel;
-import org.study.service.model.OrderModel;
-import org.study.service.model.ProductModel;
-import org.study.service.model.UserModel;
+import org.study.service.model.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -124,5 +118,13 @@ public final class DataToModelUtil {
                         .setCreateTime(detailDO.getCreateTime())
                         .setUpdateTime(detailDO.getUpdateTime())
                 ).collect(Collectors.toList());
+    }
+
+    public static AddressInfoModel getAddressInfoModel(
+            final Integer userId, final List<AddressInfoDO> info) {
+        return new AddressInfoModel()
+                .setUserId(userId)
+                .setUserAddressInfo(
+                        CollectionUtils.isEmpty(info) ? new ArrayList<>(0) : info);
     }
 }

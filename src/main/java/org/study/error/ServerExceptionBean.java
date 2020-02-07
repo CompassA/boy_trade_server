@@ -42,7 +42,13 @@ public enum ServerExceptionBean implements SystemException {
     /* 修改订单状态出现异常或update语句影响的行数为0 */
     ORDER_STATUS_EXCEPTION(50003, "修改订单状态失败"),
     /* 取消订单时SQL更新语句影响行数小于1 */
-    ORDER_CANCEL_EXCEPTION(50004, "暂时无法取消订单")
+    ORDER_CANCEL_EXCEPTION(50004, "暂时无法取消订单"),
+    /* 插入失败 */
+    ADDRESS_INFO_INSERT_EXCEPTION(60001, "无法插入新的地址信息"),
+    /* 更新失败 */
+    ADDRESS_INFO_UPDATE_EXCEPTION(60002, "无法更新地址信息"),
+    /* 删除失败 */
+    ADDRESS_INFO_DELETE_EXCEPTION(60003, "删除信息失败"),
     ;
 
     private final Integer errorCode;
