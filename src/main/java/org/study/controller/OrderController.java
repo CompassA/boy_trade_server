@@ -69,7 +69,7 @@ public class OrderController {
                 .map(ServerResponse::create)
                 .orElse(ServerResponse.fail(ServerExceptionBean.ORDER_NOT_EXIST_EXCEPTION));
     }
-
+    
     @GetMapping(value = ApiPath.Order.CREATED_ORDER_WITH_SELLER)
     public ServerResponse getCreatedOrderWithSeller(
             @RequestParam("sellerId") final Integer sellerId,
