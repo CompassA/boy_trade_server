@@ -74,7 +74,9 @@ public class OrderController {
     public ServerResponse getCreatedOrderWithSeller(
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
-        this.validateToken(sellerId, token);
+        if (!sessionService.isLogin(token, sellerId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         return ServerResponse.create(
                 this.convertCore(orderService.selectCreatedOrderWithSeller(sellerId)));
     }
@@ -83,7 +85,9 @@ public class OrderController {
     public ServerResponse getPaidOrderWithSeller(
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
-        this.validateToken(sellerId, token);
+        if (!sessionService.isLogin(token, sellerId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         return ServerResponse.create(
                 this.convertCore(orderService.selectPaidOrderWithSeller(sellerId)));
     }
@@ -92,7 +96,9 @@ public class OrderController {
     public ServerResponse getSentOrderWithSeller(
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
-        this.validateToken(sellerId, token);
+        if (!sessionService.isLogin(token, sellerId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         return ServerResponse.create(
                 this.convertCore(orderService.selectSentOrderWithSeller(sellerId)));
     }
@@ -101,7 +107,9 @@ public class OrderController {
     public ServerResponse getFinishedOrderWithSeller(
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
-        this.validateToken(sellerId, token);
+        if (!sessionService.isLogin(token, sellerId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         return ServerResponse.create(
                 this.convertCore(orderService.selectFinishedOrderWithSeller(sellerId)));
     }
@@ -110,7 +118,9 @@ public class OrderController {
     public ServerResponse getCreatedOrderWithBuyer(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
-        this.validateToken(userId, token);
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         return ServerResponse.create(this.convertCore(
                 orderService.selectByUserId(userId, OrderStatus.CREATED, OrderStatus.CREATED)));
     }
@@ -119,7 +129,9 @@ public class OrderController {
     public ServerResponse getPaidOrderWithBuyer(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
-        this.validateToken(userId, token);
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         return ServerResponse.create(this.convertCore(
                 orderService.selectByUserId(userId, OrderStatus.PAID, OrderStatus.PAID)));
     }
@@ -128,7 +140,9 @@ public class OrderController {
     public ServerResponse getSentOrderWithBuyer(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
-        this.validateToken(userId, token);
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         return ServerResponse.create(this.convertCore(
                 orderService.selectByUserId(userId, OrderStatus.SENT, OrderStatus.PAID)));
     }
@@ -137,7 +151,9 @@ public class OrderController {
     public ServerResponse getFinishedOrderWithBuyer(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
-        this.validateToken(userId, token);
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         return ServerResponse.create(this.convertCore(
                 orderService.selectByUserId(userId, OrderStatus.FINISHED, OrderStatus.PAID)));
     }
@@ -147,7 +163,9 @@ public class OrderController {
             @RequestParam("token") final String token,
             @RequestParam("userId") final Integer userId,
             @RequestParam("orderId") final String orderId) throws ServerException {
-        this.validateToken(userId, token);
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         return orderService.updateOrderStatus(orderId, OrderStatus.FINISHED, OrderStatus.PAID)
                 ? ServerResponse.create(null)
                 : ServerResponse.fail(ServerExceptionBean.ORDER_STATUS_EXCEPTION);
@@ -158,7 +176,9 @@ public class OrderController {
             @RequestParam("token") final String token,
             @RequestParam("userId") final Integer userId,
             @RequestParam("orderId") final String orderId) throws ServerException {
-        this.validateToken(userId, token);
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         return orderService.updateOrderStatus(orderId, OrderStatus.SENT, OrderStatus.PAID)
                 ? ServerResponse.create(null)
                 : ServerResponse.fail(ServerExceptionBean.ORDER_STATUS_EXCEPTION);
@@ -169,7 +189,9 @@ public class OrderController {
             @RequestParam("token") final String token,
             @RequestParam("userId") final Integer userId,
             @RequestParam("orderId") final String orderId) throws ServerException {
-        this.validateToken(userId, token);
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+        }
         orderService.cancelOrder(orderId, userId);
         return ServerResponse.create(null);
     }
@@ -201,12 +223,5 @@ public class OrderController {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
-    }
-
-    private void validateToken(final Integer userId, final String token) throws ServerException {
-        final Optional<UserModel> userInfoOpt = sessionService.getUserModel(token);
-        if (!userInfoOpt.isPresent() || !userId.equals(userInfoOpt.get().getUserId())) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
-        }
     }
 }
