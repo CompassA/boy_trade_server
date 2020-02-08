@@ -50,4 +50,11 @@ public interface AddressInfoMapper {
      * @return 影响的SQL行数
      */
     int cancelSelected(@Param("userId") final Integer userId);
+
+    /**
+     * 查询用户的默认地址信息
+     * @param userId 目标用户id
+     * @return 默认地址信息
+     */
+    AddressInfoDO selectDefault(@Param("userId") final Integer userId);
 }

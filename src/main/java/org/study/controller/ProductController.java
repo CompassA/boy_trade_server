@@ -8,9 +8,8 @@ import org.study.error.ServerExceptionBean;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
-import org.study.service.model.enumdata.CacheType;
 import org.study.service.model.ProductModel;
-import org.study.service.model.UserModel;
+import org.study.service.model.enumdata.CacheType;
 import org.study.util.ModelToViewUtil;
 import org.study.util.MyStringUtil;
 import org.study.view.ProductVO;
@@ -36,15 +35,11 @@ public class ProductController {
 
     @PutMapping(value = ApiPath.Product.CREATE)
     public ServerResponse createProduct(
+            @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestBody final ProductVO product) throws ServerException {
         //登录态方可创建
-        final Optional<UserModel> userModel = sessionService.getUserModel(token);
-        if (!userModel.isPresent()) {
-            throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
-        }
-        final Integer userId = userModel.get().getUserId();
-        if (!userId.equals(product.getUserId())) {
+        if (!sessionService.isLogin(token, userId)) {
             throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
         }
 

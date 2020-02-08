@@ -65,4 +65,9 @@
         SELECT * FROM address_info
         WHERE user_id = #{userId}
     </select>
+
+    <select id="selectDefault" resultMap="AddressInfoMap">
+        SELECT * FROM address_info
+        WHERE user_id = #{userId} AND selected = 1
+    </select>
 </mapper>

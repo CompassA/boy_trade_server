@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.study.controller.response.ServerResponse;
 import org.study.data.AddressInfoDO;
 import org.study.error.ServerException;
+import org.study.error.ServerExceptionBean;
 import org.study.service.AddressInfoService;
 
 /**
@@ -57,5 +58,14 @@ public class AddressInfoController {
             @RequestParam("infoId") final Integer infoId,
             @RequestParam("token") final String token) throws ServerException {
         return ServerResponse.create(addressInfoService.resetDefaultInfo(userId, infoId));
+    }
+
+    @GetMapping(ApiPath.AddressInfo.DEFAULT_INFO)
+    public ServerResponse getDefaultInfo(
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("token") final String token) {
+        return addressInfoService.getDefaultInfo(userId)
+                .map(ServerResponse::create)
+                .orElse(ServerResponse.fail(ServerExceptionBean.WITHOUT_DEFAULT_ADDRESS));
     }
 }

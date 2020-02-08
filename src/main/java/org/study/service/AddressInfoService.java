@@ -1,9 +1,10 @@
 package org.study.service;
 
-import org.study.controller.ApiPath;
 import org.study.data.AddressInfoDO;
 import org.study.error.ServerException;
 import org.study.service.model.AddressInfoModel;
+
+import java.util.Optional;
 
 /**
  * @author fanqie
@@ -56,4 +57,11 @@ public interface AddressInfoService {
      */
     AddressInfoModel resetDefaultInfo(final Integer userId, final Integer targetInfoId)
             throws ServerException;
+
+    /**
+     * 查询用户的默认地址信息
+     * @param userId 目标用户id
+     * @return 默认地址信息
+     */
+    Optional<AddressInfoDO> getDefaultInfo(final Integer userId);
 }

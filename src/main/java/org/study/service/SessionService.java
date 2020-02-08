@@ -13,9 +13,10 @@ public interface SessionService {
     /**
      * 根据令牌判断用户是否登录
      * @param token 用户令牌
+     * @param userId 用户id
      * @return 登录 true；未登录 false
      */
-    boolean isLogin(final String token);
+    boolean isLogin(final String token, final Integer userId);
 
     /**
      * 根据令牌获取用户登录信息

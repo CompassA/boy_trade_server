@@ -11,6 +11,8 @@ import org.study.service.AddressInfoService;
 import org.study.service.model.AddressInfoModel;
 import org.study.util.DataToModelUtil;
 
+import java.util.Optional;
+
 /**
  * @author fanqie
  * @date 2020/2/7
@@ -62,6 +64,11 @@ public class AddressInfoServerImpl implements AddressInfoService {
             throw new ServerException(ServerExceptionBean.ADDRESS_SELECTED_RESET_EXCEPTION);
         }
         return DataToModelUtil.getAddressInfoModel(userId, infoMapper.selectByUserId(userId));
+    }
+
+    @Override
+    public Optional<AddressInfoDO> getDefaultInfo(final Integer userId) {
+        return Optional.ofNullable(infoMapper.selectDefault(userId));
     }
 
     private boolean isPhoneNotValid(final AddressInfoDO info) {

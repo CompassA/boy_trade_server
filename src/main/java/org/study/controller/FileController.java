@@ -30,10 +30,11 @@ public class FileController {
 
     @PostMapping(value = ApiPath.LoadingFile.UPLOAD)
     public ServerResponse uploadFile(
+            @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestPart("imgFile") final MultipartFile file) throws ServerException {
         //登录校验
-        if (!sessionService.isLogin(token) || file.getSize() > MAX_FILE_SIZE) {
+        if (!sessionService.isLogin(token, userId) || file.getSize() > MAX_FILE_SIZE) {
             throw new ServerException(ServerExceptionBean.FILE_EXCEPTION);
         }
         final Optional<UserModel> user = sessionService.getUserModel(token);

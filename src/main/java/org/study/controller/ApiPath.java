@@ -52,5 +52,6 @@ public class ApiPath {
         public static final String UPDATE_USER_ADDRESS_INFO = "/address/update";
         public static final String DELETE_USER_ADDRESS_INFO = "/address/delete";
         public static final String RESET_SELECTED_ADDRESS = "/address/reset";
+        public static final String DEFAULT_INFO = "/address/default";
     }
 }

@@ -40,10 +40,11 @@ public class OrderController {
 
     @PostMapping(value = ApiPath.Order.CREATE)
     public ServerResponse createOrder(
+            @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestBody final ServerRequest encryptData) throws Exception {
         //未登录不可下单
-        if (!sessionService.isLogin(token)) {
+        if (!sessionService.isLogin(token, userId)) {
             throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
         }
 
@@ -175,17 +176,12 @@ public class OrderController {
 
     @PostMapping(value = ApiPath.Order.TRADE_PAY)
     public ServerResponse trade(
+            @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestBody final ServerRequest request) throws Exception {
         final OrderVO orderVO = request.deserialize(encryptService, OrderVO.class);
-        final Optional<UserModel> modelOpt = sessionService.getUserModel(token);
         //校验用户登录态
-        if (!modelOpt.isPresent()) {
-            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
-        }
-        //校验用户id
-        final UserModel userModel = modelOpt.get();
-        if (!userModel.getUserId().equals(orderVO.getUserId())) {
+        if (!sessionService.isLogin(token, userId)) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
 

@@ -87,9 +87,8 @@ public final class ModelToDataUtil {
                 .setUserId(orderModel.getUserId())
                 .setSellerId(orderModel.getSellerId())
                 .setUserName(orderModel.getUserName())
-                //TODO  接入手机号和用户地址
-                .setUserPhone("")
-                .setUserAddress("")
+                .setUserPhone(orderModel.getUserPhone())
+                .setUserAddress(orderModel.getUserAddress())
                 .setPayStatus(orderModel.getPayStatus())
                 .setCreateTime(orderModel.getCreateTime())
                 .setOrderStatus(orderModel.getOrderStatus())
