@@ -7,8 +7,10 @@
         <id column="info_id" property="infoId" jdbcType="INTEGER" />
         <result column="user_id" property="userId" jdbcType="INTEGER" />
         <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="user_phone" property="userPhone" jdbcType="INTEGER" />
         <result column="user_address" property="userAddress" jdbcType="VARCHAR" />
         <result column="gender" property="gender" jdbcType="TINYINT" />
+        <result column="selected" property="selected" jdbcType="TINYINT" />
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     </resultMap>
@@ -16,6 +18,7 @@
     <insert id="insertOrUpdate" parameterType="org.study.data.AddressInfoDO">
         INSERT INTO address_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="info.infoId != null">info_id,</if>
             <if test="info.userId != null">user_id,</if>
             <if test="info.userName != null">user_name,</if>
             <if test="info.userPhone != null">user_phone,</if>
@@ -24,6 +27,7 @@
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="info.infoId != null">#{info.infoId},</if>
             <if test="info.userId != null">#{info.userId},</if>
             <if test="info.userName != null">#{info.userName},</if>
             <if test="info.userPhone != null">#{info.userPhone},</if>
@@ -40,9 +44,21 @@
         </trim>
     </insert>
 
+    <update id="updateSelected">
+        UPDATE address_info
+        SET selected = 1
+        WHERE info_id = #{infoId} AND user_id = #{userId}
+    </update>
+
+    <update id="cancelSelected">
+        UPDATE address_info
+        SET selected = 0
+        WHERE user_id = #{userId} AND selected = 1
+    </update>
+
     <delete id="deleteById">
         DELETE FROM address_info
-        WHERE info_id = #{infoId} AND userId = #{userId}
+        WHERE info_id = #{infoId} AND user_id = #{userId}
     </delete>
 
     <select id="selectByUserId" resultMap="AddressInfoMap">

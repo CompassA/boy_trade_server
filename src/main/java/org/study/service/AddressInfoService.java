@@ -46,4 +46,14 @@ public interface AddressInfoService {
      */
     AddressInfoModel updateInfo(final Integer userId, final AddressInfoDO info)
             throws ServerException;
+
+    /**
+     * 重新设置用户的默认地址信息
+     * @param userId 用户id
+     * @param targetInfoId 要置为默认的地址信息id
+     * @return 重置后的用户地址信息列表
+     * @throws ServerException 更新的SQL语句执行错误
+     */
+    AddressInfoModel resetDefaultInfo(final Integer userId, final Integer targetInfoId)
+            throws ServerException;
 }

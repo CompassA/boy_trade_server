@@ -34,4 +34,20 @@ public interface AddressInfoMapper {
      * @return 影响的SQL行数
      */
     int deleteById(@Param("infoId") final Integer infoId, @Param("userId") final Integer userId);
+
+    /**
+     * 将地址信息设为默认
+     * @param infoId 目标地址信息的id
+     * @param userId 用户id
+     * @return 影响的SQL行数
+     */
+    int updateSelected(@Param("infoId") final Integer infoId,
+                       @Param("userId") final Integer userId);
+
+    /**
+     * 将用户的默认地址信息设置取消
+     * @param userId 用户id
+     * @return 影响的SQL行数
+     */
+    int cancelSelected(@Param("userId") final Integer userId);
 }

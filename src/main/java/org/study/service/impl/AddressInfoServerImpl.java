@@ -2,6 +2,7 @@ package org.study.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.study.dao.AddressInfoMapper;
 import org.study.data.AddressInfoDO;
 import org.study.error.ServerException;
@@ -28,7 +29,7 @@ public class AddressInfoServerImpl implements AddressInfoService {
     @Override
     public AddressInfoModel addNewInfo(final Integer userId, final AddressInfoDO info)
             throws ServerException {
-        if (infoMapper.insertOrUpdate(info) < 1) {
+        if (this.isPhoneNotValid(info) || infoMapper.insertOrUpdate(info) < 1) {
             throw new ServerException(ServerExceptionBean.ADDRESS_INFO_INSERT_EXCEPTION);
         }
         return DataToModelUtil.getAddressInfoModel(userId, infoMapper.selectByUserId(userId));
@@ -46,9 +47,31 @@ public class AddressInfoServerImpl implements AddressInfoService {
     @Override
     public AddressInfoModel updateInfo(final Integer userId, final AddressInfoDO info)
             throws ServerException {
-        if (infoMapper.insertOrUpdate(info) < 1) {
+        if (this.isPhoneNotValid(info) || infoMapper.insertOrUpdate(info) < 1) {
             throw new ServerException(ServerExceptionBean.ADDRESS_INFO_UPDATE_EXCEPTION);
         }
         return DataToModelUtil.getAddressInfoModel(userId, infoMapper.selectByUserId(userId));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public AddressInfoModel resetDefaultInfo(final Integer userId, final Integer targetInfoId)
+            throws ServerException {
+        infoMapper.cancelSelected(userId);
+        if (infoMapper.updateSelected(targetInfoId, userId) < 1) {
+            throw new ServerException(ServerExceptionBean.ADDRESS_SELECTED_RESET_EXCEPTION);
+        }
+        return DataToModelUtil.getAddressInfoModel(userId, infoMapper.selectByUserId(userId));
+    }
+
+    private boolean isPhoneNotValid(final AddressInfoDO info) {
+        try {
+            final String originPhone = info.getUserPhone();
+            final Long phoneAfterLongParse = Long.parseLong(originPhone);
+            final String phoneAfterStrParse = String.valueOf(phoneAfterLongParse);
+            return originPhone.length() != 11 || !originPhone.equals(phoneAfterStrParse);
+        } catch (final Exception e) {
+            return true;
+        }
     }
 }

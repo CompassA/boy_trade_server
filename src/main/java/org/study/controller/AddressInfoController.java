@@ -30,6 +30,7 @@ public class AddressInfoController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestBody final AddressInfoDO info) throws ServerException {
+        info.setUserId(userId);
         return ServerResponse.create(addressInfoService.addNewInfo(userId, info));
     }
 
@@ -46,6 +47,15 @@ public class AddressInfoController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestBody final AddressInfoDO info) throws ServerException {
+        info.setUserId(userId);
         return ServerResponse.create(addressInfoService.updateInfo(userId, info));
+    }
+
+    @PostMapping(ApiPath.AddressInfo.RESET_SELECTED_ADDRESS)
+    public ServerResponse updateSelected(
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("infoId") final Integer infoId,
+            @RequestParam("token") final String token) throws ServerException {
+        return ServerResponse.create(addressInfoService.resetDefaultInfo(userId, infoId));
     }
 }

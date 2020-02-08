@@ -31,6 +31,8 @@ public class AddressInfoDO {
 
     private Byte gender;
 
+    private Byte selected;
+
     private Timestamp createTime;
 
     private Timestamp updateTime;
@@ -44,6 +46,7 @@ public class AddressInfoDO {
                 ", userPhone='" + userPhone + '\'' +
                 ", userAddress='" + userAddress + '\'' +
                 ", gender=" + gender +
+                ", selected=" + selected +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 '}';

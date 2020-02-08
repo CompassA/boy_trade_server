@@ -49,6 +49,8 @@ public enum ServerExceptionBean implements SystemException {
     ADDRESS_INFO_UPDATE_EXCEPTION(60002, "无法更新地址信息"),
     /* 删除失败 */
     ADDRESS_INFO_DELETE_EXCEPTION(60003, "删除信息失败"),
+    /* 重置的SQL语句执行失败*/
+    ADDRESS_SELECTED_RESET_EXCEPTION(60004, "重置默认地址信息失败"),
     ;
 
     private final Integer errorCode;
