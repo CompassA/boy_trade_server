@@ -54,4 +54,10 @@ public class ApiPath {
         public static final String RESET_SELECTED_ADDRESS = "/address/reset";
         public static final String DEFAULT_INFO = "/address/default";
     }
+
+    public static class Cart {
+        public static final String GET = "/cart/get";
+        public static final String ADD = "/cart/add";
+        public static final String DELETE = "/cart/delete";
+    }
 }

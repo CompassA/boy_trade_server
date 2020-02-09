@@ -1,10 +1,13 @@
 package org.study.service;
 
+import org.study.data.UserDO;
 import org.study.error.ServerException;
 import org.study.service.model.UserModel;
 import org.study.view.UserVO;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author fanqie
@@ -41,4 +44,11 @@ public interface UserService {
      * @return 存在 true; 不存在 false
      */
     boolean isUserNameExists(final String name);
+
+    /**
+     * 批量查询用户信息
+     * @param userKeys 一组用户主键
+     * @return 用户信息
+     */
+    List<UserDO> queryByKeys(final Set<Integer> userKeys);
 }

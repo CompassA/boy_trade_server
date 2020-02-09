@@ -21,6 +21,7 @@ import org.study.view.UserVO;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author fanqie
@@ -111,6 +112,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isUserNameExists(final String name) {
         return userMapper.selectExistsByName(name) == 1;
+    }
+
+    @Override
+    public List<UserDO> queryByKeys(Set<Integer> userKeys) {
+        return userMapper.queryByKeys(userKeys);
     }
 
     @Override

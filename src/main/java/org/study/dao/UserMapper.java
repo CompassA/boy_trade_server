@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.study.data.UserDO;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author fanqie
@@ -40,4 +41,11 @@ public interface UserMapper {
      * @return 符合查询条件的用户数量
      */
     int selectExistsByName(@Param("name") final String name);
+
+    /**
+     * 批量查询用户信息
+     * @param userKeys 一组用户主键
+     * @return 用户信息
+     */
+    List<UserDO> queryByKeys(@Param("keys") final Set<Integer> userKeys);
 }

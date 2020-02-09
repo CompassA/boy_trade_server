@@ -33,4 +33,11 @@ public interface ProductMapper {
      * @return 符合条件的商品
      */
     ProductDO selectByPrimaryKey(@Param("id") final Integer id);
+
+    /**
+     * 传入一组商品id, 得到一组商品信息(不包含库存与销量)
+     * @param keyList 一组商品id
+     * @return 一组商品信息
+     */
+    List<ProductDO> selectInKeyList(@Param("keyList") final List<Integer> keyList);
 }

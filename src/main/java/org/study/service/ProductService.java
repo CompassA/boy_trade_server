@@ -1,5 +1,6 @@
 package org.study.service;
 
+import org.study.data.ProductDO;
 import org.study.error.ServerException;
 import org.study.service.model.ProductModel;
 
@@ -82,4 +83,11 @@ public interface ProductService {
      * @return 商品当前的实际价格
      */
     BigDecimal getProductPrice(final ProductModel productModel);
+
+    /**
+     * 传入一组商品id, 得到一组商品信息(不包含库存与销量)
+     * @param productIds 一组商品id
+     * @return 一组商品信息
+     */
+    List<ProductDO> getProductInfoByIds(final List<Integer> productIds);
 }

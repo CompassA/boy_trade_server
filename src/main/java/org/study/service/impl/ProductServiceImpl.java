@@ -14,8 +14,8 @@ import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
-import org.study.service.model.enumdata.CacheType;
 import org.study.service.model.ProductModel;
+import org.study.service.model.enumdata.CacheType;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
 import org.study.util.MyMathUtil;
@@ -200,5 +200,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public BigDecimal getProductPrice(final ProductModel productModel) {
         return productModel.getPrice();
+    }
+
+    @Override
+    public List<ProductDO> getProductInfoByIds(final List<Integer> productIds) {
+        return productMapper.selectInKeyList(productIds);
     }
 }

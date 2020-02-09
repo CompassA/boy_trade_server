@@ -11,7 +11,6 @@ import org.study.service.OrderService;
 import org.study.service.SessionService;
 import org.study.service.model.OrderModel;
 import org.study.service.model.enumdata.OrderStatus;
-import org.study.service.model.UserModel;
 import org.study.util.ModelToViewUtil;
 import org.study.util.ViewToModelUtil;
 import org.study.view.OrderDTO;

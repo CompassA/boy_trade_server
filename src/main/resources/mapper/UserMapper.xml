@@ -60,4 +60,12 @@
     <select id="selectExistsByName" parameterType="java.lang.String" resultType="java.lang.Integer">
         SELECT COUNT(name) FROM user WHERE name = #{name}
     </select>
+
+    <select id="queryByKeys" resultMap="UserMap">
+        SELECT * FROM user
+        WHERE user_id IN
+        <foreach collection="keys" index="index" item="key" open="(" close=")" separator=",">
+            #{key}
+        </foreach>
+    </select>
 </mapper>

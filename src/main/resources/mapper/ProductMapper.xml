@@ -64,4 +64,12 @@
     <select id="selectByPrimaryKey" resultMap="ProductMap">
         SELECT * FROM product WHERE id = #{id}
     </select>
+
+    <select id="selectInKeyList" resultMap="ProductMap">
+        SELECT * FROM product
+        WHERE id IN
+        <foreach collection="keyList" item="key" index="index" separator="," open="(" close=")">
+            #{key}
+        </foreach>
+    </select>
 </mapper>

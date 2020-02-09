@@ -53,6 +53,14 @@ public enum ServerExceptionBean implements SystemException {
     ADDRESS_SELECTED_RESET_EXCEPTION(60004, "重置默认地址信息失败"),
     /* 默认地址信息未设置 */
     WITHOUT_DEFAULT_ADDRESS(60005, "未设置默认地址，无法下单"),
+    /* 购物车传入非法数据 */
+    CART_DATA_FORMAT_EXCEPTION(70001, "购物车数据异常"),
+    /* 非登录状态下无法对购物车进行操作 */
+    CANNOT_PUT_WHEN_LOGOUT_EXCEPTION(70002, "用户未登录"),
+    /* 无法将商品放入购物车 */
+    CART_ADD_EXCEPTION(70003, "无法添加商品, 商品下架或已在购物车中"),
+    /* 无法从购物车删除商品 */
+    CART_DELETE_EXCEPTION(70004, "删除失败"),
     ;
 
     private final Integer errorCode;

@@ -1,18 +1,13 @@
 package org.study.util;
 
+import com.google.common.collect.Lists;
 import org.springframework.util.CollectionUtils;
-import org.study.service.model.OrderDetailModel;
-import org.study.service.model.OrderModel;
-import org.study.service.model.ProductModel;
-import org.study.service.model.UserModel;
-import org.study.view.OrderDetailVO;
-import org.study.view.OrderVO;
-import org.study.view.ProductVO;
-import org.study.view.UserVO;
+import org.study.data.ProductDO;
+import org.study.data.UserDO;
+import org.study.service.model.*;
+import org.study.view.*;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -103,5 +98,38 @@ public final class ModelToViewUtil {
                 .setProductId(detailModel.getProductId())
                 .setIconUrl(detailModel.getProductIcon())
                 .setDetailId(detailModel.getDetailId()));
+    }
+
+    public static List<CartVO> getCartVOList(final CartModel cartModel) {
+        if (cartModel == null) {
+            return Collections.emptyList();
+        }
+        final Map<Integer, UserDO> sellerInfoMap = cartModel.getSellerInfoMap();
+        final List<CartVO> cartViews = Lists.newArrayList();
+        cartModel.getProductsMap().asMap().forEach((sellerId, cartDetailModels) -> {
+            //卖家id、卖家姓名
+            final CartVO cartVO = new CartVO()
+                    .setSellerId(sellerId)
+                    .setSellerName(sellerInfoMap.getOrDefault(sellerId, new UserDO()).getName());
+
+            //商品转化
+            final List<CartDetailVO> details = cartDetailModels.stream().map(cartDetailModel -> {
+                final ProductDO productDO = cartDetailModel.getProductDO();
+                if (productDO == null) {
+                    return null;
+                }
+                return new CartDetailVO().setProductId(productDO.getId())
+                        .setProductName(productDO.getName())
+                        .setDescription(productDO.getDescription())
+                        .setIconUrl(productDO.getIconUrl())
+                        .setPrice(productDO.getPrice())
+                        .setNum(cartDetailModel.getNumInCart());
+            }).filter(Objects::nonNull).collect(Collectors.toList());
+
+            cartVO.setCartDetails(details);
+            cartViews.add(cartVO);
+        });
+
+        return cartViews;
     }
 }
