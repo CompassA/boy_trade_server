@@ -1,7 +1,14 @@
 package org.study.util;
 
 import org.springframework.util.CollectionUtils;
-import org.study.data.*;
+
+import org.study.data.OrderDetailDO;
+import org.study.data.OrderMasterDO;
+import org.study.data.ProductDO;
+import org.study.data.ProductSaleDO;
+import org.study.data.ProductStockDO;
+import org.study.data.UserDO;
+import org.study.data.UserPasswordDO;
 import org.study.service.model.OrderDetailModel;
 import org.study.service.model.OrderModel;
 import org.study.service.model.ProductModel;
