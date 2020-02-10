@@ -1,5 +1,7 @@
 package org.study.service.model;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +18,10 @@ import java.util.Map;
 @Setter
 @Accessors(chain = true)
 public class CartModel {
+
+    public static final CartModel EMPTY_CART = new CartModel()
+            .setProductsMap(ArrayListMultimap.create())
+            .setSellerInfoMap(Maps.newHashMap());
 
     private Map<Integer, UserDO> sellerInfoMap;
 

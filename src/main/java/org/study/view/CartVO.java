@@ -25,12 +25,15 @@ public class CartVO {
 
     private List<CartDetailVO> cartDetails;
 
+    private List<Integer> selectedIds;
+
     @Override
     public String toString() {
         return "CartVO{" +
                 "sellerName='" + sellerName + '\'' +
                 ", sellerId=" + sellerId +
                 ", cartDetails=" + cartDetails +
+                ", selectedIds=" + selectedIds +
                 '}';
     }
 }

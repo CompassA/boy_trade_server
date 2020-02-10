@@ -113,11 +113,13 @@ public final class ModelToViewUtil {
                     .setSellerName(sellerInfoMap.getOrDefault(sellerId, new UserDO()).getName());
 
             //商品转化
+            final List<Integer> productIds = Lists.newArrayList();
             final List<CartDetailVO> details = cartDetailModels.stream().map(cartDetailModel -> {
                 final ProductDO productDO = cartDetailModel.getProductDO();
                 if (productDO == null) {
                     return null;
                 }
+                productIds.add(productDO.getId());
                 return new CartDetailVO().setProductId(productDO.getId())
                         .setProductName(productDO.getName())
                         .setDescription(productDO.getDescription())
@@ -127,6 +129,7 @@ public final class ModelToViewUtil {
             }).filter(Objects::nonNull).collect(Collectors.toList());
 
             cartVO.setCartDetails(details);
+            cartVO.setSelectedIds(productIds);
             cartViews.add(cartVO);
         });
 

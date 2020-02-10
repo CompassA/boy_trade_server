@@ -58,9 +58,13 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartModel getCartModel(final Integer userId) throws ServerException {
         final String key = MyStringUtil.generateCacheKey(userId, CacheType.CART);
+        final Set<Object> hashKeys = redisTemplate.opsForHash().keys(key);
+        if (hashKeys.isEmpty()) {
+            return CartModel.EMPTY_CART;
+        }
         try {
             //拿到用户购物车所有商品id
-            final List<Integer> productIds = redisTemplate.opsForHash().keys(key).stream()
+            final List<Integer> productIds = hashKeys.stream()
                     .filter(val -> val instanceof String)
                     .map(val -> (String) val)
                     .map(Integer::parseInt)

@@ -118,6 +118,7 @@ public interface EncryptService {
      * MD5加密数据
      * @param data 待加密字符串
      * @return 加密后用BASE64编码的数据
+     * @throws ServerException 加密失败
      */
     String encryptByMd5(final String data) throws ServerException;
 }
