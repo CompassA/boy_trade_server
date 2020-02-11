@@ -16,6 +16,8 @@ import org.study.service.SessionService;
 import org.study.util.ModelToViewUtil;
 import org.study.view.CartDTO;
 
+import java.util.List;
+
 /**
  * @author fanqie
  * @date 2020/2/9
@@ -63,6 +65,19 @@ public class CartController {
             throw new ServerException(ServerExceptionBean.CANNOT_PUT_WHEN_LOGOUT_EXCEPTION);
         }
         return cartService.deleteProduct(cartDTO)
+                ? ServerResponse.create(null)
+                : ServerResponse.fail(ServerExceptionBean.CART_DELETE_EXCEPTION);
+    }
+
+    @DeleteMapping(ApiPath.Cart.DELETE_CART)
+    public ServerResponse deleteCart(
+            @RequestParam("token") final String token,
+            @RequestParam("userId") final Integer userId,
+            @RequestBody final List<Integer> productIds) throws ServerException {
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.CART_DELETE_EXCEPTION);
+        }
+        return cartService.deleteCart(userId, productIds)
                 ? ServerResponse.create(null)
                 : ServerResponse.fail(ServerExceptionBean.CART_DELETE_EXCEPTION);
     }

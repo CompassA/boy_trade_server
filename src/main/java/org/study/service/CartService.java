@@ -4,6 +4,8 @@ import org.study.error.ServerException;
 import org.study.service.model.CartModel;
 import org.study.view.CartDTO;
 
+import java.util.List;
+
 /**
  * @author fanqie
  * @date 2020/2/9
@@ -23,6 +25,14 @@ public interface CartService {
      * @return 操作是否成功 true 成功; false 失败
      */
     Boolean deleteProduct(final CartDTO cartDTO);
+
+    /**
+     * 删除购物车中的所有商品
+     * @param userId 用户id
+     * @param productsId 要删除的商品的id
+     * @return 操作是否成功 true 成功; false 失败
+     */
+    Boolean deleteCart(final Integer userId, final List<Integer> productsId);
 
     /**
      * 得到用户购物车的领域模型

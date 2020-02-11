@@ -50,9 +50,16 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Boolean deleteProduct(final CartDTO cartDTO) {
-        return redisTemplate.opsForHash().delete(
-                MyStringUtil.generateCacheKey(cartDTO.getUserId(), CacheType.CART),
-                cartDTO.getProductId().toString()) == 1;
+        final String key = MyStringUtil.generateCacheKey(cartDTO.getUserId(), CacheType.CART);
+        final String productId = cartDTO.getProductId().toString();
+        return redisTemplate.opsForHash().delete(key, productId) == 1;
+    }
+
+    @Override
+    public Boolean deleteCart(final Integer userId, final List<Integer> productsId) {
+        final String key = MyStringUtil.generateCacheKey(userId, CacheType.CART);
+        final Object[] hashKeys = productsId.stream().map(String::valueOf).toArray(Object[]::new);
+        return redisTemplate.opsForHash().delete(key, hashKeys) > 0;
     }
 
     @Override
