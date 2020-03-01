@@ -111,6 +111,12 @@
       <artifactId>spring-session-data-redis</artifactId>
       <version>2.1.6.RELEASE</version>
     </dependency>
+    <!--RocketMQ-->
+    <dependency>
+      <groupId>org.apache.rocketmq</groupId>
+      <artifactId>rocketmq-client</artifactId>
+      <version>4.3.0</version>
+    </dependency>
   </dependencies>
 
   <build>

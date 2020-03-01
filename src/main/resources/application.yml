@@ -19,6 +19,7 @@ spring:
     host: "101.133.161.59"
     port: 6379
     database: 1
+    password: "safaf234vvFAWd234wer432"
     jedis:
       pool:
         max-active: 50
@@ -45,3 +46,9 @@ file-load-setting:
 logging:
   level:
     org.study.dao: debug
+
+mq:
+  nameserver:
+    addr: "47.103.146.40:9876"
+  topicname: "stock"
+  groupname: "stock_group"

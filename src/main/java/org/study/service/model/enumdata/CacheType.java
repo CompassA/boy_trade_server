@@ -16,6 +16,8 @@ public enum CacheType {
     USER_INFO("user"),
     /* 购物车 */
     CART("cart"),
+    /* 商品库存 */
+    STOCK("stock"),
     ;
 
     private final String prefix;
