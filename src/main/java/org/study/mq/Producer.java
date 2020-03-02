@@ -8,11 +8,11 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.study.config.StockQueueConfig;
+import org.study.config.MQConfig;
+import org.study.mq.enumdata.MessageQueueTag;
 import org.study.mq.message.MessageFactory;
 
 import javax.annotation.PostConstruct;
-import java.nio.charset.StandardCharsets;
 
 /**
  * @author fanqie
@@ -24,29 +24,65 @@ public class Producer {
     private DefaultMQProducer producer;
 
     @Autowired
-    private StockQueueConfig stockQueueConfig;
+    private MQConfig mqConfig;
 
     @PostConstruct
     public void init() throws MQClientException {
         producer = new DefaultMQProducer("producer");
-        producer.setNamesrvAddr(stockQueueConfig.getNameServerAddress());
-        producer.start();
+        producer.setNamesrvAddr(mqConfig.getNameServerAddress());
+        producer.setSendMsgTimeout(mqConfig.getSendTimeout());
         producer.setRetryTimesWhenSendAsyncFailed(0);
+        producer.start();
     }
 
-    public boolean asyncDecreaseStock(final Integer productId, final Integer amount)
-            throws JsonProcessingException {
-        final String stockMsg = MessageFactory.createStockMsg(productId, amount);
-        final Message message = new Message(stockQueueConfig.getNameServerAddress(), "*",
-                stockMsg.getBytes(StandardCharsets.UTF_8));
+    public boolean asyncDecreaseStock(final Integer productId, final Integer amount) {
         try {
+            final Message message = MessageFactory
+                    .createStockMsg(mqConfig, productId, amount, MessageQueueTag.STOCK_DECREASE);
             producer.send(message);
-        } catch (MQClientException | RemotingException |
-                MQBrokerException | InterruptedException e) {
+        } catch (MQClientException | RemotingException | MQBrokerException | InterruptedException | JsonProcessingException e) {
             e.printStackTrace();
             return false;
         }
         return true;
     }
 
+    public boolean asyncIncreaseStock(final Integer productId, final Integer amount) {
+        try {
+            final Message message = MessageFactory
+                    .createStockMsg(mqConfig, productId, amount, MessageQueueTag.STOCK_INCREASE);
+            producer.send(message);
+        }  catch (MQClientException | RemotingException | MQBrokerException |
+                InterruptedException | JsonProcessingException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean asyncIncreaseSale(final Integer productId, final Integer amount) {
+        try {
+            final Message message = MessageFactory
+                    .createSalesMsg(mqConfig, productId, amount, MessageQueueTag.SALES_INCREASE);
+            producer.send(message);
+        } catch (MQClientException | RemotingException | MQBrokerException |
+                InterruptedException | JsonProcessingException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean asyncDecreaseSale(final Integer productId, final Integer amount) {
+        try {
+            final Message message = MessageFactory
+                    .createSalesMsg(mqConfig, productId, amount, MessageQueueTag.SALES_DECREASE);
+            producer.send(message);
+        } catch (MQClientException | RemotingException | MQBrokerException |
+                InterruptedException | JsonProcessingException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }

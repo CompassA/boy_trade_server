@@ -56,4 +56,27 @@ public interface RedisService {
      * @param key 要删除的键
      */
     void deleteCache(final String key);
+
+    /**
+     * 存储字符串数据, 不设置过期时间
+     * @param key 键
+     * @param value 值
+     */
+    void saveWithoutExpire(final String key, final Integer value);
+
+    /**
+     * key的值增加value
+     * @param key 键
+     * @param value 要增加的值
+     * @return 执行完运算后key的值
+     */
+    Long increaseKey(final String key, final Integer value);
+
+    /**
+     * key的值减少value
+     * @param key 键
+     * @param value 要减少的值
+     * @return 执行完运算后key的值
+     */
+    Long decreaseKey(final String key, final Integer value);
 }

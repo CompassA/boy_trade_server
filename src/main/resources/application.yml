@@ -48,7 +48,11 @@ logging:
     org.study.dao: debug
 
 mq:
-  nameserver:
+  name-server:
     addr: "47.103.146.40:9876"
-  topicname: "stock"
-  groupname: "stock_group"
+  topic-name: "stock"
+  decr-stock-group-name: "decr_stock_group"
+  incr-stock-group-name: "incr_stock_group"
+  decr-sales-group-name: "decr_sales_group"
+  incr-sales-group-name: "incr_sales_group"
+  send-timeout: 10000

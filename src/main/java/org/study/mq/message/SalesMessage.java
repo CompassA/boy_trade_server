@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 
 /**
  * @author fanqie
- * @date 2020/3/1
+ * @date 2020/3/2
  */
 @Getter
 @Setter
@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class StockMessage {
+public class SalesMessage {
 
     private Integer productId;
 

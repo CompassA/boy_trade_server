@@ -84,4 +84,19 @@ public class RedisServiceImpl implements RedisService {
     public void deleteCache(final String key) {
         redisTemplate.delete(key);
     }
+
+    @Override
+    public void saveWithoutExpire(final String key, final Integer value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    @Override
+    public Long increaseKey(final String key, final Integer value) {
+        return redisTemplate.opsForValue().increment(key, value);
+    }
+
+    @Override
+    public Long decreaseKey(final String key, final Integer value) {
+        return redisTemplate.opsForValue().decrement(key, value);
+    }
 }
