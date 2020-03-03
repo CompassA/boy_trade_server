@@ -37,6 +37,8 @@ public enum ServerExceptionBean implements SystemException {
     ORDER_FAIL_BY_AMOUNT_EXCEPTION(50000, "商品数量不正确"),
     /* 后端异常导致下单失败 */
     ORDER_FAIL_BY_SYSTEM_EXCEPTION(50001, "系统内部异常"),
+    /* 数据库异常导致生成的订单插入失败 */
+    ORDER_FAIL_BY_INSERT_EXCEPTION(50002, "订单插入失败"),
     /* select结果为空 */
     ORDER_NOT_EXIST_EXCEPTION(50002, "订单不存在"),
     /* 修改订单状态出现异常或update语句影响的行数为0 */

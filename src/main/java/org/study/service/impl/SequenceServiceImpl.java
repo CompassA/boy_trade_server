@@ -9,7 +9,10 @@ import org.study.data.SequenceInfoDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.service.SequenceService;
+import org.study.util.MyStringUtil;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -23,8 +26,21 @@ public class SequenceServiceImpl implements SequenceService {
     private SequenceInfoMapper sequenceInfoMapper;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String generateNewSequence(Integer userId) throws ServerException {
+        return generateNewSequence(SequenceService.DEFAULT_SEQUENCE_ID, userId);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRES_NEW)
-    public String generateNewSequence(final Integer sequenceId) throws ServerException {
+    public String generateNewSequence(final Integer sequenceId, final Integer userId)
+            throws ServerException {
+        final StringBuilder seqRes = new StringBuilder(16);
+
+        //8位日期编号
+        seqRes.append(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE).replace("-", ""));
+
+        //6位订单编号
         final SequenceInfoDO sequenceInfoDO = sequenceInfoMapper.selectSequenceInfo(sequenceId);
         if (Objects.isNull(sequenceInfoDO)) {
             throw new ServerException(ServerExceptionBean.SEQUENCE_EXCEPTION);
@@ -34,7 +50,12 @@ public class SequenceServiceImpl implements SequenceService {
             newValue = sequenceInfoDO.getMinValue();
         }
         sequenceInfoMapper.updateCurrentValue(sequenceId, newValue);
-        return String.format("%06d", newValue);
+        seqRes.append(String.format("%06d", newValue));
+
+        //2位用户分库分表号
+        seqRes.append(MyStringUtil.userIdMod(userId));
+
+        return seqRes.toString();
     }
 
     @Override

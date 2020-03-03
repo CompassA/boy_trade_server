@@ -27,8 +27,6 @@ import org.study.util.TimeUtil;
 import org.study.view.UserVO;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,37 +82,43 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //落单减库存并计算订单总金额
+        final Map<Integer, Integer> decreasedRecords = Maps.newHashMap();
         BigDecimal orderAmount = new BigDecimal(0);
         for (final ProductModel model : models) {
             final Integer productId = model.getProductId();
             final Integer productAmount = amountMap.get(productId);
             if (!productService.decreaseStockIncreaseSales(productId, productAmount)) {
+                rollBackRedis(decreasedRecords);
                 throw new ServerException(ServerExceptionBean.PRODUCT_STOCK_NOT_ENOUGH_EXCEPTION);
             }
+            decreasedRecords.put(productId, productAmount);
             orderAmount = orderAmount.add(
                     productService.getProductPrice(model).multiply(new BigDecimal(productAmount)));
         }
 
         //生成订单编号
-        final String orderId = LocalDateTime.now()
-                .format(DateTimeFormatter.ISO_DATE).replace("-", "")
-                + sequenceService.generateNewSequence(SequenceService.DEFAULT_SEQUENCE_ID)
-                + this.userIdMod(orderModel.getUserId());
+        final String orderId = sequenceService.generateNewSequence(orderModel.getUserId());
 
         //订单入库
         orderModel.setOrderId(orderId).setOrderAmount(orderAmount)
                 .setPayStatus(OrderStatus.CREATED.getValue())
                 .setOrderStatus(OrderStatus.CREATED.getValue())
                 .setCreateTime(TimeUtil.getCurrentTimestamp());
-        final int masterInsertedNum = ModelToDataUtil.getOrderMaster(orderModel)
-                .map(orderMasterMapper::insertOrderMaster)
-                .orElse(0);
-        final int detailInsertedNum = ModelToDataUtil
-                .getOrderDetails(orderModel.getProductDetails(), orderId)
-                .map(orderDetailMapper::insertOrderDetails)
-                .orElse(0);
-        if (masterInsertedNum != 1 || detailInsertedNum != amountMap.size()) {
-            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+        final int masterInsertedNum, detailInsertedNum;
+        try {
+            masterInsertedNum = ModelToDataUtil.getOrderMaster(orderModel)
+                    .map(orderMasterMapper::insertOrderMaster)
+                    .orElse(0);
+            detailInsertedNum = ModelToDataUtil
+                    .getOrderDetails(orderModel.getProductDetails(), orderId)
+                    .map(orderDetailMapper::insertOrderDetails)
+                    .orElse(0);
+            if (masterInsertedNum != 1 || detailInsertedNum != amountMap.size()) {
+                throw new Exception();
+            }
+        } catch (final Exception e) {
+            rollBackRedis(decreasedRecords);
+            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_INSERT_EXCEPTION);
         }
 
         //事务完成, 返回订单中间消息
@@ -197,13 +201,13 @@ public class OrderServiceImpl implements OrderService {
                 orderId, orderStatus.getValue(), payStatus.getValue()) > 0;
     }
 
-    /**;
-     * 根据用户编号生成分库分表位
-     * @param userId 用户编号
-     * @return 高16位低16位相异或并模100
+    /**
+     * 回滚redis操作, 勿在类外使用, 仅因为Transactional方法必须为public而声明为public
+     * @param decreasedRecord 已经修改过库存的商品
      */
-    private String userIdMod(final Integer userId) {
-        return String.format("%02d", ((userId) ^ (userId >>> 16)) % 100);
+    @Transactional(rollbackFor = Exception.class)
+    public void rollBackRedis(final Map<Integer, Integer> decreasedRecord) {
+        decreasedRecord.forEach((k, v) -> productService.increaseStockDecreaseSales(k, v));
     }
 
     private List<OrderModel> convertCore(final List<OrderMasterDO> orderMasters)

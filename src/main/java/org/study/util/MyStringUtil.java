@@ -53,4 +53,13 @@ public final class MyStringUtil {
     public static String generatePermanentKey(final Integer id, final PermanentValueType type) {
         return String.format("p:%s:%d", type.getPrefix(), id);
     }
+
+    /**
+     * 根据用户编号生成分库分表位
+     * @param userId 用户编号
+     * @return 高16位低16位相异或并模100
+     */
+    public static String userIdMod(final Integer userId) {
+        return String.format("%02d", ((userId) ^ (userId >>> 16)) % 100);
+    }
 }
