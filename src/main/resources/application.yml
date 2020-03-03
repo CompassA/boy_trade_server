@@ -55,4 +55,5 @@ mq:
   incr-stock-group-name: "incr_stock_group"
   decr-sales-group-name: "decr_sales_group"
   incr-sales-group-name: "incr_sales_group"
+  decr-stock-incr-sales-group-name: "decr_stock_incr_sales_group"
   send-timeout: 10000

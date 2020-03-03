@@ -18,6 +18,8 @@ public enum MessageQueueTag {
     SALES_DECREASE("sales_decrease"),
     /** 增加销量 */
     SALES_INCREASE("sales_increase"),
+    /** 减少销量 增加库存 */
+    STOCK_DECREASE_SALES_INCREASE("stock_decrease_sales_increase"),
     ;
 
     private String value;

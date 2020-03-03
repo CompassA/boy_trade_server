@@ -18,8 +18,9 @@ import org.study.service.SequenceService;
 import org.study.service.UserService;
 import org.study.service.model.OrderDetailModel;
 import org.study.service.model.OrderModel;
-import org.study.service.model.enumdata.OrderStatus;
+import org.study.service.model.OrderMsgModel;
 import org.study.service.model.ProductModel;
+import org.study.service.model.enumdata.OrderStatus;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
 import org.study.util.TimeUtil;
@@ -57,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OrderModel createOrder(final OrderModel orderModel) throws ServerException {
+    public OrderMsgModel createOrder(final OrderModel orderModel) throws ServerException {
         //校验用户存在性
         final Optional<UserVO> userVO = userService.queryByPrimaryKey(orderModel.getUserId());
         if (!userVO.isPresent()) {
@@ -65,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
         }
         //从数据库查询商品信息进行校验
         final List<ProductModel> models = Lists.newArrayList();
-        final Map<Integer, OrderDetailModel> productDetails = Maps.newHashMap();
+        final Map<Integer, Integer> amountMap = Maps.newHashMap();
         for (final OrderDetailModel productDetail : orderModel.getProductDetails()) {
             final Integer productId = productDetail.getProductId();
             //未查询到商品会抛异常
@@ -79,17 +80,15 @@ public class OrderServiceImpl implements OrderService {
                 throw new ServerException(ServerExceptionBean.PRODUCT_OWNER_EXCEPTION);
             }
             models.add(productModel);
-            productDetails.put(productModel.getProductId(), productDetail);
+            amountMap.put(productModel.getProductId(), productDetail.getProductAmount());
         }
 
         //落单减库存并计算订单总金额
         BigDecimal orderAmount = new BigDecimal(0);
         for (final ProductModel model : models) {
             final Integer productId = model.getProductId();
-            final OrderDetailModel productDetail = productDetails.get(productId);
-            final Integer productAmount = productDetail.getProductAmount();
-            if (!productService.decreaseStock(productId, productAmount) ||
-                    !productService.increaseSales(productId, productAmount)) {
+            final Integer productAmount = amountMap.get(productId);
+            if (!productService.decreaseStockIncreaseSales(productId, productAmount)) {
                 throw new ServerException(ServerExceptionBean.PRODUCT_STOCK_NOT_ENOUGH_EXCEPTION);
             }
             orderAmount = orderAmount.add(
@@ -103,17 +102,23 @@ public class OrderServiceImpl implements OrderService {
                 + this.userIdMod(orderModel.getUserId());
 
         //订单入库
-        orderModel.setOrderId(orderId)
-                .setOrderAmount(orderAmount)
+        orderModel.setOrderId(orderId).setOrderAmount(orderAmount)
                 .setPayStatus(OrderStatus.CREATED.getValue())
                 .setOrderStatus(OrderStatus.CREATED.getValue())
                 .setCreateTime(TimeUtil.getCurrentTimestamp());
-        ModelToDataUtil.getOrderMaster(orderModel).ifPresent(orderMasterMapper::insertOrderMaster);
-        ModelToDataUtil.getOrderDetails(orderModel.getProductDetails(), orderId)
-                .ifPresent(orderDetailMapper::insertOrderDetails);
+        final int masterInsertedNum = ModelToDataUtil.getOrderMaster(orderModel)
+                .map(orderMasterMapper::insertOrderMaster)
+                .orElse(0);
+        final int detailInsertedNum = ModelToDataUtil
+                .getOrderDetails(orderModel.getProductDetails(), orderId)
+                .map(orderDetailMapper::insertOrderDetails)
+                .orElse(0);
+        if (masterInsertedNum != 1 || detailInsertedNum != amountMap.size()) {
+            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+        }
 
-        //返回前端
-        return orderModel;
+        //事务完成, 返回订单中间消息
+        return OrderMsgModel.builder().amountMap(amountMap).orderModel(orderModel).build();
     }
 
     @Override

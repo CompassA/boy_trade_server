@@ -2,6 +2,7 @@ package org.study.service;
 
 import org.study.error.ServerException;
 import org.study.service.model.OrderModel;
+import org.study.service.model.OrderMsgModel;
 import org.study.service.model.enumdata.OrderStatus;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface OrderService {
      * @return 下单完成后的数据
      * @throws ServerException 下单失败
      */
-    OrderModel createOrder(final OrderModel orderModel) throws ServerException;
+    OrderMsgModel createOrder(final OrderModel orderModel) throws ServerException;
 
     /**
      * 根据用户Id查询用户持有的订单

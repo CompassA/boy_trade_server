@@ -199,6 +199,48 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public boolean decreaseStockIncreaseSales(final Integer productId, final Integer amount) {
+        //减redis库存
+        final String stockKey = MyStringUtil
+                .generatePermanentKey(productId, PermanentValueType.STOCK);
+        final Long resNum = redisService.decreaseKey(stockKey, amount);
+
+        //扣减合法性判断
+        if (resNum == null || resNum < 0) {
+            redisService.increaseKey(stockKey, amount);
+            return false;
+        }
+
+        //增销量
+        final String salesKey = MyStringUtil
+                .generatePermanentKey(productId, PermanentValueType.SALES);
+        redisService.increaseKey(salesKey, amount);
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean increaseStockDecreaseSales(final Integer productId, final Integer amount) {
+        //减销量
+        final String salesKey = MyStringUtil
+                .generatePermanentKey(productId, PermanentValueType.SALES);
+        final Long resNum = redisService.decreaseKey(salesKey, amount);
+
+        //扣减合法性
+        if (resNum == null || resNum < 0) {
+            redisService.increaseKey(salesKey, amount);
+            return false;
+        }
+
+        //增库存
+        final String stockKey = MyStringUtil
+                .generatePermanentKey(productId, PermanentValueType.STOCK);
+        redisService.increaseKey(stockKey, amount);
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean decreaseSales(final Integer productId, final Integer amount) {
         //减redis销量
         final String key = MyStringUtil.generatePermanentKey(productId, PermanentValueType.SALES);

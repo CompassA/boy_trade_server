@@ -11,6 +11,7 @@ import org.study.controller.response.ServerRequest;
 import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
+import org.study.mq.Producer;
 import org.study.service.EncryptService;
 import org.study.service.OrderService;
 import org.study.service.SessionService;
@@ -21,9 +22,7 @@ import org.study.util.ViewToModelUtil;
 import org.study.view.OrderDTO;
 import org.study.view.OrderVO;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author fanqie
@@ -41,6 +40,9 @@ public class OrderController {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private Producer producer;
 
     @PostMapping(value = ApiPath.Order.CREATE)
     public ServerResponse createOrder(
@@ -60,7 +62,7 @@ public class OrderController {
         }
 
         //创建订单并返回前端订单状态
-        final OrderModel result = orderService.createOrder(orderModel.get());
+        final OrderModel result = producer.createOrder(orderModel.get());
         return ModelToViewUtil.getOrderVO(result)
                 .map(ServerResponse::create)
                 .orElse(ServerResponse.fail(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION));
@@ -81,8 +83,8 @@ public class OrderController {
         if (!sessionService.isLogin(token, sellerId)) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
-        return ServerResponse.create(
-                this.convertCore(orderService.selectCreatedOrderWithSeller(sellerId)));
+        return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
+                orderService.selectCreatedOrderWithSeller(sellerId)));
     }
 
     @GetMapping(value = ApiPath.Order.PAID_ORDER_WITH_SELLER)
@@ -92,8 +94,8 @@ public class OrderController {
         if (!sessionService.isLogin(token, sellerId)) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
-        return ServerResponse.create(
-                this.convertCore(orderService.selectPaidOrderWithSeller(sellerId)));
+        return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
+                orderService.selectPaidOrderWithSeller(sellerId)));
     }
 
     @GetMapping(value = ApiPath.Order.SENT_ORDER_WITH_SELLER)
@@ -103,8 +105,8 @@ public class OrderController {
         if (!sessionService.isLogin(token, sellerId)) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
-        return ServerResponse.create(
-                this.convertCore(orderService.selectSentOrderWithSeller(sellerId)));
+        return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
+                orderService.selectSentOrderWithSeller(sellerId)));
     }
 
     @GetMapping(value = ApiPath.Order.FINISHED_ORDER_WITH_SELLER)
@@ -114,8 +116,8 @@ public class OrderController {
         if (!sessionService.isLogin(token, sellerId)) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
-        return ServerResponse.create(
-                this.convertCore(orderService.selectFinishedOrderWithSeller(sellerId)));
+        return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
+                orderService.selectFinishedOrderWithSeller(sellerId)));
     }
 
     @GetMapping(value = ApiPath.Order.CREATED_ORDER_WITH_BUYER)
@@ -125,7 +127,7 @@ public class OrderController {
         if (!sessionService.isLogin(token, userId)) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
-        return ServerResponse.create(this.convertCore(
+        return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.CREATED, OrderStatus.CREATED)));
     }
 
@@ -136,7 +138,7 @@ public class OrderController {
         if (!sessionService.isLogin(token, userId)) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
-        return ServerResponse.create(this.convertCore(
+        return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.PAID, OrderStatus.PAID)));
     }
 
@@ -147,7 +149,7 @@ public class OrderController {
         if (!sessionService.isLogin(token, userId)) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
-        return ServerResponse.create(this.convertCore(
+        return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.SENT, OrderStatus.PAID)));
     }
 
@@ -158,7 +160,7 @@ public class OrderController {
         if (!sessionService.isLogin(token, userId)) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
-        return ServerResponse.create(this.convertCore(
+        return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.FINISHED, OrderStatus.PAID)));
     }
 
@@ -219,13 +221,5 @@ public class OrderController {
                 orderVO.getOrderId(), OrderStatus.PAID, OrderStatus.PAID)
                 ? ServerResponse.create(null)
                 : ServerResponse.fail(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
-    }
-
-    private List<OrderVO> convertCore(final List<OrderModel> models) {
-        return models.stream()
-                .map(ModelToViewUtil::getOrderVO)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
     }
 }

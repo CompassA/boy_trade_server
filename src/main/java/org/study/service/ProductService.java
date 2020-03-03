@@ -78,6 +78,22 @@ public interface ProductService {
     boolean increaseSales(final Integer productId, final Integer amount);
 
     /**
+     * 减库存增销量(仅redis)
+     * @param productId 商品id
+     * @param amount 数量
+     * @return 操作是否成功 true 成功； false 失败；
+     */
+    boolean decreaseStockIncreaseSales(final Integer productId, final Integer amount);
+
+    /**
+     * 增库存减销量(仅redis)
+     * @param productId 商品id
+     * @param amount 数量
+     * @return 操作是否成功 true 成功； false 失败；
+     */
+    boolean increaseStockDecreaseSales(final Integer productId, final Integer amount);
+
+    /**
      * 计算商品价格
      * @param productModel 商品领域模型
      * @return 商品当前的实际价格

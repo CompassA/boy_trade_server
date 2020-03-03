@@ -148,4 +148,12 @@ public final class ModelToViewUtil {
 
         return cartViews;
     }
+
+    public static List<OrderVO> orderModelsToViews(final List<OrderModel> models) {
+        return models.stream()
+                .map(ModelToViewUtil::getOrderVO)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
 }

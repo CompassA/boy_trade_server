@@ -32,6 +32,9 @@ public class MQConfig {
     @Value("${mq.decr-stock-group-name}")
     private String decrStockGroup;
 
+    @Value("${mq.decr-stock-incr-sales-group-name}")
+    private String decrStockIncrSalesGroup;
+
     @Value("${mq.send-timeout}")
     private Integer sendTimeout;
 }
