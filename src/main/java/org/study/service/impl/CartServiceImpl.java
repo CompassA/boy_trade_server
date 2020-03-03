@@ -4,17 +4,17 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.study.data.UserDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.service.CartService;
 import org.study.service.ProductService;
+import org.study.service.RedisService;
 import org.study.service.UserService;
 import org.study.service.model.CartDetailModel;
 import org.study.service.model.CartModel;
-import org.study.service.model.enumdata.CacheType;
+import org.study.service.model.enumdata.PermanentValueType;
 import org.study.util.MyStringUtil;
 import org.study.view.CartDTO;
 
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class CartServiceImpl implements CartService {
 
     @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
+    private RedisService redisService;
 
     @Autowired
     private ProductService productService;
@@ -42,30 +42,31 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Boolean addProduct(final CartDTO cartDTO) {
-        return redisTemplate.opsForHash().putIfAbsent(
-                MyStringUtil.generateCacheKey(cartDTO.getUserId(), CacheType.CART),
+        return redisService.putHashKey(
+                MyStringUtil.generatePermanentKey(cartDTO.getUserId(), PermanentValueType.CART),
                 cartDTO.getProductId().toString(),
-                cartDTO.getNum());
+                cartDTO.getNum().toString());
     }
 
     @Override
     public Boolean deleteProduct(final CartDTO cartDTO) {
-        final String key = MyStringUtil.generateCacheKey(cartDTO.getUserId(), CacheType.CART);
+        final String key = MyStringUtil
+                .generatePermanentKey(cartDTO.getUserId(), PermanentValueType.CART);
         final String productId = cartDTO.getProductId().toString();
-        return redisTemplate.opsForHash().delete(key, productId) == 1;
+        return redisService.deleteHashKey(key, productId);
     }
 
     @Override
     public Boolean deleteCart(final Integer userId, final List<Integer> productsId) {
-        final String key = MyStringUtil.generateCacheKey(userId, CacheType.CART);
+        final String key = MyStringUtil.generatePermanentKey(userId, PermanentValueType.CART);
         final Object[] hashKeys = productsId.stream().map(String::valueOf).toArray(Object[]::new);
-        return redisTemplate.opsForHash().delete(key, hashKeys) > 0;
+        return redisService.deleteHashKey(key, hashKeys);
     }
 
     @Override
     public CartModel getCartModel(final Integer userId) throws ServerException {
-        final String key = MyStringUtil.generateCacheKey(userId, CacheType.CART);
-        final Set<Object> hashKeys = redisTemplate.opsForHash().keys(key);
+        final String key = MyStringUtil.generatePermanentKey(userId, PermanentValueType.CART);
+        final Set<Object> hashKeys = redisService.getHashKeys(key);
         if (hashKeys.isEmpty()) {
             return CartModel.EMPTY_CART;
         }
@@ -83,7 +84,8 @@ public class CartServiceImpl implements CartService {
             productService.getProductInfoByIds(productIds).forEach(productDO -> {
                 final Integer sellerId = productDO.getUserId();
                 final String productId = productDO.getId().toString();
-                final Integer numInCart = (Integer) redisTemplate.opsForHash().get(key, productId);
+                final Integer numInCart = Integer.parseInt(
+                        (String) redisService.getHashKeyValue(key, productId));
                 final CartDetailModel cartDetailModel = new CartDetailModel()
                         .setNumInCart(numInCart)
                         .setProductDO(productDO);
@@ -100,7 +102,7 @@ public class CartServiceImpl implements CartService {
                     .setSellerInfoMap(sellerInfoMap)
                     .setProductsMap(productMap);
         } catch (final NumberFormatException | ClassCastException e) {
-            redisTemplate.opsForHash().delete(key);
+            redisService.deleteKey(key);
             throw new ServerException(ServerExceptionBean.CART_DATA_FORMAT_EXCEPTION);
         }
     }

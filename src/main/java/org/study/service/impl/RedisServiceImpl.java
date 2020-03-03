@@ -9,6 +9,7 @@ import org.study.service.RedisService;
 
 import javax.annotation.PostConstruct;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -81,7 +82,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void deleteCache(final String key) {
+    public void deleteKey(final String key) {
         redisTemplate.delete(key);
     }
 
@@ -98,5 +99,25 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public Long decreaseKey(final String key, final Integer value) {
         return redisTemplate.opsForValue().decrement(key, value);
+    }
+
+    @Override
+    public Boolean putHashKey(final String key, final String hashKey, final String val) {
+        return redisTemplate.opsForHash().putIfAbsent(key, hashKey, val);
+    }
+
+    @Override
+    public Boolean deleteHashKey(final String key, final Object...hashKeys) {
+        return redisTemplate.opsForHash().delete(key, hashKeys) > 0;
+    }
+
+    @Override
+    public Set<Object> getHashKeys(final String key) {
+        return redisTemplate.opsForHash().keys(key);
+    }
+
+    @Override
+    public Object getHashKeyValue(final String key, final String hashKey) {
+        return redisTemplate.opsForHash().get(key, hashKey);
     }
 }

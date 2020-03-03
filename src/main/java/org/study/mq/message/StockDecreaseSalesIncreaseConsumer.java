@@ -60,7 +60,7 @@ public class StockDecreaseSalesIncreaseConsumer {
                             stockMapper.decreaseStock(k, v);
                             saleMapper.increaseSales(k, v);
                             final String key = MyStringUtil.generateCacheKey(k, CacheType.PRODUCT);
-                            redisService.deleteCache(key);
+                            redisService.deleteKey(key);
                         });
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }

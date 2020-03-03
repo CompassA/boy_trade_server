@@ -14,8 +14,6 @@ public enum CacheType {
     PRODUCT_VALIDATION("product_validation"),
     /* 用户信息缓存 */
     USER_INFO("user"),
-    /* 购物车 */
-    CART("cart"),
     ;
 
     private final String prefix;

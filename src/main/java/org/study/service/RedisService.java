@@ -1,6 +1,7 @@
 package org.study.service;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -55,7 +56,7 @@ public interface RedisService {
      * 删除缓存
      * @param key 要删除的键
      */
-    void deleteCache(final String key);
+    void deleteKey(final String key);
 
     /**
      * 存储字符串数据, 不设置过期时间
@@ -79,4 +80,36 @@ public interface RedisService {
      * @return 执行完运算后key的值
      */
     Long decreaseKey(final String key, final Integer value);
+
+    /**
+     * 插入hash的一个key数据, 若hashKey已经存在则插入失败
+     * @param key redis键值
+     * @param hashKey hash键值
+     * @param val 要插入的值
+     * @return 操作是否成功
+     */
+    Boolean putHashKey(final String key, final String hashKey, final String val);
+
+    /**
+     * 删除hash中的key
+     * @param key redis键
+     * @param hashKeys hash键
+     * @return 删除是否成功
+     */
+    Boolean deleteHashKey(final String key, final Object...hashKeys);
+
+    /**
+     * 得到hash的所有key
+     * @param key redis键
+     * @return hash所有键的集合
+     */
+    Set<Object> getHashKeys(final String key);
+
+    /**
+     * 得到hash对应键的值
+     * @param key redis键
+     * @param hashKey hash键
+     * @return 值
+     */
+    Object getHashKeyValue(final String key, final String hashKey);
 }

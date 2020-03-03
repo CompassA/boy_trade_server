@@ -156,7 +156,7 @@ public class ProductServiceImpl implements ProductService {
         //发消息，减mysql库存
         final boolean decreased = producer.asyncDecreaseStock(productId, amount);
         if (decreased) {
-            redisService.deleteCache(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+            redisService.deleteKey(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
         } else {
             redisService.increaseKey(key, amount);
         }
@@ -173,7 +173,7 @@ public class ProductServiceImpl implements ProductService {
         //发消息加mysql库存
         final boolean increased = producer.asyncIncreaseStock(productId, amount);
         if (increased) {
-            redisService.deleteCache(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+            redisService.deleteKey(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
         } else {
             redisService.decreaseKey(key, amount);
         }
@@ -190,7 +190,7 @@ public class ProductServiceImpl implements ProductService {
         //发消息增加mysql销量, 发送消息失败则回滚数据
         final boolean increased = producer.asyncIncreaseSale(productId, amount);
         if (increased) {
-            redisService.deleteCache(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+            redisService.deleteKey(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
         } else {
             redisService.decreaseKey(key, amount);
         }
@@ -255,7 +255,7 @@ public class ProductServiceImpl implements ProductService {
         //发消息加库存, 发送消息失败回滚数据
         final boolean decreased = producer.asyncDecreaseSale(productId, amount);
         if (decreased) {
-            redisService.deleteCache(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+            redisService.deleteKey(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
         } else {
             redisService.increaseKey(key, amount);
         }

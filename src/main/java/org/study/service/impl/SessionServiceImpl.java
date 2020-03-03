@@ -42,6 +42,6 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public void logout(final String token) {
-        service.deleteCache(token);
+        service.deleteKey(token);
     }
 }

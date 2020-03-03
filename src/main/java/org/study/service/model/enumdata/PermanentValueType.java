@@ -14,6 +14,8 @@ public enum PermanentValueType {
     STOCK("stock"),
     /* 商品销量 */
     SALES("sales"),
+    /* 购物车数据 */
+    CART("cart"),
     ;
 
     private final String prefix;
