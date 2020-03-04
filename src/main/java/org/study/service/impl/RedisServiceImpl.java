@@ -48,6 +48,9 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public <T> Optional<T> getCache(final String key, final Class<T> type) {
+        if (key == null || type == null) {
+            return Optional.empty();
+        }
         try {
             //先获取本地内存
             Object value = localCache.getIfPresent(key);

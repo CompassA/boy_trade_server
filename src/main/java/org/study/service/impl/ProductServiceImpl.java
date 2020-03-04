@@ -141,6 +141,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductModel> selectByUserId(final int userId) throws ServerException {
+        final ProductDO condition = new ProductDO().setUserId(userId);
+        return query(condition);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean decreaseStock(final Integer productId, final Integer amount) {
         //减redis库存
@@ -269,6 +275,16 @@ public class ProductServiceImpl implements ProductService {
         return query(new ProductDO());
     }
 
+    @Override
+    public BigDecimal getProductPrice(final ProductModel productModel) {
+        return productModel.getPrice();
+    }
+
+    @Override
+    public List<ProductDO> getProductInfoByIds(final List<Integer> productIds) {
+        return productMapper.selectInKeyList(productIds);
+    }
+
     private List<ProductModel> query(final ProductDO condition) throws ServerException {
         final List<ProductDO> products = productMapper.selectProduct(condition);
         if (CollectionUtils.isEmpty(products)) {
@@ -291,15 +307,5 @@ public class ProductServiceImpl implements ProductService {
         }
 
         throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
-    }
-
-    @Override
-    public BigDecimal getProductPrice(final ProductModel productModel) {
-        return productModel.getPrice();
-    }
-
-    @Override
-    public List<ProductDO> getProductInfoByIds(final List<Integer> productIds) {
-        return productMapper.selectInKeyList(productIds);
     }
 }

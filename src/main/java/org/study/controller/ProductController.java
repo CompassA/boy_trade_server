@@ -70,6 +70,17 @@ public class ProductController {
                 ModelToViewUtil.getProductViews(productService.getAllProduct()));
     }
 
+    @GetMapping(value = ApiPath.Product.USER_PRODUCTS)
+    public ServerResponse getProductByUserId(
+            @RequestParam("userId") final Integer userId,
+            @RequestParam("token") final String token) throws ServerException {
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
+        return ServerResponse.create(
+                ModelToViewUtil.getProductViews(productService.selectByUserId(userId)));
+    }
+
     @GetMapping(value = ApiPath.Product.DETAIL)
     public ServerResponse getProductInfo(@RequestParam("productId") final Integer productId)
             throws ServerException {

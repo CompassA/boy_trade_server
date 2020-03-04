@@ -38,6 +38,14 @@ public interface ProductService {
     ProductModel selectWithoutStockAndSales(final int productId) throws ServerException;
 
     /**
+     * 查询用户发布的商品
+     * @param userId 用户id
+     * @return 用户发布的所有商品
+     * @throws ServerException 查询失败
+     */
+    List<ProductModel> selectByUserId(final int userId) throws ServerException;
+
+    /**
      * 仅测试用
      * @return 所有的商品
      * @throws ServerException 查询失败

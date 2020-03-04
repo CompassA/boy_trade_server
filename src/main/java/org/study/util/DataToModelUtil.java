@@ -73,20 +73,10 @@ public final class DataToModelUtil {
                 .setUpdateTime(product.getUpdateTime()));
     }
 
-    public static Optional<List<ProductModel>> getProductModels(final List<ProductDO> products,
-            final List<ProductStockDO> stocks, final List<ProductSaleDO> sales) {
-        if (CollectionUtils.isEmpty(products) || CollectionUtils.isEmpty(stocks)
-                || CollectionUtils.isEmpty(sales)) {
-            return Optional.empty();
-        }
-
-        //查询商品销量, 库存
-        final Map<Integer, ProductStockDO> stockMap = stocks.stream().collect(Collectors.toMap(
-                        ProductStockDO::getProductId, item -> item, (oldVal, newVal) -> newVal));
-        final Map<Integer, ProductSaleDO> saleMap = sales.stream().collect(Collectors.toMap(
-                        ProductSaleDO::getProductId, item -> item, (oldVal, newVal) -> newVal));
-
-        //组装成商品领域模型
+    public static Optional<List<ProductModel>> getProductModels(
+            final List<ProductDO> products,
+            final Map<Integer, ProductStockDO> stockMap,
+            final Map<Integer, ProductSaleDO> saleMap) {
         final List<ProductModel> models = products.stream()
                 .map(product -> DataToModelUtil.getProductModel(
                         product, stockMap.get(product.getId()), saleMap.get(product.getId())))
@@ -97,6 +87,21 @@ public final class DataToModelUtil {
             return Optional.empty();
         }
         return Optional.of(models);
+    }
+
+    public static Optional<List<ProductModel>> getProductModels(final List<ProductDO> products,
+            final List<ProductStockDO> stocks, final List<ProductSaleDO> sales) {
+        if (CollectionUtils.isEmpty(products) || CollectionUtils.isEmpty(stocks)
+                || CollectionUtils.isEmpty(sales)) {
+            return Optional.empty();
+        }
+
+        //查询商品销量, 库存
+        final Map<Integer, ProductStockDO> stockMap = DataToModelUtil.getStockMap(stocks);
+        final Map<Integer, ProductSaleDO> saleMap = DataToModelUtil.getSaleMap(sales);
+
+        //组装成商品领域模型
+        return DataToModelUtil.getProductModels(products, stockMap, saleMap);
     }
 
     public static Optional<OrderModel> getOrderModel(
@@ -141,5 +146,19 @@ public final class DataToModelUtil {
                 .setUserId(userId)
                 .setUserAddressInfo(
                         CollectionUtils.isEmpty(info) ? new ArrayList<>(0) : info);
+    }
+
+    public static List<Integer> getProductId(final List<ProductDO> productCollection) {
+        return productCollection.stream().map(ProductDO::getId).collect(Collectors.toList());
+    }
+
+    public static Map<Integer, ProductSaleDO> getSaleMap(final List<ProductSaleDO> sales) {
+        return sales.stream().collect(Collectors.toMap(
+                ProductSaleDO::getProductId, item -> item, (oldVal, newVal) -> newVal));
+    }
+
+    public static Map<Integer, ProductStockDO> getStockMap(final List<ProductStockDO> stocks) {
+        return stocks.stream().collect(Collectors.toMap(
+                ProductStockDO::getProductId, item -> item, (oldVal, newVal) -> newVal));
     }
 }
