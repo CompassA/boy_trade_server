@@ -6,6 +6,7 @@ import org.study.service.model.OrderMsgModel;
 import org.study.service.model.enumdata.OrderStatus;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -91,4 +92,10 @@ public interface OrderService {
      * @throws ServerException 创建订单失败
      */
     void cancelOrder(final String orderId, final Integer userId) throws ServerException;
+
+    /**
+     * 回滚redis的库存扣减
+     * @param decreasedRecord 扣减记录
+     */
+    void rollBackStockDecrease(final Map<Integer, Integer> decreasedRecord);
 }

@@ -1,6 +1,5 @@
 package org.study.service.impl;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -57,73 +57,94 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public OrderMsgModel createOrder(final OrderModel orderModel) throws ServerException {
-        //校验用户存在性
+        //validate order
+        final OrderCache orderUsefulData = validateOrder(orderModel);
+
+        //decrease product stock in redis
+        final Map<Integer, Integer> decreasedRecords = Maps.newHashMap();
+        for (final Integer productId : orderUsefulData.getProductIds()) {
+            final Integer productAmount = orderUsefulData.getProductAmount(productId);
+            if (!productService.decreaseStockIncreaseSales(productId, productAmount)) {
+                rollBackStockDecrease(decreasedRecords);
+                throw new ServerException(ServerExceptionBean.PRODUCT_STOCK_NOT_ENOUGH_EXCEPTION);
+            }
+            decreasedRecords.put(productId, productAmount);
+        }
+
+        //generate the order id
+        final String orderId = sequenceService.generateNewSequence(orderModel.getUserId());
+
+        //store the order data
+        orderModel.setOrderId(orderId).setOrderAmount(orderUsefulData.getOrderTotalPrice())
+                .setPayStatus(OrderStatus.CREATED.getValue())
+                .setOrderStatus(OrderStatus.CREATED.getValue())
+                .setCreateTime(TimeUtil.getCurrentTimestamp());
+        try {
+            final int masterInsertedNum = ModelToDataUtil.getOrderMaster(orderModel)
+                    .map(orderMasterMapper::insertOrderMaster)
+                    .orElse(0);
+            final int detailInsertedNum = ModelToDataUtil
+                    .getOrderDetails(orderModel.getProductDetails(), orderId)
+                    .map(orderDetailMapper::insertOrderDetails)
+                    .orElse(0);
+            if (masterInsertedNum != 1 || detailInsertedNum != orderUsefulData.getProductNum()) {
+                throw new Exception();
+            }
+        } catch (final Exception e) {
+            rollBackStockDecrease(decreasedRecords);
+            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_INSERT_EXCEPTION);
+        }
+
+        //return the decreased data and order data to the producer
+        return OrderMsgModel.builder()
+                .decreaseRecords(decreasedRecords)
+                .orderModel(orderModel)
+                .build();
+    }
+
+    /**
+     * inspection order date
+     * cache the total price of order and product amount in order
+     * @param orderModel order data
+     * @return cache data
+     * @throws ServerException order is invalid
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public OrderCache validateOrder(final OrderModel orderModel) throws ServerException {
+        //validate buyer presence
         final Optional<UserVO> userVO = userService.queryByPrimaryKey(orderModel.getUserId());
         if (!userVO.isPresent()) {
             throw new ServerException(ServerExceptionBean.USER_QUERY_EXCEPTION);
         }
-        //从数据库查询商品信息进行校验
-        final List<ProductModel> models = Lists.newArrayList();
+
         final Map<Integer, Integer> amountMap = Maps.newHashMap();
+        BigDecimal totalPrice = new BigDecimal(0);
         for (final OrderDetailModel productDetail : orderModel.getProductDetails()) {
+            //throw ServerException when the product doesn't exist
             final Integer productId = productDetail.getProductId();
-            //未查询到商品会抛异常
             final ProductModel productModel = productService.selectWithoutStockAndSales(productId);
-            //验证购买数量
-            if (productDetail.getProductAmount() < 1) {
-                throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_AMOUNT_EXCEPTION);
-            }
-            //验证商品持有者
+
+            //validate the owner of the product
             if (!productModel.getUserId().equals(productDetail.getOwnerId())) {
                 throw new ServerException(ServerExceptionBean.PRODUCT_OWNER_EXCEPTION);
             }
-            models.add(productModel);
-            amountMap.put(productModel.getProductId(), productDetail.getProductAmount());
-        }
 
-        //落单减库存并计算订单总金额
-        final Map<Integer, Integer> decreasedRecords = Maps.newHashMap();
-        BigDecimal orderAmount = new BigDecimal(0);
-        for (final ProductModel model : models) {
-            final Integer productId = model.getProductId();
-            final Integer productAmount = amountMap.get(productId);
-            if (!productService.decreaseStockIncreaseSales(productId, productAmount)) {
-                rollBackRedis(decreasedRecords);
-                throw new ServerException(ServerExceptionBean.PRODUCT_STOCK_NOT_ENOUGH_EXCEPTION);
+            //validate the product amount in order
+            final int amount = productDetail.getProductAmount();
+            if (amount < 1) {
+                throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_AMOUNT_EXCEPTION);
             }
-            decreasedRecords.put(productId, productAmount);
-            orderAmount = orderAmount.add(
-                    productService.getProductPrice(model).multiply(new BigDecimal(productAmount)));
+
+            //calculate the total price of the order
+            final BigDecimal price = productService.getProductPrice(productModel);
+            totalPrice = totalPrice.add(price.multiply(new BigDecimal(amount)));
+
+            //inspection completed, cache price and amount
+            amountMap.put(productId, amount);
         }
-
-        //生成订单编号
-        final String orderId = sequenceService.generateNewSequence(orderModel.getUserId());
-
-        //订单入库
-        orderModel.setOrderId(orderId).setOrderAmount(orderAmount)
-                .setPayStatus(OrderStatus.CREATED.getValue())
-                .setOrderStatus(OrderStatus.CREATED.getValue())
-                .setCreateTime(TimeUtil.getCurrentTimestamp());
-        final int masterInsertedNum, detailInsertedNum;
-        try {
-            masterInsertedNum = ModelToDataUtil.getOrderMaster(orderModel)
-                    .map(orderMasterMapper::insertOrderMaster)
-                    .orElse(0);
-            detailInsertedNum = ModelToDataUtil
-                    .getOrderDetails(orderModel.getProductDetails(), orderId)
-                    .map(orderDetailMapper::insertOrderDetails)
-                    .orElse(0);
-            if (masterInsertedNum != 1 || detailInsertedNum != amountMap.size()) {
-                throw new Exception();
-            }
-        } catch (final Exception e) {
-            rollBackRedis(decreasedRecords);
-            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_INSERT_EXCEPTION);
-        }
-
-        //事务完成, 返回订单中间消息
-        return OrderMsgModel.builder().amountMap(amountMap).orderModel(orderModel).build();
+        return new OrderCache(amountMap, totalPrice);
     }
+
 
     @Override
     public List<OrderModel> selectByUserId(final Integer userId, final OrderStatus orderStatus,
@@ -171,18 +192,18 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void cancelOrder(final String orderId, final Integer userId) throws ServerException {
-        //获取订单详情并校验
+        //validate the order
         final List<OrderDetailDO> details = orderDetailMapper.selectDetailByOrderId(orderId);
         if (CollectionUtils.isEmpty(details)) {
             throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
         }
 
-        //更改订单状态
+        //change order status
         if (orderMasterMapper.cancelOrder(orderId) < 1) {
             throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
         }
 
-        //增库存、减销量
+        //increase stock and decrease sales
         for (final OrderDetailDO detail : details) {
             final Integer productId = detail.getProductId();
             final Integer productAmount = detail.getProductAmount();
@@ -201,12 +222,9 @@ public class OrderServiceImpl implements OrderService {
                 orderId, orderStatus.getValue(), payStatus.getValue()) > 0;
     }
 
-    /**
-     * 回滚redis操作, 勿在类外使用, 仅因为Transactional方法必须为public而声明为public
-     * @param decreasedRecord 已经修改过库存的商品
-     */
+    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void rollBackRedis(final Map<Integer, Integer> decreasedRecord) {
+    public void rollBackStockDecrease(final Map<Integer, Integer> decreasedRecord) {
         decreasedRecord.forEach((k, v) -> productService.increaseStockDecreaseSales(k, v));
     }
 
@@ -223,5 +241,31 @@ public class OrderServiceImpl implements OrderService {
             return models;
         }
         throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+    }
+
+    private static class OrderCache {
+        private final Map<Integer, Integer> amountMap;
+        private final BigDecimal totalPrice;
+
+        public OrderCache(final Map<Integer, Integer> amountMap, final BigDecimal totalPrice) {
+            this.amountMap = amountMap;
+            this.totalPrice = totalPrice;
+        }
+
+        public BigDecimal getOrderTotalPrice() {
+            return this.totalPrice;
+        }
+
+        public int getProductAmount(final Integer productId) {
+            return amountMap.getOrDefault(productId, 0);
+        }
+
+        public Set<Integer> getProductIds() {
+            return amountMap.keySet();
+        }
+
+        public int getProductNum() {
+            return amountMap.size();
+        }
     }
 }

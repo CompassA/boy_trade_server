@@ -11,20 +11,15 @@ import java.util.Map;
 @Getter
 public class OrderMsgModel {
 
-    /**
-     * 待返回前端的订单model
-     */
+    /** the order model to be returned to the front-end */
     private final OrderModel orderModel;
 
-    /**
-     * productId -> 购买商品数量
-     * 待减库存增销量的商品
-     */
-    private final Map<Integer, Integer> amountMap;
+    /** productId -> reduced inventory */
+    private final Map<Integer, Integer> decreaseRecords;
 
-    private OrderMsgModel(OrderModel orderModel, Map<Integer, Integer> amountMap) {
+    private OrderMsgModel(OrderModel orderModel, Map<Integer, Integer> decreaseRecords) {
         this.orderModel = orderModel;
-        this.amountMap = amountMap;
+        this.decreaseRecords = decreaseRecords;
     }
 
     public static InnerBuilder builder() {
@@ -35,20 +30,20 @@ public class OrderMsgModel {
 
         private OrderModel orderModel;
 
-        private Map<Integer, Integer> amountMap;
+        private Map<Integer, Integer> decreaseRecords;
 
         public InnerBuilder orderModel(OrderModel orderModel) {
             this.orderModel = orderModel;
             return this;
         }
 
-        public InnerBuilder amountMap(Map<Integer, Integer> amountMap) {
-            this.amountMap = amountMap;
+        public InnerBuilder decreaseRecords(Map<Integer, Integer> decreaseRecords) {
+            this.decreaseRecords = decreaseRecords;
             return this;
         }
 
         public OrderMsgModel build() {
-            return new OrderMsgModel(orderModel, amountMap);
+            return new OrderMsgModel(orderModel, decreaseRecords);
         }
     }
 }

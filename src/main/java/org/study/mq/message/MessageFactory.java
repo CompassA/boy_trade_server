@@ -41,7 +41,7 @@ public final class MessageFactory {
 
     public static Message createOrderStockMsg(final MQConfig config, final OrderMsgModel msgModel,
             final MessageQueueTag tag) throws JsonProcessingException {
-        final byte[] body = new ObjectMapper().writeValueAsString(msgModel.getAmountMap())
+        final byte[] body = new ObjectMapper().writeValueAsString(msgModel.getDecreaseRecords())
                 .getBytes(StandardCharsets.UTF_8);
         return new Message(config.getTopicName(), tag.getValue(), body);
     }

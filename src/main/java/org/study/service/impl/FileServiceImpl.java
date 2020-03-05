@@ -25,6 +25,7 @@ import java.util.UUID;
  * @date 2020/1/19
  */
 @Service
+@Deprecated
 public class FileServiceImpl implements FileService {
 
     private static final String JPG_SUFFIX = ".jpg";
@@ -53,8 +54,8 @@ public class FileServiceImpl implements FileService {
         }
 
         //将文件上传至ftp，删除本地文件，并返回url
-        final String fptPath = this.generateFtpPath(user.getUserId());
-        final String resourceUrl = this.uploadFtp(des, fileName, fptPath);
+        final String ftpPath = this.generateFtpPath(user.getUserId());
+        final String resourceUrl = this.uploadFtp(des, fileName, ftpPath);
         //noinspection ResultOfMethodCallIgnored
         des.delete();
         return resourceUrl;

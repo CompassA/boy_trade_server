@@ -46,10 +46,10 @@ public class Producer {
 
     @Transactional(rollbackFor = Exception.class)
     public OrderModel createOrder(final OrderModel orderModel) throws ServerException {
-        try {
-            //创建订单, 返回要扣减的库存信息及入库后的订单状态
-            final OrderMsgModel orderMsgModel = orderService.createOrder(orderModel);
+        //创建订单, 返回要扣减的库存信息及入库后的订单状态
+        final OrderMsgModel orderMsgModel = orderService.createOrder(orderModel);
 
+        try {
             //发送消息扣减库存增加销量
             final Message orderStockMsg = MessageFactory.createOrderStockMsg(
                     mqConfig, orderMsgModel, MessageQueueTag.STOCK_DECREASE_SALES_INCREASE);
@@ -59,6 +59,7 @@ public class Producer {
             return orderMsgModel.getOrderModel();
         } catch (JsonProcessingException | MQClientException | InterruptedException |
                 RemotingException | MQBrokerException e) {
+            orderService.rollBackStockDecrease(orderMsgModel.getDecreaseRecords());
             throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
         }
     }

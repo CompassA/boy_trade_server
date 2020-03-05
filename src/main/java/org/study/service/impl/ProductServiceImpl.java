@@ -26,6 +26,7 @@ import org.study.validation.ValidationResult;
 import org.study.validation.ValidatorImpl;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -143,7 +144,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductModel> selectByUserId(final int userId) throws ServerException {
         final ProductDO condition = new ProductDO().setUserId(userId);
-        return query(condition);
+        return queryCore(condition);
     }
 
     @Override
@@ -272,7 +273,7 @@ public class ProductServiceImpl implements ProductService {
     @Deprecated
     @Override
     public List<ProductModel> getAllProduct() throws ServerException {
-        return query(new ProductDO());
+        return queryCore(new ProductDO());
     }
 
     @Override
@@ -285,10 +286,10 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.selectInKeyList(productIds);
     }
 
-    private List<ProductModel> query(final ProductDO condition) throws ServerException {
+    private List<ProductModel> queryCore(final ProductDO condition) throws ServerException {
         final List<ProductDO> products = productMapper.selectProduct(condition);
         if (CollectionUtils.isEmpty(products)) {
-            throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+            return Collections.emptyList();
         }
 
         //获取所有商品id
