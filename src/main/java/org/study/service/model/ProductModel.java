@@ -2,6 +2,7 @@ package org.study.service.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.Min;
@@ -16,6 +17,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Accessors(chain = true)
+@ToString
 public class ProductModel {
 
     private Integer productId;
@@ -46,23 +48,4 @@ public class ProductModel {
     private String iconUrl;
 
     private Timestamp createTime;
-
-    private Timestamp updateTime;
-
-    @Override
-    public String toString() {
-        return "ProductModel{" +
-                "productId=" + productId +
-                ", payStatus=" + payStatus +
-                ", categoryId=" + categoryId +
-                ", sales=" + sales +
-                ", stock=" + stock +
-                ", price=" + price +
-                ", productName='" + productName + '\'' +
-                ", description='" + description + '\'' +
-                ", iconUrl='" + iconUrl + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                '}';
-    }
 }

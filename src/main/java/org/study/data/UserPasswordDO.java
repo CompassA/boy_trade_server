@@ -2,6 +2,7 @@ package org.study.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
@@ -13,6 +14,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Accessors(chain = true)
+@ToString
 public class UserPasswordDO {
 
     private Integer userId;
@@ -22,14 +24,4 @@ public class UserPasswordDO {
     private Timestamp createTime;
 
     private Timestamp updateTime;
-
-    @Override
-    public String toString() {
-        return "UserPasswordDO{" +
-                "userId=" + userId +
-                ", password='" + password + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                '}';
-    }
 }

@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * inspection order date
+     * inspection order data
      * cache the total price of order and product amount in order
      * @param orderModel order data
      * @return cache data
@@ -221,8 +221,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean updateOrderStatus(
-            final String orderId, final OrderStatus orderStatus, final OrderStatus payStatus) {
+    public boolean updateOrderStatus(final String orderId, final OrderStatus orderStatus,
+            final OrderStatus payStatus) {
         return orderMasterMapper.updateStatus(
                 orderId, orderStatus.getValue(), payStatus.getValue()) > 0;
     }

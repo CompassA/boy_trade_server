@@ -57,9 +57,8 @@ public class EncryptServiceImpl implements EncryptService {
     }
 
     private void initKeyPair() {
-        final KeyPairGenerator generator;
         try {
-            generator = KeyPairGenerator.getInstance(RSA_ALGORITHM);
+            final KeyPairGenerator generator = KeyPairGenerator.getInstance(RSA_ALGORITHM);
             generator.initialize(KEY_SIZE);
             final KeyPair keyPair = generator.generateKeyPair();
             publicKey = keyPair.getPublic().getEncoded();
@@ -98,16 +97,14 @@ public class EncryptServiceImpl implements EncryptService {
     }
 
     @Override
-    public String decryptByAesKey(final String data, final byte[] aesKey)
-            throws Exception {
+    public String decryptByAesKey(final String data, final byte[] aesKey) throws Exception {
         final Decoder decoder = Base64.getDecoder();
         final Encoder encoder = Base64.getEncoder();
         return encoder.encodeToString(decryptByAesKey(decoder.decode(data), aesKey));
     }
 
     @Override
-    public String encryptByAesKey(final String data, final byte[] aesKey)
-            throws Exception {
+    public String encryptByAesKey(final String data, final byte[] aesKey) throws Exception {
         final Decoder decoder = Base64.getDecoder();
         final Encoder encoder = Base64.getEncoder();
         return encoder.encodeToString(encryptByAesKey(decoder.decode(data), aesKey));
@@ -115,8 +112,8 @@ public class EncryptServiceImpl implements EncryptService {
 
     @Override
     public byte[] encryptByPrivateKey(final byte[] data) throws ServerException {
-        final PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(privateKey);
         try {
+            final PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(privateKey);
             final PrivateKey privateKey = KeyFactory.getInstance(RSA_ALGORITHM)
                     .generatePrivate(pkcs8KeySpec);
             final Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
@@ -130,8 +127,8 @@ public class EncryptServiceImpl implements EncryptService {
 
     @Override
     public byte[] decryptByPrivateKey(final byte[] data) throws ServerException {
-        final PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(privateKey);
         try {
+            final PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(privateKey);
             final PrivateKey privateKey = KeyFactory.getInstance(RSA_ALGORITHM)
                     .generatePrivate(pkcs8KeySpec);
             final Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
@@ -182,8 +179,7 @@ public class EncryptServiceImpl implements EncryptService {
     }
 
     @Override
-    public byte[] encryptByAesKey(final byte[] data, final byte[] aesKey)
-            throws ServerException {
+    public byte[] encryptByAesKey(final byte[] data, final byte[] aesKey) throws ServerException {
         try {
             final SecretKey secretKey = new SecretKeySpec(aesKey, AES_ALGORITHM);
             final Cipher cipher = Cipher.getInstance(AES_MODE);
@@ -196,8 +192,7 @@ public class EncryptServiceImpl implements EncryptService {
     }
 
     @Override
-    public byte[] decryptByAesKey(final byte[] data, final byte[] aesKey)
-            throws ServerException {
+    public byte[] decryptByAesKey(final byte[] data, final byte[] aesKey) throws ServerException {
         try {
             final SecretKey secretKey = new SecretKeySpec(aesKey, AES_ALGORITHM);
             final Cipher cipher = Cipher.getInstance(AES_MODE);

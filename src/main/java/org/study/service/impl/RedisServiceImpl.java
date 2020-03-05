@@ -21,6 +21,9 @@ public class RedisServiceImpl implements RedisService {
 
     private Cache<String, Object> localCache;
 
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
+
     @PostConstruct
     public void init() {
         localCache = CacheBuilder.newBuilder()
@@ -30,9 +33,6 @@ public class RedisServiceImpl implements RedisService {
                 .build();
     }
 
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
-
     @Override
     public <T> void cacheData(final String key, final T data) {
         localCache.put(key, data);
@@ -41,7 +41,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public <T> void cacheDataWithoutLocalCache(String key, T data) {
+    public <T> void cacheDataWithoutLocalCache(final String key, final T data) {
         redisTemplate.opsForValue().set(key, data);
         redisTemplate.expire(key, 10, TimeUnit.MINUTES);
     }
@@ -71,7 +71,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public <T> Optional<T> getCacheWithoutLocalCache(String key, Class<T> type) {
+    public <T> Optional<T> getCacheWithoutLocalCache(final String key, final Class<T> type) {
         final Object cache = redisTemplate.opsForValue().get(key);
         if (cache != null && type.equals(cache.getClass())) {
             return Optional.of((T) cache);

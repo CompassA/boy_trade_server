@@ -28,8 +28,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ServerResponse handle(final HttpServletRequest request,
-                                 final HttpServletResponse response,
-                                 final Exception ex) {
+            final HttpServletResponse response, final Exception ex) {
         final Map<String, Object> exceptionData = Maps.newHashMap();
         //业务异常
         if (ex instanceof ServerException) {

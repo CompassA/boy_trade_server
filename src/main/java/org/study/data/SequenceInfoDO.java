@@ -2,6 +2,7 @@ package org.study.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -11,6 +12,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
+@ToString
 public class SequenceInfoDO {
 
     private Integer sequenceId;
@@ -22,15 +24,4 @@ public class SequenceInfoDO {
     private Integer minValue;
 
     private Integer maxValue;
-
-    @Override
-    public String toString() {
-        return "SequenceInfoDO{" +
-                "sequenceId=" + sequenceId +
-                ", currentValue=" + currentValue +
-                ", step=" + step +
-                ", minValue=" + minValue +
-                ", maxValue=" + maxValue +
-                '}';
-    }
 }

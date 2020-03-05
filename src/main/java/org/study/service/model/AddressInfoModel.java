@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.study.data.AddressInfoDO;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @Accessors(chain = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class AddressInfoModel {
 
     private Integer userId;

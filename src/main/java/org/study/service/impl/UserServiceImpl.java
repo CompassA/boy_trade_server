@@ -69,8 +69,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserModel registry(final UserModel userModel)
-            throws ServerException {
+    public UserModel registry(final UserModel userModel) throws ServerException {
         //入参校验
         final ValidationResult result = validator.validate(userModel);
         if (result.hasErrors()) {

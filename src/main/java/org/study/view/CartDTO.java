@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -15,6 +16,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
 public class CartDTO {
 
     private Integer userId;
@@ -22,13 +24,4 @@ public class CartDTO {
     private Integer productId;
 
     private Integer num;
-
-    @Override
-    public String toString() {
-        return "CartDTO{" +
-                "userId=" + userId +
-                ", productId=" + productId +
-                ", num=" + num +
-                '}';
-    }
 }

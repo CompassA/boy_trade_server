@@ -2,6 +2,7 @@ package org.study.data;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Accessors(chain = true)
+@ToString
 public class ProductDO {
 
     private Integer id;
@@ -35,19 +37,4 @@ public class ProductDO {
     private Timestamp createTime;
 
     private Timestamp updateTime;
-
-    @Override
-    public String toString() {
-        return "ProductDO{" +
-                "id=" + id +
-                ", categoryId=" + categoryId +
-                ", status=" + status +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", iconUrl='" + iconUrl + '\'' +
-                ", price=" + price +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                '}';
-    }
 }

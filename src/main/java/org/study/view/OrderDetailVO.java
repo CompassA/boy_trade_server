@@ -2,6 +2,7 @@ package org.study.view;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Accessors(chain = true)
+@ToString
 public class OrderDetailVO {
 
     private Integer detailId;
@@ -28,17 +30,4 @@ public class OrderDetailVO {
     private Integer productAmount;
 
     private String iconUrl;
-
-    @Override
-    public String toString() {
-        return "OrderDetailVO{" +
-                "detailId=" + detailId +
-                ", orderId='" + orderId + '\'' +
-                ", productId=" + productId +
-                ", productName='" + productName + '\'' +
-                ", productPrice=" + productPrice +
-                ", productAmount=" + productAmount +
-                ", iconUrl='" + iconUrl + '\'' +
-                '}';
-    }
 }

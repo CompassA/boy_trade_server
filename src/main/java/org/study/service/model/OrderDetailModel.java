@@ -2,6 +2,7 @@ package org.study.service.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Accessors(chain = true)
+@ToString
 public class OrderDetailModel {
 
     private Integer detailId;

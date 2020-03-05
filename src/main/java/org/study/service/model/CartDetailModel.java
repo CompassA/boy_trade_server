@@ -2,6 +2,7 @@ package org.study.service.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.study.data.ProductDO;
 
@@ -12,6 +13,7 @@ import org.study.data.ProductDO;
 @Getter
 @Setter
 @Accessors(chain = true)
+@ToString
 public class CartDetailModel {
 
     private ProductDO productDO;

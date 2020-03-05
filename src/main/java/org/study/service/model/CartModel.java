@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.study.data.UserDO;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Accessors(chain = true)
+@ToString
 public class CartModel {
 
     public static final CartModel EMPTY_CART = new CartModel()

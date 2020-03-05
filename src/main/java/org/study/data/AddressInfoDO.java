@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.sql.Timestamp;
@@ -17,6 +18,7 @@ import java.sql.Timestamp;
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
 public class AddressInfoDO {
 
     private Integer infoId;
@@ -36,19 +38,4 @@ public class AddressInfoDO {
     private Timestamp createTime;
 
     private Timestamp updateTime;
-
-    @Override
-    public String toString() {
-        return "AddressInfoDO{" +
-                "infoId=" + infoId +
-                ", userId=" + userId +
-                ", userName='" + userName + '\'' +
-                ", userPhone='" + userPhone + '\'' +
-                ", userAddress='" + userAddress + '\'' +
-                ", gender=" + gender +
-                ", selected=" + selected +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                '}';
-    }
 }

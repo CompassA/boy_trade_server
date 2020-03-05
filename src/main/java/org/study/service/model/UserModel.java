@@ -2,6 +2,7 @@ package org.study.service.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
@@ -15,6 +16,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Accessors(chain = true)
+@ToString
 public class UserModel implements Serializable {
 
     private Integer userId;
@@ -32,17 +34,4 @@ public class UserModel implements Serializable {
     private Timestamp createTime;
 
     private Timestamp updateTime;
-
-    @Override
-    public String toString() {
-        return "UserModel{" +
-                "userId=" + userId +
-                ", account='" + account + '\'' +
-                ", name='" + name + '\'' +
-                ", iconUrl='" + iconUrl + '\'' +
-                ", password='" + password + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                '}';
-    }
 }

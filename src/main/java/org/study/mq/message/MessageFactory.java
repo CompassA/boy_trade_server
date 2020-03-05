@@ -30,8 +30,7 @@ public final class MessageFactory {
         return new Message(config.getTopicName(), tag.getValue(), body);
     }
 
-    public static Message createSalesMsg(
-            final MQConfig config, final Integer productId,
+    public static Message createSalesMsg(final MQConfig config, final Integer productId,
             final Integer amount, final MessageQueueTag tag) throws JsonProcessingException {
         final SalesMessage message = new SalesMessage().setProductId(productId).setAmount(amount);
         final byte[] body = new ObjectMapper().writeValueAsString(message)

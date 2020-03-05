@@ -1,4 +1,4 @@
-package org.study.mq.message;
+package org.study.mq.consumer;
 
 import lombok.SneakyThrows;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -11,21 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.study.config.MQConfig;
 import org.study.dao.ProductSaleMapper;
-import org.study.dao.ProductStockMapper;
 import org.study.mq.enumdata.MessageQueueTag;
-import org.study.service.RedisService;
-import org.study.service.model.enumdata.CacheType;
-import org.study.util.MyStringUtil;
+import org.study.mq.message.MessageFactory;
+import org.study.mq.message.SalesMessage;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
  * @author fanqie
- * @date 2020/3/3
+ * @date 2020/3/2
  */
 @Component
-public class StockDecreaseSalesIncreaseConsumer {
+public class SalesDecreaseConsumer {
 
     private DefaultMQPushConsumer consumer;
 
@@ -35,19 +33,12 @@ public class StockDecreaseSalesIncreaseConsumer {
     @Autowired
     private ProductSaleMapper saleMapper;
 
-    @Autowired
-    private ProductStockMapper stockMapper;
-
-    @Autowired
-    private RedisService redisService;
-
     @PostConstruct
     public void init() throws MQClientException {
-        //组、注册中心、订阅消息
-        consumer = new DefaultMQPushConsumer(config.getDecrStockIncrSalesGroup());
+        //组、注册中心、订阅信息
+        consumer = new DefaultMQPushConsumer(config.getDecrSalesGroup());
         consumer.setNamesrvAddr(config.getNameServerAddress());
-        consumer.subscribe(config.getTopicName(),
-                MessageQueueTag.STOCK_DECREASE_SALES_INCREASE.getValue());
+        consumer.subscribe(config.getTopicName(), MessageQueueTag.SALES_DECREASE.getValue());
 
         //注册回调
         consumer.registerMessageListener(new MessageListenerConcurrently() {
@@ -55,13 +46,9 @@ public class StockDecreaseSalesIncreaseConsumer {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(
                     List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
-                MessageFactory.deserializeMapMsg(list.get(0), Integer.class, Integer.class)
-                        .forEach((k, v) -> {
-                            stockMapper.decreaseStock(k, v);
-                            saleMapper.increaseSales(k, v);
-                            final String key = MyStringUtil.generateCacheKey(k, CacheType.PRODUCT);
-                            redisService.deleteKey(key);
-                        });
+                final SalesMessage msg = MessageFactory
+                        .deserializeMsg(list.get(0), SalesMessage.class);
+                saleMapper.decreaseSales(msg.getProductId(), msg.getAmount());
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
         });

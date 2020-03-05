@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -15,6 +16,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
 public class UserVO {
 
     private Integer userId;
@@ -28,16 +30,4 @@ public class UserVO {
     private String createTime;
 
     private String token;
-
-    @Override
-    public String toString() {
-        return "UserVO{" +
-                "userId=" + userId +
-                ", account='" + account + '\'' +
-                ", name='" + name + '\'' +
-                ", iconUrl='" + iconUrl + '\'' +
-                ", createTime='" + createTime + '\'' +
-                ", token='" + token + '\'' +
-                '}';
-    }
 }

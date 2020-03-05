@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 @Accessors(chain = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class CartVO {
 
     private String sellerName;
@@ -26,14 +28,4 @@ public class CartVO {
     private List<CartDetailVO> cartDetails;
 
     private List<Integer> selectedIds;
-
-    @Override
-    public String toString() {
-        return "CartVO{" +
-                "sellerName='" + sellerName + '\'' +
-                ", sellerId=" + sellerId +
-                ", cartDetails=" + cartDetails +
-                ", selectedIds=" + selectedIds +
-                '}';
-    }
 }

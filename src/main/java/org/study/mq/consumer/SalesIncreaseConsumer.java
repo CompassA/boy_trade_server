@@ -1,4 +1,4 @@
-package org.study.mq;
+package org.study.mq.consumer;
 
 import lombok.SneakyThrows;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -23,7 +23,7 @@ import java.util.List;
  * @date 2020/3/2
  */
 @Component
-public class SalesDecreaseConsumer {
+public class SalesIncreaseConsumer {
 
     private DefaultMQPushConsumer consumer;
 
@@ -36,9 +36,9 @@ public class SalesDecreaseConsumer {
     @PostConstruct
     public void init() throws MQClientException {
         //组、注册中心、订阅信息
-        consumer = new DefaultMQPushConsumer(config.getDecrSalesGroup());
+        consumer = new DefaultMQPushConsumer(config.getIncrSalesGroup());
         consumer.setNamesrvAddr(config.getNameServerAddress());
-        consumer.subscribe(config.getTopicName(), MessageQueueTag.SALES_DECREASE.getValue());
+        consumer.subscribe(config.getTopicName(), MessageQueueTag.SALES_INCREASE.getValue());
 
         //注册回调
         consumer.registerMessageListener(new MessageListenerConcurrently() {
@@ -48,7 +48,7 @@ public class SalesDecreaseConsumer {
                     List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
                 final SalesMessage msg = MessageFactory
                         .deserializeMsg(list.get(0), SalesMessage.class);
-                saleMapper.decreaseSales(msg.getProductId(), msg.getAmount());
+                saleMapper.increaseSales(msg.getProductId(), msg.getAmount());
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             }
         });

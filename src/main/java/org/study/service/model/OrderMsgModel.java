@@ -1,6 +1,7 @@
 package org.study.service.model;
 
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import java.util.Map;
  * @date 2020/3/3
  */
 @Getter
+@ToString
 public class OrderMsgModel {
 
     /** the order model to be returned to the front-end */

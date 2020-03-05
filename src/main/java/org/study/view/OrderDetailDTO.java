@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class OrderDetailDTO {
 
     private Integer productId;
@@ -30,16 +32,4 @@ public class OrderDetailDTO {
     private BigDecimal productPrice;
 
     private String iconUrl;
-
-    @Override
-    public String toString() {
-        return "OrderDetailDTO{" +
-                "productId=" + productId +
-                ", ownerId=" + ownerId +
-                ", productName='" + productName + '\'' +
-                ", productAmount=" + productAmount +
-                ", productPrice=" + productPrice +
-                ", iconUrl='" + iconUrl + '\'' +
-                '}';
-    }
 }

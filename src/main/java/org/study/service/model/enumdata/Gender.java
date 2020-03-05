@@ -1,7 +1,5 @@
 package org.study.service.model.enumdata;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 /**

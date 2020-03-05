@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -15,17 +16,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
 public class LoginDTO {
 
     private String account;
 
     private String password;
-
-    @Override
-    public String toString() {
-        return "LoginDTO{" +
-                "account='" + account + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
 }

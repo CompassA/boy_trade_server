@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
 public class OrderDTO {
 
     private Integer userId;
@@ -28,15 +30,4 @@ public class OrderDTO {
     private String userAddress;
 
     private List<OrderDetailDTO> productDetails;
-
-    @Override
-    public String toString() {
-        return "OrderDTO{" +
-                "userId='" + userId + '\'' +
-                ", userName='" + userName + '\'' +
-                ", userPhone='" + userPhone + '\'' +
-                ", userAddress='" + userAddress + '\'' +
-                ", productDetails=" + productDetails +
-                '}';
-    }
 }
