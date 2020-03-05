@@ -1,6 +1,7 @@
 package org.study.util;
 
 import org.springframework.util.CollectionUtils;
+import org.study.dao.OrderDetailMapper;
 import org.study.data.AddressInfoDO;
 import org.study.data.OrderDetailDO;
 import org.study.data.OrderMasterDO;
@@ -9,6 +10,8 @@ import org.study.data.ProductSaleDO;
 import org.study.data.ProductStockDO;
 import org.study.data.UserDO;
 import org.study.data.UserPasswordDO;
+import org.study.error.ServerException;
+import org.study.error.ServerExceptionBean;
 import org.study.service.model.AddressInfoModel;
 import org.study.service.model.OrderDetailModel;
 import org.study.service.model.OrderModel;
@@ -160,5 +163,20 @@ public final class DataToModelUtil {
     public static Map<Integer, ProductStockDO> getStockMap(final List<ProductStockDO> stocks) {
         return stocks.stream().collect(Collectors.toMap(
                 ProductStockDO::getProductId, item -> item, (oldVal, newVal) -> newVal));
+    }
+
+    public static List<OrderModel> getOrderModel(final List<OrderMasterDO> orderMasters,
+            final OrderDetailMapper orderDetailMapper) throws ServerException {
+        final List<OrderModel> models = orderMasters.stream()
+                .map(orderMasterDO -> DataToModelUtil.getOrderModel(
+                        orderMasterDO,
+                        orderDetailMapper.selectDetailByOrderId(orderMasterDO.getOrderId())))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+        if (models.size() == orderMasters.size()) {
+            return models;
+        }
+        throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
     }
 }

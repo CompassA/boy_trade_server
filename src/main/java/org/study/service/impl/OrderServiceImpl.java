@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author fanqie
@@ -149,9 +148,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderModel> selectByUserId(final Integer userId, final OrderStatus orderStatus,
             final OrderStatus payStatus) throws ServerException {
-        return this.convertCore(
-                orderMasterMapper.selectByUserId(userId,
-                        orderStatus.getValue(), payStatus.getValue()));
+        final List<OrderMasterDO> masters = orderMasterMapper
+                .selectByUserId(userId, orderStatus.getValue(), payStatus.getValue());
+        return DataToModelUtil.getOrderModel(masters, orderDetailMapper);
     }
 
     @Override
@@ -165,28 +164,34 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderModel> selectCreatedOrderWithSeller(final Integer sellerId)
             throws ServerException {
         final Byte created = OrderStatus.CREATED.getValue();
-        return this.convertCore(orderMasterMapper.selectBySellerId(sellerId, created, created));
+        return DataToModelUtil.getOrderModel(
+                orderMasterMapper.selectBySellerId(sellerId, created, created),
+                orderDetailMapper);
     }
 
     @Override
     public List<OrderModel> selectPaidOrderWithSeller(final Integer sellerId)
             throws ServerException {
         final Byte paid = OrderStatus.PAID.getValue();
-        return this.convertCore(orderMasterMapper.selectBySellerId(sellerId, paid, paid));
+        return DataToModelUtil.getOrderModel(
+                orderMasterMapper.selectBySellerId(sellerId, paid, paid),
+                orderDetailMapper);
     }
 
     @Override
     public List<OrderModel> selectSentOrderWithSeller(final Integer sellerId)
             throws ServerException {
-        return this.convertCore(orderMasterMapper.selectBySellerId(
-                sellerId, OrderStatus.SENT.getValue(), OrderStatus.PAID.getValue()));
+        final List<OrderMasterDO> masters = orderMasterMapper.selectBySellerId(
+                sellerId, OrderStatus.SENT.getValue(), OrderStatus.PAID.getValue());
+        return DataToModelUtil.getOrderModel(masters, orderDetailMapper);
     }
 
     @Override
     public List<OrderModel> selectFinishedOrderWithSeller(final Integer sellerId)
             throws ServerException {
-        return this.convertCore(orderMasterMapper.selectBySellerId(sellerId,
-                OrderStatus.FINISHED.getValue(), OrderStatus.PAID.getValue()));
+        final List<OrderMasterDO> masters = orderMasterMapper.selectBySellerId(
+                sellerId, OrderStatus.FINISHED.getValue(), OrderStatus.PAID.getValue());
+        return DataToModelUtil.getOrderModel(masters, orderDetailMapper);
     }
 
     @Override
@@ -226,21 +231,6 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(rollbackFor = Exception.class)
     public void rollBackStockDecrease(final Map<Integer, Integer> decreasedRecord) {
         decreasedRecord.forEach((k, v) -> productService.increaseStockDecreaseSales(k, v));
-    }
-
-    private List<OrderModel> convertCore(final List<OrderMasterDO> orderMasters)
-            throws ServerException {
-        final List<OrderModel> models = orderMasters.stream()
-                .map(orderMasterDO -> DataToModelUtil.getOrderModel(
-                        orderMasterDO,
-                        orderDetailMapper.selectDetailByOrderId(orderMasterDO.getOrderId())))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-        if (models.size() == orderMasters.size()) {
-            return models;
-        }
-        throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
     }
 
     private static class OrderCache {
