@@ -112,4 +112,18 @@ public interface RedisService {
      * @return 值
      */
     Object getHashKeyValue(final String key, final String hashKey);
+
+    /**
+     * 得到持久存储的string
+     * @param key 键值
+     * @return 存储值
+     */
+    Optional<String> getPermanentStr(final String key);
+
+    /**
+     * 得到持久存储的数字
+     * @param key 键值
+     * @return 存储值
+     */
+    Optional<Integer> getPermanentInt(final String key);
 }

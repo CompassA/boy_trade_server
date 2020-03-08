@@ -48,4 +48,6 @@ public class ProductModel {
     private String iconUrl;
 
     private Timestamp createTime;
+
+    private Timestamp updateTime;
 }

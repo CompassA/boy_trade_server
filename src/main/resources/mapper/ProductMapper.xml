@@ -19,6 +19,7 @@
     <insert id="upsertProduct" parameterType="org.study.data.ProductDO" useGeneratedKeys="true" keyProperty="product.id">
         INSERT INTO product
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="product.id != null" >id, </if>
             <if test="product.name != null">name, </if>
             <if test="product.price != null">price, </if>
             <if test="product.description != null">description, </if>
@@ -29,6 +30,7 @@
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="product.id != null"> #{product.id}, </if>
             <if test="product.name != null"> #{product.name}, </if>
             <if test="product.price != null"> #{product.price}, </if>
             <if test="product.description != null"> #{product.description}, </if>
@@ -52,6 +54,7 @@
     <select id="selectProduct" parameterType="org.study.data.ProductDO" resultMap="ProductMap">
         SELECT * FROM product
         <where>
+            status != 2
             <if test="product.id != null">AND id = #{product.id}</if>
             <if test="product.name != null">AND name = #{product.name}</if>
             <if test="product.categoryId != null">AND category_id = #{product.categoryId}</if>

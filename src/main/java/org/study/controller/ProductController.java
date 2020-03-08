@@ -85,7 +85,7 @@ public class ProductController {
     public ServerResponse getProductInfo(@RequestParam("productId") final Integer productId)
             throws ServerException {
         //取缓存
-        final String key = MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT);
+        final String key = MyStringUtil.getCacheKey(productId, CacheType.PRODUCT);
         final Optional<ProductVO> cache =
                 redisService.getCacheWithoutLocalCache(key, ProductVO.class);
         if (cache.isPresent()) {

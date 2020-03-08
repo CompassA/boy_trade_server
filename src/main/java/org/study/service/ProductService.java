@@ -114,4 +114,30 @@ public interface ProductService {
      * @return 一组商品信息
      */
     List<ProductDO> getProductInfoByIds(final List<Integer> productIds);
+
+    /**
+     * 将商品下架
+     * @param productId 要下架的商品id
+     */
+    void withdrawFromShelves(final Integer productId);
+
+    /**
+     * 将商品重新上架
+     * @param productId 商品id
+     * @throws ServerException 上架失败
+     */
+    void republish(final Integer productId) throws ServerException;
+
+    /**
+     * 商品是否售罄
+     * @param id 商品id
+     * @return 售罄 true; 未售罄 false
+     */
+    boolean isSoldOut(final Integer id);
+
+    /**
+     * 将商品置为废弃状态，不可再上架
+     * @param productId 目标商品id
+     */
+    void removeProduct(final Integer productId);
 }

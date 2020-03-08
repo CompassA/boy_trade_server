@@ -103,7 +103,7 @@ public class UserController {
     public ServerResponse selectUserInfo(@RequestParam("userId") final Integer userId)
             throws ServerException {
         //获取缓存
-        final String key = MyStringUtil.generateCacheKey(userId, CacheType.USER_INFO);
+        final String key = MyStringUtil.getCacheKey(userId, CacheType.USER_INFO);
         final Optional<UserVO> cache = redisService.getCache(key, UserVO.class);
         if (cache.isPresent()) {
             return ServerResponse.create(cache.get());

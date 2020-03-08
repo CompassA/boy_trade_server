@@ -20,6 +20,7 @@ import org.study.service.model.OrderModel;
 import org.study.service.model.OrderMsgModel;
 import org.study.service.model.ProductModel;
 import org.study.service.model.enumdata.OrderStatus;
+import org.study.service.model.enumdata.ProductStatus;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
 import org.study.util.TimeUtil;
@@ -122,6 +123,12 @@ public class OrderServiceImpl implements OrderService {
             //throw ServerException when the product doesn't exist
             final Integer productId = productDetail.getProductId();
             final ProductModel productModel = productService.selectWithoutStockAndSales(productId);
+
+            //check if the product was sold out
+            if (ProductStatus.SOLD_OUT.getValue() == productModel.getPayStatus() ||
+                    productService.isSoldOut(productId)) {
+                throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SOLD_OUT_EXCEPTION);
+            }
 
             //validate the owner of the product
             if (!productModel.getUserId().equals(productDetail.getOwnerId())) {

@@ -123,4 +123,21 @@ public class RedisServiceImpl implements RedisService {
     public Object getHashKeyValue(final String key, final String hashKey) {
         return redisTemplate.opsForHash().get(key, hashKey);
     }
+
+    @Override
+    public Optional<String> getPermanentStr(final String key) {
+        final Object res = redisTemplate.opsForValue().get(key);
+        return res instanceof String ? Optional.of((String) res) : Optional.empty();
+    }
+
+    @Override
+    public Optional<Integer> getPermanentInt(final String key) {
+        return getPermanentStr(key).map(value -> {
+            try {
+                return Integer.parseInt(value);
+            } catch (final NumberFormatException e) {
+                return null;
+            }
+        });
+    }
 }

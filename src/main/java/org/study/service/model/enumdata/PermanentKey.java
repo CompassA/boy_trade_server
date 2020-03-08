@@ -8,7 +8,7 @@ import lombok.Getter;
  * @date 2020/3/2
  */
 @Getter
-public enum PermanentValueType {
+public enum PermanentKey {
 
     /* 商品库存 */
     STOCK("stock"),
@@ -16,11 +16,13 @@ public enum PermanentValueType {
     SALES("sales"),
     /* 购物车数据 */
     CART("cart"),
+    /* 售罄标志 */
+    SOLD_OUT_MARK("out"),
     ;
 
     private final String prefix;
 
-    PermanentValueType(final String prefix) {
+    PermanentKey(final String prefix) {
         this.prefix = prefix;
     }
 }

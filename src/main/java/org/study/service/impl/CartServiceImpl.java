@@ -14,7 +14,7 @@ import org.study.service.RedisService;
 import org.study.service.UserService;
 import org.study.service.model.CartDetailModel;
 import org.study.service.model.CartModel;
-import org.study.service.model.enumdata.PermanentValueType;
+import org.study.service.model.enumdata.PermanentKey;
 import org.study.util.MyStringUtil;
 import org.study.view.CartDTO;
 
@@ -43,29 +43,28 @@ public class CartServiceImpl implements CartService {
     @Override
     public Boolean addProduct(final CartDTO cartDTO) {
         return redisService.putHashKey(
-                MyStringUtil.generatePermanentKey(cartDTO.getUserId(), PermanentValueType.CART),
+                MyStringUtil.getPermanentKey(cartDTO.getUserId(), PermanentKey.CART),
                 cartDTO.getProductId().toString(),
                 cartDTO.getNum().toString());
     }
 
     @Override
     public Boolean deleteProduct(final CartDTO cartDTO) {
-        final String key = MyStringUtil
-                .generatePermanentKey(cartDTO.getUserId(), PermanentValueType.CART);
+        final String key = MyStringUtil.getPermanentKey(cartDTO.getUserId(), PermanentKey.CART);
         final String productId = cartDTO.getProductId().toString();
         return redisService.deleteHashKey(key, productId);
     }
 
     @Override
     public Boolean deleteCart(final Integer userId, final List<Integer> productsId) {
-        final String key = MyStringUtil.generatePermanentKey(userId, PermanentValueType.CART);
+        final String key = MyStringUtil.getPermanentKey(userId, PermanentKey.CART);
         final Object[] hashKeys = productsId.stream().map(String::valueOf).toArray(Object[]::new);
         return redisService.deleteHashKey(key, hashKeys);
     }
 
     @Override
     public CartModel getCartModel(final Integer userId) throws ServerException {
-        final String key = MyStringUtil.generatePermanentKey(userId, PermanentValueType.CART);
+        final String key = MyStringUtil.getPermanentKey(userId, PermanentKey.CART);
         final Set<Object> hashKeys = redisService.getHashKeys(key);
         if (hashKeys.isEmpty()) {
             return CartModel.EMPTY_CART;

@@ -17,7 +17,8 @@ import org.study.service.ProductService;
 import org.study.service.RedisService;
 import org.study.service.model.ProductModel;
 import org.study.service.model.enumdata.CacheType;
-import org.study.service.model.enumdata.PermanentValueType;
+import org.study.service.model.enumdata.PermanentKey;
+import org.study.service.model.enumdata.ProductStatus;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
 import org.study.util.MyMathUtil;
@@ -81,14 +82,14 @@ public class ProductServiceImpl implements ProductService {
         final ProductStockDO stock = stockDO.get().setProductId(productId);
         stockMapper.initProductStock(stock);
         redisService.saveWithoutExpire(
-                MyStringUtil.generatePermanentKey(productId, PermanentValueType.STOCK),
+                MyStringUtil.getPermanentKey(productId, PermanentKey.STOCK),
                 stock.getStock());
 
         //销量入库并同步redis
         final ProductSaleDO sale = new ProductSaleDO().setProductId(productId);
         saleMapper.initProductSale(sale);
         redisService.saveWithoutExpire(
-                MyStringUtil.generatePermanentKey(productId, PermanentValueType.SALES), 0);
+                MyStringUtil.getPermanentKey(productId, PermanentKey.SALES), 0);
 
         //返回数据库状态
         final Optional<ProductModel> productStatus = DataToModelUtil.getProductModel(
@@ -117,7 +118,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductModel selectWithoutStockAndSales(int productId) throws ServerException {
         ProductDO productInfo = null;
 
-        final String key = MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT_VALIDATION);
+        final String key = MyStringUtil.getCacheKey(productId, CacheType.PRODUCT_VALIDATION);
         final Optional<ProductDO> cache = redisService.getCache(key, ProductDO.class);
         if (cache.isPresent()) {
             productInfo = cache.get();
@@ -151,7 +152,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(rollbackFor = Exception.class)
     public boolean decreaseStock(final Integer productId, final Integer amount) {
         //减redis库存
-        final String key = MyStringUtil.generatePermanentKey(productId, PermanentValueType.STOCK);
+        final String key = MyStringUtil.getPermanentKey(productId, PermanentKey.STOCK);
         final Long resNum = redisService.decreaseKey(key, amount);
 
         //扣减合法性判断
@@ -163,7 +164,7 @@ public class ProductServiceImpl implements ProductService {
         //发消息，减mysql库存
         final boolean decreased = producer.asyncDecreaseStock(productId, amount);
         if (decreased) {
-            redisService.deleteKey(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+            redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT));
         } else {
             redisService.increaseKey(key, amount);
         }
@@ -174,13 +175,16 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(rollbackFor = Exception.class)
     public boolean increaseStock(final Integer productId, final Integer amount) {
         //加redis库存
-        final String key = MyStringUtil.generatePermanentKey(productId, PermanentValueType.STOCK);
-        redisService.increaseKey(key, amount);
+        final String key = MyStringUtil.getPermanentKey(productId, PermanentKey.STOCK);
+        final long restNum = redisService.increaseKey(key, amount);
 
         //发消息加mysql库存
         final boolean increased = producer.asyncIncreaseStock(productId, amount);
         if (increased) {
-            redisService.deleteKey(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+            if (restNum - amount == 0) {
+                this.republish(productId);
+            }
+            redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT));
         } else {
             redisService.decreaseKey(key, amount);
         }
@@ -191,13 +195,13 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(rollbackFor = Exception.class)
     public boolean increaseSales(final Integer productId, final Integer amount) {
         //加redis销量
-        final String key = MyStringUtil.generatePermanentKey(productId, PermanentValueType.SALES);
+        final String key = MyStringUtil.getPermanentKey(productId, PermanentKey.SALES);
         redisService.increaseKey(key, amount);
 
         //发消息增加mysql销量, 发送消息失败则回滚数据
         final boolean increased = producer.asyncIncreaseSale(productId, amount);
         if (increased) {
-            redisService.deleteKey(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+            redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT));
         } else {
             redisService.decreaseKey(key, amount);
         }
@@ -207,41 +211,42 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean decreaseStockIncreaseSales(final Integer productId, final Integer amount) {
-        //减redis库存
-        final String stockKey = MyStringUtil
-                .generatePermanentKey(productId, PermanentValueType.STOCK);
+        //decrease stock in redis
+        final String stockKey = MyStringUtil.getPermanentKey(productId, PermanentKey.STOCK);
         final Long resNum = redisService.decreaseKey(stockKey, amount);
 
-        //扣减合法性判断
+        //check rest number
         if (resNum == null || resNum < 0) {
             redisService.increaseKey(stockKey, amount);
             return false;
         }
 
-        //增销量
-        final String salesKey = MyStringUtil
-                .generatePermanentKey(productId, PermanentValueType.SALES);
+        //increase sales in redis
+        final String salesKey = MyStringUtil.getPermanentKey(productId, PermanentKey.SALES);
         redisService.increaseKey(salesKey, amount);
+
+        //set sold out mark
+        if (resNum == 0) {
+            this.withdrawFromShelves(productId);
+        }
         return true;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean increaseStockDecreaseSales(final Integer productId, final Integer amount) {
-        //减销量
-        final String salesKey = MyStringUtil
-                .generatePermanentKey(productId, PermanentValueType.SALES);
+        //decrease sales in redis
+        final String salesKey = MyStringUtil.getPermanentKey(productId, PermanentKey.SALES);
         final Long resNum = redisService.decreaseKey(salesKey, amount);
 
-        //扣减合法性
+        //check rest num
         if (resNum == null || resNum < 0) {
             redisService.increaseKey(salesKey, amount);
             return false;
         }
 
-        //增库存
-        final String stockKey = MyStringUtil
-                .generatePermanentKey(productId, PermanentValueType.STOCK);
+        //increase stock
+        final String stockKey = MyStringUtil.getPermanentKey(productId, PermanentKey.STOCK);
         redisService.increaseKey(stockKey, amount);
         return true;
     }
@@ -250,7 +255,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(rollbackFor = Exception.class)
     public boolean decreaseSales(final Integer productId, final Integer amount) {
         //减redis销量
-        final String key = MyStringUtil.generatePermanentKey(productId, PermanentValueType.SALES);
+        final String key = MyStringUtil.getPermanentKey(productId, PermanentKey.SALES);
         final Long resNum = redisService.decreaseKey(key, amount);
 
         //扣减合法性判断
@@ -262,18 +267,18 @@ public class ProductServiceImpl implements ProductService {
         //发消息加库存, 发送消息失败回滚数据
         final boolean decreased = producer.asyncDecreaseSale(productId, amount);
         if (decreased) {
-            redisService.deleteKey(MyStringUtil.generateCacheKey(productId, CacheType.PRODUCT));
+            redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT));
         } else {
             redisService.increaseKey(key, amount);
         }
         return decreased;
     }
 
-    /** 获取所有商品， 仅测试用 */
+    /** only be used for test */
     @Deprecated
     @Override
     public List<ProductModel> getAllProduct() throws ServerException {
-        return queryCore(new ProductDO());
+        return queryCore(new ProductDO().setStatus(ProductStatus.IN_SALE.getValue()));
     }
 
     @Override
@@ -284,6 +289,58 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDO> getProductInfoByIds(final List<Integer> productIds) {
         return productMapper.selectInKeyList(productIds);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void withdrawFromShelves(final Integer productId) {
+        //set sold out mark
+        String key = MyStringUtil.getPermanentKey(productId, PermanentKey.SOLD_OUT_MARK);
+        redisService.saveWithoutExpire(key, -1);
+
+        //change mysql
+        final ProductDO condition = new ProductDO().setId(productId)
+                .setStatus(ProductStatus.SOLD_OUT.getValue());
+        productMapper.upsertProduct(condition);
+
+        //expire validate cache
+        redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT_VALIDATION));
+    }
+
+    @Override
+    public void removeProduct(final Integer productId) {
+        //change mysql
+        final ProductDO condition = new ProductDO().setId(productId)
+                .setStatus(ProductStatus.REMOVED.getValue());
+        productMapper.upsertProduct(condition);
+
+        //delete stock in redis
+        redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.STOCK));
+        redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.SALES));
+
+        //delete sell out mark in redis
+        redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.SOLD_OUT_MARK));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void republish(final Integer productId) {
+        //change mysql
+        final ProductDO condition = new ProductDO().setId(productId)
+                .setStatus(ProductStatus.IN_SALE.getValue());
+        productMapper.upsertProduct(condition);
+
+        //delete sold out mark in redis
+        redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.SOLD_OUT_MARK));
+
+        //delete product validate cache
+        redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT_VALIDATION));
+    }
+
+    @Override
+    public boolean isSoldOut(final Integer id) {
+        final String key = MyStringUtil.getPermanentKey(id, PermanentKey.SOLD_OUT_MARK);
+        return redisService.getPermanentStr(key).isPresent();
     }
 
     private List<ProductModel> queryCore(final ProductDO condition) throws ServerException {

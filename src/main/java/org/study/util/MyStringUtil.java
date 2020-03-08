@@ -1,7 +1,7 @@
 package org.study.util;
 
 import org.study.service.model.enumdata.CacheType;
-import org.study.service.model.enumdata.PermanentValueType;
+import org.study.service.model.enumdata.PermanentKey;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -40,7 +40,7 @@ public final class MyStringUtil {
      * @param type 数据类型
      * @return 生成的缓存key
      */
-    public static String generateCacheKey(final Integer id, final CacheType type) {
+    public static String getCacheKey(final Integer id, final CacheType type) {
         return String.format("%s:%d", type.getPrefix(), id);
     }
 
@@ -50,7 +50,7 @@ public final class MyStringUtil {
      * @param type 持久存储的数据类型
      * @return 生成的持久数据key
      */
-    public static String generatePermanentKey(final Integer id, final PermanentValueType type) {
+    public static String getPermanentKey(final Integer id, final PermanentKey type) {
         return String.format("p:%s:%d", type.getPrefix(), id);
     }
 
