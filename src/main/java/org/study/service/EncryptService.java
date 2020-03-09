@@ -1,5 +1,6 @@
 package org.study.service;
 
+import org.study.controller.response.ServerRequest;
 import org.study.error.ServerException;
 
 /**
@@ -7,6 +8,16 @@ import org.study.error.ServerException;
  * @date 2020/1/8
  */
 public interface EncryptService {
+
+    /**
+     * 解密并反序列化
+     * @param request 加密数据
+     * @param type 反序列化目标类型
+     * @param <T> 反序列化返回目标类型
+     * @return 反序列化对象
+     * @throws ServerException 反序列化或加解密异常
+     */
+    <T> T deserialize(ServerRequest request, Class<T> type) throws ServerException;
 
     /**
      * 公钥解密

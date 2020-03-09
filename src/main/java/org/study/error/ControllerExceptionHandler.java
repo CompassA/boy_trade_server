@@ -1,4 +1,4 @@
-package org.study.controller;
+package org.study.error;
 
 import com.google.common.collect.Maps;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.study.controller.response.ServerResponse;
-import org.study.error.ServerException;
-import org.study.error.SystemException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

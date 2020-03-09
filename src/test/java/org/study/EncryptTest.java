@@ -108,7 +108,7 @@ public class EncryptTest extends BaseTest {
                 encryptServiceImpl.encryptByPublicKey(aesKey));
 
         final ServerRequest mock = new ServerRequest(key, encryptJson);
-        final UserVO userVO = mock.deserialize(encryptServiceImpl, UserVO.class);
+        final UserVO userVO = encryptServiceImpl.deserialize(mock, UserVO.class);
         Assert.assertTrue(Objects.nonNull(userVO));
         System.out.println(userVO);
     }

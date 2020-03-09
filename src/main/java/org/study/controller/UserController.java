@@ -50,7 +50,7 @@ public class UserController {
     public ServerResponse login(@RequestBody final ServerRequest serverRequest)
             throws ServerException {
         //反序列化判空
-        final LoginDTO loginDTO = serverRequest.deserialize(encryptService, LoginDTO.class);
+        final LoginDTO loginDTO = encryptService.deserialize(serverRequest, LoginDTO.class);
         final String account = loginDTO.getAccount();
         final String password = loginDTO.getPassword();
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) {
@@ -73,7 +73,7 @@ public class UserController {
     @PostMapping(value = ApiPath.User.REGISTRY)
     public ServerResponse registry(@RequestBody final ServerRequest data) throws ServerException {
         //反序列化
-        final RegistryDTO registryDTO = data.deserialize(encryptService, RegistryDTO.class);
+        final RegistryDTO registryDTO = encryptService.deserialize(data, RegistryDTO.class);
 
         //插入用户注册数据
         final UserModel registryModel = new UserModel()

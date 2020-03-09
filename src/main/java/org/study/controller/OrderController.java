@@ -1,5 +1,7 @@
 package org.study.controller;
 
+import com.alipay.api.internal.util.AlipaySignature;
+import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.study.config.AliPayConfig;
 import org.study.controller.response.ServerRequest;
 import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
@@ -20,8 +23,10 @@ import org.study.service.model.enumdata.OrderStatus;
 import org.study.util.ModelToViewUtil;
 import org.study.util.ViewToModelUtil;
 import org.study.view.OrderDTO;
-import org.study.view.OrderVO;
 
+import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -44,6 +49,9 @@ public class OrderController {
     @Autowired
     private Producer producer;
 
+    @Autowired
+    private AliPayConfig aliPayConfig;
+
     @PostMapping(value = ApiPath.Order.CREATE)
     public ServerResponse createOrder(
             @RequestParam("userId") final Integer userId,
@@ -55,7 +63,7 @@ public class OrderController {
         }
 
         //反序列化并校验
-        final OrderDTO orderDTO = encryptData.deserialize(encryptService, OrderDTO.class);
+        final OrderDTO orderDTO = encryptService.deserialize(encryptData, OrderDTO.class);
         final Optional<OrderModel> orderModel = ViewToModelUtil.getOrderModel(orderDTO);
         if (!orderModel.isPresent()) {
             throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
@@ -202,24 +210,33 @@ public class OrderController {
         return ServerResponse.create(null);
     }
 
-    @PostMapping(value = ApiPath.Order.TRADE_PAY)
-    public ServerResponse trade(
-            @RequestParam("userId") final Integer userId,
-            @RequestParam("token") final String token,
-            @RequestBody final ServerRequest request) throws Exception {
-        final OrderVO orderVO = request.deserialize(encryptService, OrderVO.class);
-        //校验用户登录态
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+    @GetMapping(value = ApiPath.Order.TRADE_PAY)
+    public String changeToPaidStatus(HttpServletRequest request) throws Exception {
+        Map<String, String> params = Maps.newHashMap();
+        request.getParameterMap().forEach((name, values) -> {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < values.length; i++) {
+                if (i == values.length - 1) {
+                    builder.append(values[i]);
+                } else {
+                    builder.append(values[i]).append(",");
+                }
+            }
+            params.put(name, builder.toString());
+        });
+
+        boolean signVerified = AlipaySignature.rsaCheckV1(params, aliPayConfig.getAliPayPublicKey(),
+                aliPayConfig.getCharset(), aliPayConfig.getSignType());
+
+        if (signVerified) {
+            String orderId = new String(
+                    request.getParameter(aliPayConfig.getTradePropertyName())
+                            .getBytes(StandardCharsets.ISO_8859_1),
+                    aliPayConfig.getCharset());
+            orderService.updateOrderStatus(orderId, OrderStatus.PAID, OrderStatus.PAID);
+        } else {
+            return "失败";
         }
-
-        //支付
-        ;;;
-
-        //更改订单状态
-        return orderService.updateOrderStatus(
-                orderVO.getOrderId(), OrderStatus.PAID, OrderStatus.PAID)
-                ? ServerResponse.create(null)
-                : ServerResponse.fail(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+        return "成功";
     }
 }

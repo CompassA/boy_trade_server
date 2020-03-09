@@ -62,4 +62,8 @@ public class ApiPath {
         public static final String DELETE = "/cart/delete";
         public static final String DELETE_CART = "/cart/delete_all";
     }
+
+    public static class Trade {
+        public static final String PAY = "/trade/pay";
+    }
 }
