@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.study.controller.ControllerExceptionHandler;
+import org.study.error.ControllerExceptionHandler;
 import org.study.error.ServerExceptionBean;
 
 import java.util.Map;
