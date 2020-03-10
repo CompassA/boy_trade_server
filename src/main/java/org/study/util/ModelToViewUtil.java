@@ -1,9 +1,11 @@
 package org.study.util;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.study.data.ProductDO;
 import org.study.data.UserDO;
+import org.study.service.OrderService;
 import org.study.service.model.CartModel;
 import org.study.service.model.OrderDetailModel;
 import org.study.service.model.OrderModel;
@@ -16,6 +18,7 @@ import org.study.view.OrderVO;
 import org.study.view.ProductVO;
 import org.study.view.UserVO;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +61,8 @@ public final class ModelToViewUtil {
                 .setPrice(product.getPrice())
                 .setSales(product.getSales())
                 .setStock(product.getStock())
-                .setCreateTime(TimeUtil.toString(product.getCreateTime()))
-                .setUpdateTime(TimeUtil.toString(product.getUpdateTime())));
+                .setCreateTime(MyTimeUtil.toString(product.getCreateTime()))
+                .setUpdateTime(MyTimeUtil.toString(product.getUpdateTime())));
     }
 
     public static Optional<List<ProductVO>> getProductViews(final List<ProductModel> products) {
@@ -85,6 +88,7 @@ public final class ModelToViewUtil {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
+        final Timestamp createTimestamp = orderModel.getCreateTime();
         return Optional.of(new OrderVO()
                 .setSellerId(orderModel.getSellerId())
                 .setOrderId(orderModel.getOrderId())
@@ -96,7 +100,9 @@ public final class ModelToViewUtil {
                 .setUserName(orderModel.getUserName())
                 .setUserPhone(orderModel.getUserPhone())
                 .setOrderDetails(orderDetails)
-                .setCreateTime(TimeUtil.toString(orderModel.getCreateTime())));
+                .setLeftTimeInfo(StringUtils.EMPTY)
+                .setExpireTime(MyTimeUtil.getDeadlineStr(createTimestamp, OrderService.HOUR_PERIOD))
+                .setCreateTime(MyTimeUtil.toString(createTimestamp)));
     }
 
     public static Optional<OrderDetailVO> getOrderDetailVO(final OrderDetailModel detailModel) {

@@ -11,6 +11,7 @@ import org.study.data.OrderDetailDO;
 import org.study.data.OrderMasterDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
+import org.study.service.DelayService;
 import org.study.service.OrderService;
 import org.study.service.ProductService;
 import org.study.service.SequenceService;
@@ -23,10 +24,12 @@ import org.study.service.model.enumdata.OrderStatus;
 import org.study.service.model.enumdata.ProductStatus;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
-import org.study.util.TimeUtil;
+import org.study.util.MyTimeUtil;
 import org.study.view.UserVO;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,6 +50,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private SequenceService sequenceService;
+
+    @Autowired
+    private DelayService delayService;
 
     @Autowired
     private OrderMasterMapper orderMasterMapper;
@@ -78,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
         orderModel.setOrderId(orderId).setOrderAmount(orderUsefulData.getOrderTotalPrice())
                 .setPayStatus(OrderStatus.CREATED.getValue())
                 .setOrderStatus(OrderStatus.CREATED.getValue())
-                .setCreateTime(TimeUtil.getCurrentTimestamp());
+                .setCreateTime(MyTimeUtil.getCurrentTimestamp());
         try {
             final int masterInsertedNum = ModelToDataUtil.getOrderMaster(orderModel)
                     .map(orderMasterMapper::insertOrderMaster)
@@ -94,6 +100,8 @@ public class OrderServiceImpl implements OrderService {
             rollBackStockDecrease(decreasedRecords);
             throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_INSERT_EXCEPTION);
         }
+
+        delayService.submitTask(orderId, orderModel.getCreateTime());
 
         //return the decreased data and order data to the producer
         return OrderMsgModel.builder()
@@ -203,7 +211,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void cancelOrder(final String orderId, final Integer userId) throws ServerException {
+    public void cancelOrder(final String orderId) throws ServerException {
         //validate the order
         final List<OrderDetailDO> details = orderDetailMapper.selectDetailByOrderId(orderId);
         if (CollectionUtils.isEmpty(details)) {
@@ -212,15 +220,25 @@ public class OrderServiceImpl implements OrderService {
 
         //change order status
         if (orderMasterMapper.cancelOrder(orderId) < 1) {
-            throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
+            return;
         }
 
         //increase stock and decrease sales
+        final Map<Integer, Integer> rollBackRecords = new HashMap<>(details.size());
         for (final OrderDetailDO detail : details) {
             final Integer productId = detail.getProductId();
             final Integer productAmount = detail.getProductAmount();
-            if (!productService.increaseStock(productId, productAmount)
-                    || !productService.decreaseSales(productId, productAmount)) {
+            //redis
+            if (productService.increaseStockDecreaseSales(productId, productAmount)) {
+                rollBackRecords.put(productId, productAmount);
+            } else {
+                this.rollBackStockDecrease(rollBackRecords);
+            }
+
+            //mysql
+            if (!productService.decreaseSales(productId, productAmount) ||
+                    !productService.increaseStock(productId, productAmount)) {
+                this.rollBackStockDecrease(rollBackRecords);
                 throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
             }
         }
@@ -238,6 +256,16 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(rollbackFor = Exception.class)
     public void rollBackStockDecrease(final Map<Integer, Integer> decreasedRecord) {
         decreasedRecord.forEach((k, v) -> productService.increaseStockDecreaseSales(k, v));
+    }
+
+    @Override
+    public boolean isOrderExpired(final Timestamp createTime) {
+        final Timestamp deadline = MyTimeUtil.getDeadline(createTime, HOUR_PERIOD);
+        return MyTimeUtil.getCurrentTimestamp().after(deadline);
+    }
+
+    public void rollBackStockIncrease(final Map<Integer, Integer> increasedMap) {
+        increasedMap.forEach((k, v) -> productService.decreaseStockIncreaseSales(k, v));
     }
 
     private static class OrderCache {

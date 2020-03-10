@@ -64,6 +64,7 @@ public class Producer {
         }
     }
 
+    @Deprecated
     public boolean asyncDecreaseStock(final Integer productId, final Integer amount) {
         try {
             final Message message = MessageFactory
@@ -77,6 +78,7 @@ public class Producer {
         return true;
     }
 
+    @Deprecated
     public boolean asyncIncreaseStock(final Integer productId, final Integer amount) {
         try {
             final Message message = MessageFactory
@@ -90,6 +92,7 @@ public class Producer {
         return true;
     }
 
+    @Deprecated
     public boolean asyncIncreaseSale(final Integer productId, final Integer amount) {
         try {
             final Message message = MessageFactory
@@ -103,6 +106,7 @@ public class Producer {
         return true;
     }
 
+    @Deprecated
     public boolean asyncDecreaseSale(final Integer productId, final Integer amount) {
         try {
             final Message message = MessageFactory

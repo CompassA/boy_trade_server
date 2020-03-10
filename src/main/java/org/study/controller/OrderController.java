@@ -206,7 +206,7 @@ public class OrderController {
         if (!sessionService.isLogin(token, userId)) {
             throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
         }
-        orderService.cancelOrder(orderId, userId);
+        orderService.cancelOrder(orderId);
         return ServerResponse.create(null);
     }
 

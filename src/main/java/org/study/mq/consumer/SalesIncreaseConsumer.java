@@ -23,6 +23,7 @@ import java.util.List;
  * @date 2020/3/2
  */
 @Component
+@Deprecated
 public class SalesIncreaseConsumer {
 
     private DefaultMQPushConsumer consumer;
@@ -54,6 +55,6 @@ public class SalesIncreaseConsumer {
         });
 
         //启动
-        consumer.start();
+        //consumer.start();
     }
 }

@@ -20,15 +20,19 @@ public class MQConfig {
     @Value("${mq.topic-name}")
     private String topicName;
 
+    @Deprecated
     @Value("${mq.incr-sales-group-name}")
     private String incrSalesGroup;
 
+    @Deprecated
     @Value("${mq.decr-sales-group-name}")
     private String decrSalesGroup;
 
+    @Deprecated
     @Value("${mq.incr-stock-group-name}")
     private String incrStockGroup;
 
+    @Deprecated
     @Value("${mq.decr-stock-group-name}")
     private String decrStockGroup;
 

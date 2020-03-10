@@ -39,4 +39,8 @@ public class OrderVO {
     private List<OrderDetailVO> orderDetails;
 
     private String createTime;
+
+    private String expireTime;
+
+    private String leftTimeInfo;
 }

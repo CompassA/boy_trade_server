@@ -6,7 +6,6 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,6 +23,7 @@ import java.util.List;
  * @date 2020/3/1
  */
 @Component
+@Deprecated
 public class StockDecreaseConsumer {
 
     private DefaultMQPushConsumer consumer;
@@ -55,6 +55,6 @@ public class StockDecreaseConsumer {
         });
 
         //启动
-        consumer.start();
+        //consumer.start();
     }
 }

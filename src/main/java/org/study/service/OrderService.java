@@ -5,6 +5,7 @@ import org.study.service.model.OrderModel;
 import org.study.service.model.OrderMsgModel;
 import org.study.service.model.enumdata.OrderStatus;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,9 @@ import java.util.Optional;
  * @date 2020/1/26
  */
 public interface OrderService {
+
+    /** 订单两小时后过期 */
+    int HOUR_PERIOD = 2;
 
     /**
      * 创建订单
@@ -88,14 +92,20 @@ public interface OrderService {
     /**
      * 取消订单
      * @param orderId 订单号
-     * @param userId 要取消订单的用户
      * @throws ServerException 创建订单失败
      */
-    void cancelOrder(final String orderId, final Integer userId) throws ServerException;
+    void cancelOrder(final String orderId) throws ServerException;
 
     /**
      * 回滚redis的库存扣减
      * @param decreasedRecord 扣减记录
      */
     void rollBackStockDecrease(final Map<Integer, Integer> decreasedRecord);
+
+    /**
+     * 判断订单是否已经过期
+     * @param createTime 订单创建时间
+     * @return 过期 true; 未过期 false
+     */
+    boolean isOrderExpired(final Timestamp createTime);
 }

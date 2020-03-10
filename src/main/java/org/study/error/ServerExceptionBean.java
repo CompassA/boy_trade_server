@@ -45,6 +45,8 @@ public enum ServerExceptionBean implements SystemException {
     ORDER_STATUS_EXCEPTION(50003, "修改订单状态失败"),
     /* 取消订单时SQL更新语句影响行数小于1 */
     ORDER_CANCEL_EXCEPTION(50004, "暂时无法取消订单"),
+    /* 订单距离下单时间已经超过两小时 */
+    ORDER_EXPIRED_EXCEPTION(50005, "订单已过期"),
     /* 商品已经售罄 */
     ORDER_FAIL_BY_SOLD_OUT_EXCEPTION(50005, "部分或全部商品已售罄, 无法下单"),
     /* 插入失败 */

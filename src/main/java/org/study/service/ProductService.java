@@ -54,15 +54,16 @@ public interface ProductService {
     List<ProductModel> getAllProduct() throws ServerException;
 
     /**
-     * 减库存
+     * redis减库存, 异步通知mysql减库存
      * @param productId 要减库存的商品的id
      * @param amount 要减去的数量
      * @return 减库存是否成功 true 成功； false 失败；
      */
+    @Deprecated
     boolean decreaseStock(final Integer productId, final Integer amount);
 
     /**
-     * 增库存
+     * mysql增库存
      * @param productId 要增库存的商品的id
      * @param amount 要增加的数量
      * @return 增库存是否成功 true 成功； false 失败；
@@ -70,7 +71,7 @@ public interface ProductService {
     boolean increaseStock(final Integer productId, final Integer amount);
 
     /**
-     * 减销量
+     * mysql减销量
      * @param productId 要减销量的商品的id
      * @param amount 减去的销量数
      * @return 减销量是否成功 true 成功； false 失败；
@@ -78,11 +79,12 @@ public interface ProductService {
     boolean decreaseSales(final Integer productId, final Integer amount);
 
     /**
-     * 增加销量
+     * redis增加销量, 异步通知mysql增加销量
      * @param productId 要加销量的商品的id
      * @param amount 增加的销量数
      * @return 增加销量是否成功 true 成功； false 失败；
      */
+    @Deprecated
     boolean increaseSales(final Integer productId, final Integer amount);
 
     /**

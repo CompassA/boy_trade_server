@@ -174,21 +174,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean increaseStock(final Integer productId, final Integer amount) {
-        //加redis库存
-        final String key = MyStringUtil.getPermanentKey(productId, PermanentKey.STOCK);
-        final long restNum = redisService.increaseKey(key, amount);
-
-        //发消息加mysql库存
-        final boolean increased = producer.asyncIncreaseStock(productId, amount);
-        if (increased) {
-            if (restNum - amount == 0) {
-                this.republish(productId);
-            }
-            redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT));
-        } else {
-            redisService.decreaseKey(key, amount);
-        }
-        return increased;
+        return stockMapper.increaseStock(productId, amount) > 0;
     }
 
     @Override
@@ -254,24 +240,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean decreaseSales(final Integer productId, final Integer amount) {
-        //减redis销量
-        final String key = MyStringUtil.getPermanentKey(productId, PermanentKey.SALES);
-        final Long resNum = redisService.decreaseKey(key, amount);
-
-        //扣减合法性判断
-        if (resNum == null || resNum < 0) {
-            redisService.increaseKey(key, amount);
-            return false;
-        }
-
-        //发消息加库存, 发送消息失败回滚数据
-        final boolean decreased = producer.asyncDecreaseSale(productId, amount);
-        if (decreased) {
-            redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT));
-        } else {
-            redisService.increaseKey(key, amount);
-        }
-        return decreased;
+        return saleMapper.decreaseSales(productId, amount) > 0;
     }
 
     /** only be used for test */
@@ -317,6 +286,10 @@ public class ProductServiceImpl implements ProductService {
         //delete stock in redis
         redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.STOCK));
         redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.SALES));
+
+        //delete cache
+        redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT_VALIDATION));
+        redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT));
 
         //delete sell out mark in redis
         redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.SOLD_OUT_MARK));

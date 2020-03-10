@@ -16,7 +16,9 @@ import org.study.controller.response.ServerRequest;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.service.EncryptService;
+import org.study.service.OrderService;
 import org.study.service.SessionService;
+import org.study.util.MyTimeUtil;
 import org.study.view.OrderVO;
 
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +41,9 @@ public class AliPayController {
     @Autowired
     private EncryptService encryptService;
 
+    @Autowired
+    private OrderService orderService;
+
     @PostMapping(ApiPath.Trade.PAY)
     public void trade(@RequestParam("userId") Integer userId, @RequestParam("token") String token,
             @RequestBody ServerRequest encryptedOrderData,
@@ -48,7 +53,9 @@ public class AliPayController {
         }
 
         final OrderVO orderVO = encryptService.deserialize(encryptedOrderData, OrderVO.class);
-
+        if (orderService.isOrderExpired(MyTimeUtil.parseStr(orderVO.getCreateTime()))) {
+            throw new ServerException(ServerExceptionBean.ORDER_EXPIRED_EXCEPTION);
+        }
         try {
             final AlipayClient client = AliPayFactory.getClient(config);
             final AlipayTradePagePayRequest request = AliPayFactory.getRequest(orderVO, config);
