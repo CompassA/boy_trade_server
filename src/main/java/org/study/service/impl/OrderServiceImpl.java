@@ -232,13 +232,13 @@ public class OrderServiceImpl implements OrderService {
             if (productService.increaseStockDecreaseSales(productId, productAmount)) {
                 rollBackRecords.put(productId, productAmount);
             } else {
-                this.rollBackStockDecrease(rollBackRecords);
+                this.rollBackStockIncrease(rollBackRecords);
             }
 
             //mysql
             if (!productService.decreaseSales(productId, productAmount) ||
                     !productService.increaseStock(productId, productAmount)) {
-                this.rollBackStockDecrease(rollBackRecords);
+                this.rollBackStockIncrease(rollBackRecords);
                 throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
             }
         }
@@ -258,14 +258,14 @@ public class OrderServiceImpl implements OrderService {
         decreasedRecord.forEach((k, v) -> productService.increaseStockDecreaseSales(k, v));
     }
 
+    public void rollBackStockIncrease(final Map<Integer, Integer> increasedMap) {
+        increasedMap.forEach((k, v) -> productService.decreaseStockIncreaseSales(k, v));
+    }
+
     @Override
     public boolean isOrderExpired(final Timestamp createTime) {
         final Timestamp deadline = MyTimeUtil.getDeadline(createTime, HOUR_PERIOD);
         return MyTimeUtil.getCurrentTimestamp().after(deadline);
-    }
-
-    public void rollBackStockIncrease(final Map<Integer, Integer> increasedMap) {
-        increasedMap.forEach((k, v) -> productService.decreaseStockIncreaseSales(k, v));
     }
 
     private static class OrderCache {
