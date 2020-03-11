@@ -3,7 +3,6 @@ package org.study.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.study.dao.ProductMapper;
 import org.study.dao.ProductSaleMapper;
 import org.study.dao.ProductStockMapper;
@@ -30,7 +29,6 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author fanqie
@@ -145,7 +143,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductModel> selectByUserId(final int userId) throws ServerException {
         final ProductDO condition = new ProductDO().setUserId(userId);
-        return queryCore(condition);
+        final List<ProductDO> products = productMapper.selectProduct(condition);
+        return DataToModelUtil.getProductModels(products, stockMapper, saleMapper);
     }
 
     @Override
@@ -243,13 +242,6 @@ public class ProductServiceImpl implements ProductService {
         return saleMapper.decreaseSales(productId, amount) > 0;
     }
 
-    /** only be used for test */
-    @Deprecated
-    @Override
-    public List<ProductModel> getAllProduct() throws ServerException {
-        return queryCore(new ProductDO().setStatus(ProductStatus.IN_SALE.getValue()));
-    }
-
     @Override
     public BigDecimal getProductPrice(final ProductModel productModel) {
         return productModel.getPrice();
@@ -296,47 +288,32 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void republish(final Integer productId) {
-        //change mysql
-        final ProductDO condition = new ProductDO().setId(productId)
-                .setStatus(ProductStatus.IN_SALE.getValue());
-        productMapper.upsertProduct(condition);
+    public List<ProductModel> selectFromBegin(Integer pageNum) throws ServerException {
+        final List<ProductDO> products = productMapper.selectFromBegin(pageNum * PAGE_SIZE);
+        return DataToModelUtil.getProductModels(products, stockMapper, saleMapper);
+    }
 
-        //delete sold out mark in redis
-        redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.SOLD_OUT_MARK));
+    @Override
+    public List<ProductModel> selectNextPage(Integer preLastId, Integer prePage,
+            Integer targetPage, Integer typeId) throws ServerException {
+        final int gap = (targetPage - prePage - 1) * PAGE_SIZE;
+        if (gap < 0) {
+            return Collections.emptyList();
+        }
+        List<ProductDO> products = productMapper.selectNextPage(preLastId, gap, PAGE_SIZE, typeId);
+        return DataToModelUtil.getProductModels(products, stockMapper, saleMapper);
+    }
 
-        //delete product validate cache
-        redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT_VALIDATION));
+    @Override
+    public List<ProductModel> selectPageNormal(Integer targetPage, Integer typeId) throws ServerException {
+        final int gap = (targetPage - 1) * PAGE_SIZE;
+        final List<ProductDO> productDO = productMapper.selectPageNormal(gap, PAGE_SIZE, typeId);
+        return DataToModelUtil.getProductModels(productDO, stockMapper, saleMapper);
     }
 
     @Override
     public boolean isSoldOut(final Integer id) {
         final String key = MyStringUtil.getPermanentKey(id, PermanentKey.SOLD_OUT_MARK);
         return redisService.getPermanentStr(key).isPresent();
-    }
-
-    private List<ProductModel> queryCore(final ProductDO condition) throws ServerException {
-        final List<ProductDO> products = productMapper.selectProduct(condition);
-        if (CollectionUtils.isEmpty(products)) {
-            return Collections.emptyList();
-        }
-
-        //获取所有商品id
-        final List<Integer> productIds = products.stream()
-                .map(ProductDO::getId).collect(Collectors.toList());
-
-        //查询商品销量, 库存
-        final List<ProductStockDO> stocks = stockMapper.selectProductStock(productIds);
-        final List<ProductSaleDO> sales = saleMapper.selectProductSale(productIds);
-
-        //组装成商品领域模型
-        final Optional<List<ProductModel>> models =
-                DataToModelUtil.getProductModels(products, stocks, sales);
-        if (models.isPresent()) {
-            return models.get();
-        }
-
-        throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
     }
 }

@@ -75,4 +75,28 @@
             #{key}
         </foreach>
     </select>
+
+    <select id="selectFromBegin" resultMap="ProductMap">
+        SELECT * FROM product
+        WHERE status != 2
+        ORDER BY id DESC
+        LIMIT 0, #{size}
+    </select>
+
+    <select id="selectNextPage" resultMap="ProductMap">
+        SELECT * FROM product
+        WHERE id > #{preLastId} AND status != 2
+        <if test="typeId != null"> AND category_id = #{typeId}</if>
+        ORDER BY id DESC
+        LIMIT #{gap}, #{pageSize}
+    </select>
+
+    <select id="selectPageNormal" resultMap="ProductMap">
+        SELECT * FROM product
+        WHERE status != 2
+        <if test="typeId != null"> AND category_id = #{typeId}</if>
+        ORDER BY id DESC
+        LIMIT #{gap}, #{pageSize}
+    </select>
+
 </mapper>

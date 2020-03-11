@@ -2,6 +2,8 @@ package org.study.util;
 
 import org.springframework.util.CollectionUtils;
 import org.study.dao.OrderDetailMapper;
+import org.study.dao.ProductSaleMapper;
+import org.study.dao.ProductStockMapper;
 import org.study.data.AddressInfoDO;
 import org.study.data.OrderDetailDO;
 import org.study.data.OrderMasterDO;
@@ -19,6 +21,7 @@ import org.study.service.model.ProductModel;
 import org.study.service.model.UserModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -178,5 +181,28 @@ public final class DataToModelUtil {
             return models;
         }
         throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+    }
+
+    public static List<ProductModel> getProductModels(List<ProductDO> products,
+            ProductStockMapper stockMapper, ProductSaleMapper saleMapper) throws ServerException {
+        if (CollectionUtils.isEmpty(products)) {
+            return Collections.emptyList();
+        }
+
+        //获取所有商品id
+        final List<Integer> productIds = products.stream()
+                .map(ProductDO::getId).collect(Collectors.toList());
+
+        //查询商品销量, 库存
+        final List<ProductStockDO> stocks = stockMapper.selectProductStock(productIds);
+        final List<ProductSaleDO> sales = saleMapper.selectProductSale(productIds);
+
+        //组装成商品领域模型
+        final Optional<List<ProductModel>> models =
+                DataToModelUtil.getProductModels(products, stocks, sales);
+        if (models.isPresent()) {
+            return models.get();
+        }
+        throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
     }
 }

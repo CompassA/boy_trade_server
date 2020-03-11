@@ -65,16 +65,16 @@ public final class ModelToViewUtil {
                 .setUpdateTime(MyTimeUtil.toString(product.getUpdateTime())));
     }
 
-    public static Optional<List<ProductVO>> getProductViews(final List<ProductModel> products) {
+    public static List<ProductVO> getProductViews(final List<ProductModel> products) {
         final List<ProductVO> views = products.stream()
                 .map(ModelToViewUtil::getProductVO)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
         if (CollectionUtils.isEmpty(views)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
-        return Optional.of(views);
+        return views;
     }
 
     public static Optional<OrderVO> getOrderVO(final OrderModel orderModel) {

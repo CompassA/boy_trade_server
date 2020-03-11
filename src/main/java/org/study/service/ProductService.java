@@ -13,6 +13,9 @@ import java.util.List;
  */
 public interface ProductService {
 
+    /** 每页有多少商品 */
+    int PAGE_SIZE = 12;
+
     /**
      * 创建商品
      * @param productModel 创建的商品信息
@@ -44,14 +47,6 @@ public interface ProductService {
      * @throws ServerException 查询失败
      */
     List<ProductModel> selectByUserId(final int userId) throws ServerException;
-
-    /**
-     * 仅测试用
-     * @return 所有的商品
-     * @throws ServerException 查询失败
-     */
-    @Deprecated
-    List<ProductModel> getAllProduct() throws ServerException;
 
     /**
      * redis减库存, 异步通知mysql减库存
@@ -124,13 +119,6 @@ public interface ProductService {
     void withdrawFromShelves(final Integer productId);
 
     /**
-     * 将商品重新上架
-     * @param productId 商品id
-     * @throws ServerException 上架失败
-     */
-    void republish(final Integer productId) throws ServerException;
-
-    /**
      * 商品是否售罄
      * @param id 商品id
      * @return 售罄 true; 未售罄 false
@@ -142,4 +130,32 @@ public interface ProductService {
      * @param productId 目标商品id
      */
     void removeProduct(final Integer productId);
+
+    /**
+     * 查询前pageNum个页的数据
+     * @param pageNum pageNum
+     * @return 所有页数据
+     * @throws ServerException 商品不存在
+     */
+    List<ProductModel> selectFromBegin(final Integer pageNum) throws ServerException;
+
+    /**
+     * 向后查询页数据
+     * @param preLastId 上一个最后一个商品的id
+     * @param prePage 上一页页码
+     * @param targetPage 目标页
+     * @param typeId 类别
+     * @return 页数据
+     */
+    List<ProductModel> selectNextPage(Integer preLastId,
+                                      Integer prePage,
+                                      Integer targetPage,
+                                      Integer typeId) throws ServerException;
+
+    /**
+     * 使用limit分页查询数据
+     * @param targetPage 目标页码
+     * @return 页数据
+     */
+    List<ProductModel> selectPageNormal(Integer targetPage, Integer typeId) throws ServerException;
 }

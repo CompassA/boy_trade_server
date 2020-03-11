@@ -40,4 +40,31 @@ public interface ProductMapper {
      * @return 一组商品信息
      */
     List<ProductDO> selectInKeyList(@Param("keyList") final List<Integer> keyList);
+
+    /**
+     * 截取表的前n个商品
+     * @param n 需要多少商品
+     * @return 商品记录
+     */
+    List<ProductDO> selectFromBegin(@Param("size") int n);
+
+    /**
+     * 向后查询页码
+     * @param preLastId 上一页最后的商品的id
+     * @param gap 上一页最后一个商品与这一页第一个商品之间隔了多少商品
+     * @param pageSize 每页有多少商品
+     * @param typeId 商品类别
+     * @return 页商品记录
+     */
+    List<ProductDO> selectNextPage(@Param("preLastId") Integer preLastId, @Param("gap") Integer gap,
+            @Param("pageSize") Integer pageSize, @Param("typeId") Integer typeId);
+
+    /**
+     * 普通分页查询
+     * @param gap 间隙
+     * @param size 每页有多少商品
+     * @return 页商品记录
+     */
+    List<ProductDO> selectPageNormal(@Param("gap") Integer gap, @Param("pageSize") Integer size,
+                                     @Param("typeId") Integer typeId);
 }
