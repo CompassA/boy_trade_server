@@ -104,7 +104,7 @@ public class UserController {
             throws ServerException {
         //获取缓存
         final String key = MyStringUtil.getCacheKey(userId, CacheType.USER_INFO);
-        final Optional<UserVO> cache = redisService.getCache(key, UserVO.class);
+        final Optional<UserVO> cache = redisService.getCache(key);
         if (cache.isPresent()) {
             return ServerResponse.create(cache.get());
         }

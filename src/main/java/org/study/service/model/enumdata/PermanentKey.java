@@ -18,6 +18,8 @@ public enum PermanentKey {
     CART("cart"),
     /* 售罄标志 */
     SOLD_OUT_MARK("out"),
+    /* 已支付数量 */
+    PAID_NUM("paid"),
     ;
 
     private final String prefix;

@@ -47,19 +47,19 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public <T> Optional<T> getCache(final String key, final Class<T> type) {
-        if (key == null || type == null) {
+    public <T> Optional<T> getCache(final String key) {
+        if (key == null) {
             return Optional.empty();
         }
         try {
             //先获取本地内存
             Object value = localCache.getIfPresent(key);
-            if (value != null && type.equals(value.getClass())) {
+            if (value != null) {
                 return Optional.of((T) value);
             }
             //本地内存不存在 获取redis缓存
             value = redisTemplate.opsForValue().get(key);
-            if (value != null && type.equals(value.getClass())) {
+            if (value != null) {
                 //更新本地缓存
                 localCache.put(key, value);
                 return Optional.of((T) value);
@@ -71,12 +71,9 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public <T> Optional<T> getCacheWithoutLocalCache(final String key, final Class<T> type) {
+    public <T> Optional<T> getCacheWithoutLocalCache(final String key) {
         final Object cache = redisTemplate.opsForValue().get(key);
-        if (cache != null && type.equals(cache.getClass())) {
-            return Optional.of((T) cache);
-        }
-        return Optional.empty();
+        return Optional.ofNullable((T) cache);
     }
 
     @Override

@@ -135,9 +135,8 @@ public interface ProductService {
      * 查询前pageNum个页的数据
      * @param pageNum pageNum
      * @return 所有页数据
-     * @throws ServerException 商品不存在
      */
-    List<ProductModel> selectFromBegin(final Integer pageNum) throws ServerException;
+    List<ProductModel> selectFromBegin(final Integer pageNum);
 
     /**
      * 向后查询页数据
@@ -147,15 +146,36 @@ public interface ProductService {
      * @param typeId 类别
      * @return 页数据
      */
-    List<ProductModel> selectNextPage(Integer preLastId,
-                                      Integer prePage,
-                                      Integer targetPage,
-                                      Integer typeId) throws ServerException;
+    List<ProductModel> selectNextPage(Integer preLastId, Integer prePage, Integer targetPage,
+                                      Integer typeId);
+
 
     /**
      * 使用limit分页查询数据
      * @param targetPage 目标页码
+     * @param typeId 类别
      * @return 页数据
      */
-    List<ProductModel> selectPageNormal(Integer targetPage, Integer typeId) throws ServerException;
+    List<ProductModel> selectPageNormal(Integer targetPage, Integer typeId);
+
+    /**
+     * 获取该商品已付款的件数
+     * @param id 商品id
+     * @return 件数
+     */
+    Integer getPaidNum(Integer id);
+
+    /**
+     * 增加商品付款数
+     * @param id 商品id
+     * @param amount 要增加的数量
+     */
+    void increasePaidNum(Integer id, Integer amount);
+
+    /**
+     * 是否所有买家都付了款
+     * @param id 商品id
+     * @return 全都付款 true
+     */
+    boolean isProductAllPaid(Integer id);
 }

@@ -25,6 +25,8 @@ public class ProductVO {
 
     private Byte payStatus;
 
+    private Integer paidNum;
+
     private Integer categoryId;
 
     private Integer sales;

@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.study.cache.LRUFactory;
-import org.study.cache.MyCache;
+import org.study.cache.LocalCacheBean;
 import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
@@ -22,11 +21,7 @@ import org.study.util.MyStringUtil;
 import org.study.view.PageVO;
 import org.study.view.ProductVO;
 
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -46,29 +41,8 @@ public class ProductController {
     @Autowired
     private RedisService redisService;
 
-    private MyCache<Integer, PageVO> cache;
-
-    @PostConstruct
-    public void initCache() {
-        cache = LRUFactory.getCache();
-        try {
-            final List<ProductVO> views = ModelToViewUtil.getProductViews(
-                    productService.selectFromBegin(10));
-
-            final Map<Integer, List<ProductVO>> pages = new HashMap<>(10);
-            for (int i = 0; i < views.size(); ++i) {
-                final int pageNo = (i / ProductService.PAGE_SIZE) + 1;
-                if (!pages.containsKey(pageNo)) {
-                    pages.put(pageNo, new ArrayList<>(ProductService.PAGE_SIZE));
-                }
-                pages.get(pageNo).add(views.get(i));
-            }
-
-            pages.forEach((k, v) -> cache.put(k, new PageVO(k, v)));
-        } catch (final ServerException e) {
-            e.printStackTrace();
-        }
-    }
+    @Autowired
+    private LocalCacheBean cache;
 
     @PutMapping(value = ApiPath.Product.CREATE)
     public ServerResponse createProduct(
@@ -93,16 +67,16 @@ public class ProductController {
         if (!productVO.isPresent()) {
             throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
         }
-        cache.invalidate();
+        cache.getMainPageCache().invalidate();
         return ServerResponse.create(productVO.get());
     }
 
     @GetMapping(value = ApiPath.Product.PAGE)
     public ServerResponse getPageView(
             @RequestParam("prePage") Integer prePage, @RequestParam("targetPage") int targetPage,
-            @RequestParam("preLastId") int preLastId) throws ServerException {
+            @RequestParam("preLastId") int preLastId) {
         //get from cache
-        final PageVO pageVO = cache.get(targetPage);
+        final PageVO pageVO = cache.getMainPageCache().get(targetPage);
         if (pageVO != null) {
             return ServerResponse.create(pageVO);
         }
@@ -115,7 +89,7 @@ public class ProductController {
 
         //update cache
         final PageVO page = new PageVO(targetPage, views);
-        cache.put(targetPage, page);
+        cache.getMainPageCache().put(targetPage, page);
         return ServerResponse.create(page);
     }
 
@@ -135,19 +109,18 @@ public class ProductController {
             throws ServerException {
         //取缓存
         final String key = MyStringUtil.getCacheKey(productId, CacheType.PRODUCT);
-        final Optional<ProductVO> cache =
-                redisService.getCacheWithoutLocalCache(key, ProductVO.class);
+        final Optional<ProductVO> cache = redisService.getCacheWithoutLocalCache(key);
         if (cache.isPresent()) {
             return ServerResponse.create(cache.get());
         }
 
         //查询数据库
         final ProductModel productModel = productService.selectByPrimaryKey(productId);
-        final Optional<ProductVO> productVO = ModelToViewUtil.getProductVO(productModel);
-        if (productVO.isPresent()) {
-            redisService.cacheDataWithoutLocalCache(key, productVO.get());
-            return ServerResponse.create(productVO.get());
-        }
-        throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+        return ModelToViewUtil.getProductVO(productModel)
+                .map(productVO -> {
+                    productVO.setPaidNum(productService.getPaidNum(productId));
+                    redisService.cacheDataWithoutLocalCache(key, productVO);
+                    return ServerResponse.create(productVO);
+                }).orElse(ServerResponse.fail(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION));
     }
 }

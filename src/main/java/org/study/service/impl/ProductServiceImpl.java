@@ -117,7 +117,7 @@ public class ProductServiceImpl implements ProductService {
         ProductDO productInfo = null;
 
         final String key = MyStringUtil.getCacheKey(productId, CacheType.PRODUCT_VALIDATION);
-        final Optional<ProductDO> cache = redisService.getCache(key, ProductDO.class);
+        final Optional<ProductDO> cache = redisService.getCache(key);
         if (cache.isPresent()) {
             productInfo = cache.get();
         } else {
@@ -278,6 +278,7 @@ public class ProductServiceImpl implements ProductService {
         //delete stock in redis
         redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.STOCK));
         redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.SALES));
+        redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.PAID_NUM));
 
         //delete cache
         redisService.deleteKey(MyStringUtil.getCacheKey(productId, CacheType.PRODUCT_VALIDATION));
@@ -288,32 +289,54 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductModel> selectFromBegin(Integer pageNum) throws ServerException {
+    public List<ProductModel> selectFromBegin(Integer pageNum) {
         final List<ProductDO> products = productMapper.selectFromBegin(pageNum * PAGE_SIZE);
-        return DataToModelUtil.getProductModels(products, stockMapper, saleMapper);
+        return DataToModelUtil.getProductPageModels(products);
     }
 
     @Override
     public List<ProductModel> selectNextPage(Integer preLastId, Integer prePage,
-            Integer targetPage, Integer typeId) throws ServerException {
+                                             Integer targetPage, Integer typeId) {
         final int gap = (targetPage - prePage - 1) * PAGE_SIZE;
         if (gap < 0) {
             return Collections.emptyList();
         }
         List<ProductDO> products = productMapper.selectNextPage(preLastId, gap, PAGE_SIZE, typeId);
-        return DataToModelUtil.getProductModels(products, stockMapper, saleMapper);
+        return DataToModelUtil.getProductPageModels(products);
     }
 
     @Override
-    public List<ProductModel> selectPageNormal(Integer targetPage, Integer typeId) throws ServerException {
+    public List<ProductModel> selectPageNormal(Integer targetPage, Integer typeId) {
         final int gap = (targetPage - 1) * PAGE_SIZE;
         final List<ProductDO> productDO = productMapper.selectPageNormal(gap, PAGE_SIZE, typeId);
-        return DataToModelUtil.getProductModels(productDO, stockMapper, saleMapper);
+        return DataToModelUtil.getProductPageModels(productDO);
     }
 
     @Override
     public boolean isSoldOut(final Integer id) {
         final String key = MyStringUtil.getPermanentKey(id, PermanentKey.SOLD_OUT_MARK);
         return redisService.getPermanentStr(key).isPresent();
+    }
+
+    @Override
+    public Integer getPaidNum(Integer id) {
+        final String key = MyStringUtil.getPermanentKey(id, PermanentKey.PAID_NUM);
+        return redisService.getPermanentInt(key).orElse(0);
+    }
+
+    @Override
+    public void increasePaidNum(Integer id, Integer amount) {
+        final String key = MyStringUtil.getPermanentKey(id, PermanentKey.PAID_NUM);
+        redisService.increaseKey(key, amount == null ? 0 : amount);
+    }
+
+    @Override
+    public boolean isProductAllPaid(Integer id) {
+        final String stockKey = MyStringUtil.getPermanentKey(id, PermanentKey.STOCK);
+        final String salesKey = MyStringUtil.getPermanentKey(id, PermanentKey.SALES);
+        final int stock = redisService.getPermanentInt(stockKey).orElse(0);
+        final int sales = redisService.getPermanentInt(salesKey).orElse(0);
+        final int paidNum = this.getPaidNum(id);
+        return paidNum == sales + stock;
     }
 }

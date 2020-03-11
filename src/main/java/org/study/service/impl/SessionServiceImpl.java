@@ -29,7 +29,7 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public Optional<UserModel> getUserModel(final String token) {
-        return service.getCache(token, UserModel.class);
+        return service.getCache(token);
     }
 
     @Override

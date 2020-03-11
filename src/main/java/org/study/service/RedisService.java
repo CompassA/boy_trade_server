@@ -29,20 +29,18 @@ public interface RedisService {
     /**
      * 得到缓存数据
      * @param key 缓存的键值
-     * @param type 要缓存的数据
      * @param <T> 缓存数据类型
      * @return 缓存数据
      */
-    <T> Optional<T> getCache(final String key, final Class<T> type);
+    <T> Optional<T> getCache(final String key);
 
     /**
      * 得到缓存数据(无本地缓存)
      * @param key 缓存的键值
-     * @param type 要缓存的数据
      * @param <T> 缓存数据类型
      * @return 缓存数据
      */
-    <T> Optional<T> getCacheWithoutLocalCache(final String key, final Class<T> type);
+    <T> Optional<T> getCacheWithoutLocalCache(final String key);
 
     /**
      * 为键值设置过期时间

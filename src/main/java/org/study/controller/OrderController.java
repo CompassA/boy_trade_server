@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.study.cache.LocalCacheBean;
 import org.study.config.AliPayConfig;
 import org.study.controller.response.ServerRequest;
 import org.study.controller.response.ServerResponse;
@@ -17,6 +18,7 @@ import org.study.error.ServerExceptionBean;
 import org.study.mq.Producer;
 import org.study.service.EncryptService;
 import org.study.service.OrderService;
+import org.study.service.ProductService;
 import org.study.service.SessionService;
 import org.study.service.model.OrderModel;
 import org.study.service.model.enumdata.OrderStatus;
@@ -47,10 +49,16 @@ public class OrderController {
     private SessionService sessionService;
 
     @Autowired
+    private ProductService productService;
+
+    @Autowired
     private Producer producer;
 
     @Autowired
     private AliPayConfig aliPayConfig;
+
+    @Autowired
+    private LocalCacheBean cache;
 
     @PostMapping(value = ApiPath.Order.CREATE)
     public ServerResponse createOrder(
@@ -229,10 +237,22 @@ public class OrderController {
                 aliPayConfig.getCharset(), aliPayConfig.getSignType());
 
         if (signVerified) {
-            String orderId = new String(
+            final String orderId = new String(
                     request.getParameter(aliPayConfig.getTradePropertyName())
                             .getBytes(StandardCharsets.ISO_8859_1),
                     aliPayConfig.getCharset());
+
+            //increase paid num, remove product if all buyer were paid
+            orderService.selectOrderById(orderId).map(OrderModel::getProductDetails)
+                    .ifPresent(detailModels -> detailModels.forEach(detailModel -> {
+                        final Integer id = detailModel.getProductId();
+                        productService.increasePaidNum(id, detailModel.getProductAmount());
+                        if (productService.isProductAllPaid(id)) {
+                            productService.removeProduct(id);
+                            cache.getMainPageCache().invalidate();
+                        }
+                    }));
+
             orderService.updateOrderStatus(orderId, OrderStatus.PAID, OrderStatus.PAID);
         } else {
             return "失败";

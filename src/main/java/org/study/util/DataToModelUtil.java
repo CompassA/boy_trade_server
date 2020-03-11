@@ -183,6 +183,25 @@ public final class DataToModelUtil {
         throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
     }
 
+    /** 没有拼装销量、库存、付款数 */
+    public static List<ProductModel> getProductPageModels(
+            List<ProductDO> products) {
+        if (CollectionUtils.isEmpty(products)) {
+            return Collections.emptyList();
+        }
+        return products.stream().map(productDO -> new ProductModel().setProductId(productDO.getId())
+                .setUserId(productDO.getUserId())
+                .setProductName(productDO.getName())
+                .setCategoryId(productDO.getCategoryId())
+                .setDescription(productDO.getDescription())
+                .setIconUrl(productDO.getIconUrl())
+                .setPayStatus(productDO.getStatus())
+                .setPrice(productDO.getPrice())
+                .setCreateTime(productDO.getCreateTime())
+                .setUpdateTime(productDO.getUpdateTime())
+        ).collect(Collectors.toList());
+    }
+
     public static List<ProductModel> getProductModels(List<ProductDO> products,
             ProductStockMapper stockMapper, ProductSaleMapper saleMapper) throws ServerException {
         if (CollectionUtils.isEmpty(products)) {
