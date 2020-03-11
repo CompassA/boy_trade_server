@@ -54,7 +54,6 @@
     <select id="selectProduct" parameterType="org.study.data.ProductDO" resultMap="ProductMap">
         SELECT * FROM product
         <where>
-            status != 2
             <if test="product.id != null">AND id = #{product.id}</if>
             <if test="product.name != null">AND name = #{product.name}</if>
             <if test="product.categoryId != null">AND category_id = #{product.categoryId}</if>
