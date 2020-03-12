@@ -25,7 +25,6 @@ import java.util.UUID;
  * @date 2020/1/19
  */
 @Service
-@Deprecated
 public class FileServiceImpl implements FileService {
 
     private static final String JPG_SUFFIX = ".jpg";
@@ -36,6 +35,7 @@ public class FileServiceImpl implements FileService {
     private FileServiceConfig config;
 
     @Override
+    @Deprecated
     public String uploadFile(
             final MultipartFile file, final UserModel user) throws ServerException {
         final String fileName = this.generateFileName(file, user);
@@ -60,6 +60,36 @@ public class FileServiceImpl implements FileService {
         des.delete();
         return resourceUrl;
     }
+
+    @Override
+    public String uploadFileToLocal(MultipartFile file, UserModel user) throws ServerException {
+        //file name
+        final String fileName = generateFileName(file, user);
+
+        //path after nginx url
+        final String serverPath = user.getUserId() + File.separator + fileName;
+
+        //local path
+        final File des = new File(config.getLocalImageDictionary() + serverPath);
+
+        //create parent dictionaries
+        if (!des.getParentFile().exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            des.mkdirs();
+        }
+
+        //save file
+        try {
+            file.transferTo(des);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ServerException(ServerExceptionBean.FILE_EXCEPTION);
+        }
+
+        //generate url
+        return config.getNginxResourceUrl() + serverPath;
+    }
+
 
     /**
      * 将文件上传到ftp
