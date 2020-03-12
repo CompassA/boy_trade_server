@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface ProductService {
 
-    List<Integer> CATEGORY_LIST = Arrays.asList(0, 1, 2, 3, 4, 5, 6 ,7);
+    List<Integer> CATEGORY_LIST = Arrays.asList(7, 6, 5, 4, 3, 2, 1, 0);
 
     /** 每页有多少商品 */
     int PAGE_SIZE = 12;

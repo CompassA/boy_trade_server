@@ -1,6 +1,10 @@
 package org.study.view;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
@@ -11,11 +15,15 @@ import java.util.List;
  */
 @ToString
 @Getter
+@Setter
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryHomeVO {
 
-    private final Integer categoryId;
+    private Integer categoryId;
 
-    private final List<ProductVO> topFive;
+    private List<ProductVO> topFive;
 
     public CategoryHomeVO(final Integer categoryId, final List<ProductVO> topFive) {
         this.categoryId = categoryId;

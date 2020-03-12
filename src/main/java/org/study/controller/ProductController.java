@@ -135,11 +135,32 @@ public class ProductController {
 
     @GetMapping(ApiPath.Product.HOME_PRODUCTS)
     public ServerResponse getHomePageView() {
+        //local cache
+        HomePageVO data = cache.getHomePageCache();
+        if (data != null) {
+            return ServerResponse.create(data);
+        }
+
+        //redis cache
+        final String redisKey = MyStringUtil.getCacheKey(0, CacheType.HOME_PAGE);
+        Optional<HomePageVO> redisCache = redisService.getCache(redisKey);
+        if (redisCache.isPresent()) {
+            data = redisCache.get();
+            cache.cacheHomePage(data);
+            return ServerResponse.create(data);
+        }
+
+        //mysql
         final List<CategoryHomeVO> topFives = new ArrayList<>(ProductService.CATEGORY_LIST.size());
         for (final Integer id : ProductService.CATEGORY_LIST) {
             List<ProductVO> vo = ModelToViewUtil.getProductViews(productService.selectTopFive(id));
             topFives.add(new CategoryHomeVO(id, vo));
         }
-        return ServerResponse.create(new HomePageVO(topFives));
+
+        //re cache
+        data = new HomePageVO(topFives);
+        redisService.cacheDataWithoutLocalCache(redisKey, data);
+        cache.cacheHomePage(data);
+        return ServerResponse.create(data);
     }
 }
