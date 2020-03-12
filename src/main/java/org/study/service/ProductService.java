@@ -5,6 +5,7 @@ import org.study.error.ServerException;
 import org.study.service.model.ProductModel;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,6 +13,8 @@ import java.util.List;
  * @date 2020/1/12
  */
 public interface ProductService {
+
+    List<Integer> CATEGORY_LIST = Arrays.asList(0, 1, 2, 3, 4, 5, 6 ,7);
 
     /** 每页有多少商品 */
     int PAGE_SIZE = 12;
@@ -47,6 +50,13 @@ public interface ProductService {
      * @throws ServerException 查询失败
      */
     List<ProductModel> selectByUserId(final int userId) throws ServerException;
+
+    /**
+     * 查询某类别最新的5个商品(不含库存、销量、付款数)
+     * @param typeId 类别id
+     * @return 商品信息
+     */
+    List<ProductModel> selectTopFive(final Integer typeId);
 
     /**
      * redis减库存, 异步通知mysql减库存

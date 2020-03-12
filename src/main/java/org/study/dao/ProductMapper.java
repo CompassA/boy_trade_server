@@ -63,8 +63,16 @@ public interface ProductMapper {
      * 普通分页查询
      * @param gap 间隙
      * @param size 每页有多少商品
+     * @param typeId 商品类别
      * @return 页商品记录
      */
     List<ProductDO> selectPageNormal(@Param("gap") Integer gap, @Param("pageSize") Integer size,
                                      @Param("typeId") Integer typeId);
+
+    /**
+     * 查询某类别最新的5个商品
+     * @param typeId 商品类别
+     * @return 记录列表
+     */
+    List<ProductDO> selectTopFive(@Param("typeId") Integer typeId);
 }

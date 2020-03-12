@@ -18,9 +18,12 @@ import org.study.service.model.ProductModel;
 import org.study.service.model.enumdata.CacheType;
 import org.study.util.ModelToViewUtil;
 import org.study.util.MyStringUtil;
+import org.study.view.CategoryHomeVO;
+import org.study.view.HomePageVO;
 import org.study.view.PageVO;
 import org.study.view.ProductVO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,5 +125,21 @@ public class ProductController {
                     redisService.cacheDataWithoutLocalCache(key, productVO);
                     return ServerResponse.create(productVO);
                 }).orElse(ServerResponse.fail(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION));
+    }
+
+    public ServerResponse getCategoryPageView(
+            @RequestParam("prePage") Integer pre, @RequestParam("targetPage") Integer target,
+            @RequestParam("preLastId") Integer preLastId, @RequestParam("typeId") Integer typeId) {
+        return null;
+    }
+
+    @GetMapping(ApiPath.Product.HOME_PRODUCTS)
+    public ServerResponse getHomePageView() {
+        final List<CategoryHomeVO> topFives = new ArrayList<>(ProductService.CATEGORY_LIST.size());
+        for (final Integer id : ProductService.CATEGORY_LIST) {
+            List<ProductVO> vo = ModelToViewUtil.getProductViews(productService.selectTopFive(id));
+            topFives.add(new CategoryHomeVO(id, vo));
+        }
+        return ServerResponse.create(new HomePageVO(topFives));
     }
 }

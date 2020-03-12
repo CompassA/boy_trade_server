@@ -148,6 +148,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductModel> selectTopFive(final Integer typeId) {
+        if (typeId == null) {
+            return Collections.emptyList();
+        }
+        final List<ProductDO> productData = productMapper.selectTopFive(typeId);
+        return DataToModelUtil.getProductPageModels(productData);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean decreaseStock(final Integer productId, final Integer amount) {
         //减redis库存

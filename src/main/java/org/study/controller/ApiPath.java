@@ -35,6 +35,8 @@ public class ApiPath {
         public static final String DETAIL = "/product/detail";
         /* 获取用户所有发布商品的状态 */
         public static final String USER_PRODUCTS = "/product/list";
+        /* 获取主页展示的商品 */
+        public static final String HOME_PRODUCTS = "/product/home";
     }
 
     public static class LoadingFile {

@@ -84,7 +84,7 @@
 
     <select id="selectNextPage" resultMap="ProductMap">
         SELECT * FROM product
-        WHERE id > #{preLastId} AND status != 2
+        WHERE #{preLastId} > id AND status != 2
         <if test="typeId != null"> AND category_id = #{typeId}</if>
         ORDER BY id DESC
         LIMIT #{gap}, #{pageSize}
@@ -96,6 +96,14 @@
         <if test="typeId != null"> AND category_id = #{typeId}</if>
         ORDER BY id DESC
         LIMIT #{gap}, #{pageSize}
+    </select>
+
+    <select id="selectTopFive" resultMap="ProductMap">
+        SELECT * FROM product
+        WHERE status != 2
+        <if test="typeId != null"> AND category_id = #{typeId}</if>
+        ORDER BY id DESC
+        LIMIT 0, 5
     </select>
 
 </mapper>
