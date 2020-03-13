@@ -30,8 +30,6 @@ public class LocalCacheBean {
 
     private static final Integer HOME_PAGE_CACHE_KEY = 0;
 
-    private static final Integer IGNORE_ID = -1;
-
     @Autowired
     private ProductService productService;
 
@@ -90,14 +88,14 @@ public class LocalCacheBean {
     }
 
     public PageVO getPageCache(final Integer typeId, final Integer page) {
-        if (typeId.equals(IGNORE_ID)) {
+        if (typeId == null) {
             return mainPageCache.get(page);
         }
         return categoryPageCache.get(getCategoryPageKey(typeId, page));
     }
 
     public void cachePage(final Integer typeId, final Integer page, final PageVO pageVO) {
-        if (typeId.equals(IGNORE_ID)) {
+        if (typeId == null) {
             mainPageCache.put(page, pageVO);
         }
         categoryPageCache.put(getCategoryPageKey(typeId, page), pageVO);

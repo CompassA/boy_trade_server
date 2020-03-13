@@ -75,15 +75,14 @@ public class ProductController {
     }
 
     @GetMapping(value = ApiPath.Product.PAGE)
-    public ServerResponse getPageView(
-            @RequestParam("prePage") int prePage, @RequestParam("targetPage") int targetPage,
-            @RequestParam("preLastId") int preLastId, @RequestParam("typeId") int typeId) {
+    public ServerResponse getPageView(@RequestParam("prePage") int prePage,
+            @RequestParam("targetPage") int targetPage, @RequestParam("preLastId") int preLastId,
+            @RequestParam(value = "typeId", required = false) Integer typeId) {
         //get from cache
         final PageVO pageVO = cache.getPageCache(typeId, targetPage);
         if (pageVO != null) {
             return ServerResponse.create(pageVO);
         }
-
         //get from mysql
         final List<ProductVO> views = ModelToViewUtil.getProductViews(
                 (preLastId != 0 && prePage < targetPage)
