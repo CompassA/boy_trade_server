@@ -249,7 +249,7 @@ public class OrderController {
                         productService.increasePaidNum(id, detailModel.getProductAmount());
                         if (productService.isProductAllPaid(id)) {
                             productService.removeProduct(id);
-                            cache.getMainPageCache().invalidate();
+                            cache.invalidatePageCache();
                         }
                     }));
 

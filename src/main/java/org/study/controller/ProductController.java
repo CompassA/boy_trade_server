@@ -70,16 +70,16 @@ public class ProductController {
         if (!productVO.isPresent()) {
             throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
         }
-        cache.getMainPageCache().invalidate();
+        cache.invalidatePageCache();
         return ServerResponse.create(productVO.get());
     }
 
     @GetMapping(value = ApiPath.Product.PAGE)
     public ServerResponse getPageView(
-            @RequestParam("prePage") Integer prePage, @RequestParam("targetPage") int targetPage,
-            @RequestParam("preLastId") int preLastId) {
+            @RequestParam("prePage") int prePage, @RequestParam("targetPage") int targetPage,
+            @RequestParam("preLastId") int preLastId, @RequestParam("typeId") int typeId) {
         //get from cache
-        final PageVO pageVO = cache.getMainPageCache().get(targetPage);
+        final PageVO pageVO = cache.getPageCache(typeId, targetPage);
         if (pageVO != null) {
             return ServerResponse.create(pageVO);
         }
@@ -87,12 +87,12 @@ public class ProductController {
         //get from mysql
         final List<ProductVO> views = ModelToViewUtil.getProductViews(
                 (preLastId != 0 && prePage < targetPage)
-                        ? productService.selectNextPage(preLastId, prePage, targetPage, null)
-                        : productService.selectPageNormal(targetPage, null));
+                        ? productService.selectNextPage(preLastId, prePage, targetPage, typeId)
+                        : productService.selectPageNormal(targetPage, typeId));
 
         //update cache
         final PageVO page = new PageVO(targetPage, views);
-        cache.getMainPageCache().put(targetPage, page);
+        cache.cachePage(typeId, targetPage, page);
         return ServerResponse.create(page);
     }
 
@@ -125,12 +125,6 @@ public class ProductController {
                     redisService.cacheDataWithoutLocalCache(key, productVO);
                     return ServerResponse.create(productVO);
                 }).orElse(ServerResponse.fail(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION));
-    }
-
-    public ServerResponse getCategoryPageView(
-            @RequestParam("prePage") Integer pre, @RequestParam("targetPage") Integer target,
-            @RequestParam("preLastId") Integer preLastId, @RequestParam("typeId") Integer typeId) {
-        return null;
     }
 
     @GetMapping(ApiPath.Product.HOME_PRODUCTS)

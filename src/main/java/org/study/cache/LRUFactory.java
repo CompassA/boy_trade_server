@@ -11,7 +11,7 @@ public final class LRUFactory {
     private LRUFactory() {
     }
 
-    public static <K, V> MyCache<K, V> getCache() {
+    public static <K, V> MyCache<K, V> create() {
         return new LocalLRU<>(LRU_CACHE_SIZE);
     }
 }
