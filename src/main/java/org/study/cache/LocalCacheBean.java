@@ -5,7 +5,11 @@ import com.google.common.cache.CacheBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.study.service.ProductService;
+import org.study.service.RedisService;
+import org.study.service.model.enumdata.CacheType;
 import org.study.util.ModelToViewUtil;
+import org.study.util.MyStringUtil;
+import org.study.view.CategoryHomeVO;
 import org.study.view.HomePageVO;
 import org.study.view.PageVO;
 import org.study.view.ProductVO;
@@ -30,6 +34,9 @@ public class LocalCacheBean {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private RedisService redisService;
 
     private MyCache<Integer, PageVO> mainPageCache;
 
@@ -60,6 +67,15 @@ public class LocalCacheBean {
                 .maximumSize(1)
                 .expireAfterWrite(1, TimeUnit.MINUTES)
                 .build();
+        final List<CategoryHomeVO> topFives = new ArrayList<>(ProductService.CATEGORY_LIST.size());
+        for (final Integer id : ProductService.CATEGORY_LIST) {
+            List<ProductVO> vo = ModelToViewUtil.getProductViews(productService.selectTopFive(id));
+            topFives.add(new CategoryHomeVO(id, vo));
+        }
+        final HomePageVO data = new HomePageVO(topFives);
+        final String redisKey = MyStringUtil.getCacheKey(0, CacheType.HOME_PAGE);
+        redisService.cacheDataWithoutLocalCache(redisKey, data);
+        homeCache.put(HOME_PAGE_CACHE_KEY, data);
 
         //init category page cache
         categoryPageCache = LRUFactory.create();

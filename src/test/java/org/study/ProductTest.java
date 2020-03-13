@@ -11,13 +11,8 @@ import org.study.dao.ProductStockMapper;
 import org.study.data.ProductDO;
 import org.study.data.ProductSaleDO;
 import org.study.data.ProductStockDO;
-import org.study.service.model.ProductModel;
-import org.study.util.DataToModelUtil;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * @author fanqie
@@ -58,21 +53,5 @@ public class ProductTest extends BaseTest {
                 .setProductId(product.getId())
                 .setStock(25);
         Assert.assertEquals(1, productStockMapper.initProductStock(productStockDO));
-        final List<ProductDO> products = productMapper.selectProduct(product);
-
-        //查询组装
-        final ProductDO productDO = productMapper.selectProduct(new ProductDO().setId(product.getId()))
-                .iterator().next();
-        final ProductSaleDO sale = productSaleMapper.selectProductSale(Collections.singletonList(product.getId()))
-                .iterator().next();
-        final ProductStockDO stock = productStockMapper.selectProductStock(Collections.singletonList(product.getId()))
-                .iterator().next();
-        final Optional<ProductModel> productModel = DataToModelUtil.getProductModel(productDO, stock, sale);
-        Assert.assertTrue(productModel.isPresent());
-        System.out.println("商品领域数据: " + productModel);
-
-        //更新库存
-        product.setCategoryId(2);
-        Assert.assertEquals(productMapper.upsertProduct(product), 1);
     }
 }
