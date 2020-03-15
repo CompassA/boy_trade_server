@@ -1,10 +1,15 @@
 package org.study.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.study.service.model.enumdata.CacheType;
 import org.study.service.model.enumdata.PermanentKey;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 字符转码工具
@@ -61,5 +66,17 @@ public final class MyStringUtil {
      */
     public static String userIdMod(final Integer userId) {
         return String.format("%02d", ((userId) ^ (userId >>> 16)) % 100);
+    }
+
+    public static <K, V> byte[] mapToByte(final Map<K, V> map) throws JsonProcessingException {
+        final ObjectMapper mapper = new ObjectMapper();
+        final String mapJson = mapper.writeValueAsString(map);
+        return mapJson.getBytes(StandardCharsets.UTF_8);
+    }
+
+    public static <K, V> Map<K, V> byteToMap(final byte[] bytes) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
+        final String json = new String(bytes, StandardCharsets.UTF_8);
+        return mapper.readValue(json, HashMap.class);
     }
 }
