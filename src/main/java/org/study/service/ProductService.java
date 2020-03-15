@@ -142,6 +142,12 @@ public interface ProductService {
     void removeProduct(final Integer productId);
 
     /**
+     * 将商品状态改为售卖中
+     * @param productId 商品id
+     */
+    boolean reInSale(final Integer productId);
+
+    /**
      * 查询前pageNum个页的数据
      * @param pageNum pageNum
      * @return 所有页数据
@@ -188,4 +194,10 @@ public interface ProductService {
      * @return 全都付款 true
      */
     boolean isProductAllPaid(Integer id);
+
+    /**
+     * 商品详情缓存失效
+     * @param id
+     */
+    void delDetailCache(Integer id);
 }

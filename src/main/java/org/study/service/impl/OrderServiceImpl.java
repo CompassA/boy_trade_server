@@ -237,9 +237,12 @@ public class OrderServiceImpl implements OrderService {
 
             //mysql
             if (!productService.decreaseSales(productId, productAmount) ||
-                    !productService.increaseStock(productId, productAmount)) {
+                    !productService.increaseStock(productId, productAmount) ||
+                    !productService.reInSale(productId)) {
                 this.rollBackStockIncrease(rollBackRecords);
                 throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
+            } else {
+                productService.delDetailCache(productId);
             }
         }
     }

@@ -298,6 +298,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public boolean reInSale(final Integer productId) {
+        final ProductDO condition = new ProductDO().setId(productId)
+                .setStatus(ProductStatus.IN_SALE.getValue());
+        return productMapper.upsertProduct(condition) > 0;
+    }
+
+    @Override
     public List<ProductModel> selectFromBegin(Integer pageNum) {
         final List<ProductDO> products = productMapper.selectFromBegin(pageNum * PAGE_SIZE);
         return DataToModelUtil.getProductPageModels(products);
@@ -347,5 +354,10 @@ public class ProductServiceImpl implements ProductService {
         final int sales = redisService.getPermanentInt(salesKey).orElse(0);
         final int paidNum = this.getPaidNum(id);
         return paidNum == sales + stock;
+    }
+
+    @Override
+    public void delDetailCache(Integer id) {
+        redisService.deleteKey(MyStringUtil.getCacheKey(id, CacheType.PRODUCT));
     }
 }
