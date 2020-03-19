@@ -38,9 +38,11 @@ public final class MessageFactory {
         return new Message(config.getTopicName(), tag.getValue(), body);
     }
 
-    public static Message createOrderStockMsg(final MQConfig config, final OrderMsgModel msgModel,
+    public static Message createOrderMsg(final MQConfig config, final OrderMsgModel msgModel,
             final MessageQueueTag tag) throws JsonProcessingException {
-        final byte[] body = new ObjectMapper().writeValueAsString(msgModel.getDecreaseRecords())
+        final OrderConsumerMsg consumerMsg = new OrderConsumerMsg(
+                msgModel.getOrderModel().getOrderId(), msgModel.getDecreaseRecords());
+        final byte[] body = new ObjectMapper().writeValueAsString(consumerMsg)
                 .getBytes(StandardCharsets.UTF_8);
         return new Message(config.getTopicName(), tag.getValue(), body);
     }

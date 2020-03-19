@@ -14,6 +14,10 @@ import org.springframework.stereotype.Component;
 @Setter
 public class MQConfig {
 
+    public static final String STOCK_MSG_KEY = "stockMsgMap";
+
+    public static final String ORDER_ID_MSG_KEY = "orderId";
+
     @Value("${mq.name-server.addr}")
     private String nameServerAddress;
 

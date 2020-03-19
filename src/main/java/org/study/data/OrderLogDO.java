@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.sql.Timestamp;
+
 /**
  * @author fanqie
  * @date 2020/3/15
@@ -13,9 +15,13 @@ import lombok.ToString;
 @ToString
 public class OrderLogDO {
 
-    String orderId;
+    private String orderId;
 
-    byte[] record;
+    private byte[] record;
 
-    Byte status;
+    private Byte status;
+
+    private Timestamp createTime;
+
+    private Timestamp updateTime;
 }

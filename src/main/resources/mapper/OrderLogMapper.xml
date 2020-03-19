@@ -5,8 +5,10 @@
 <mapper namespace="org.study.dao.OrderLogMapper">
     <resultMap id="OrderLogMap" type="org.study.data.OrderLogDO">
         <id column="order_id" property="orderId" jdbcType="VARCHAR" />
-        <result column="record" property="record" jdbcType="BLOB"/>
+        <result column="record" property="record" jdbcType="BLOB" />
         <result column="status" property="status" jdbcType="TINYINT" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     </resultMap>
 
     <select id="selectByOrderId" resultMap="OrderLogMap">

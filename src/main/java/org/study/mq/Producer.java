@@ -51,7 +51,7 @@ public class Producer {
 
         try {
             //发送消息扣减库存增加销量
-            final Message orderStockMsg = MessageFactory.createOrderStockMsg(
+            final Message orderStockMsg = MessageFactory.createOrderMsg(
                     mqConfig, orderMsgModel, MessageQueueTag.STOCK_DECREASE_SALES_INCREASE);
             producer.send(orderStockMsg);
 

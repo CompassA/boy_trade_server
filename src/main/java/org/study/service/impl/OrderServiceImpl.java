@@ -12,6 +12,7 @@ import org.study.data.OrderMasterDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.service.DelayService;
+import org.study.service.OrderLogService;
 import org.study.service.OrderService;
 import org.study.service.ProductService;
 import org.study.service.SequenceService;
@@ -55,6 +56,9 @@ public class OrderServiceImpl implements OrderService {
     private DelayService delayService;
 
     @Autowired
+    private OrderLogService orderLogService;
+
+    @Autowired
     private OrderMasterMapper orderMasterMapper;
 
     @Autowired
@@ -67,14 +71,14 @@ public class OrderServiceImpl implements OrderService {
         final OrderCache orderUsefulData = validateOrder(orderModel);
 
         //decrease product stock in redis
-        final Map<Integer, Integer> decreasedRecords = Maps.newHashMap();
+        final Map<Integer, Integer> reducedRecord = Maps.newHashMap();
         for (final Integer productId : orderUsefulData.getProductIds()) {
             final Integer productAmount = orderUsefulData.getProductAmount(productId);
             if (!productService.decreaseStockIncreaseSales(productId, productAmount)) {
-                rollBackStockDecrease(decreasedRecords);
+                rollBackStockDecrease(reducedRecord);
                 throw new ServerException(ServerExceptionBean.PRODUCT_STOCK_NOT_ENOUGH_EXCEPTION);
             }
-            decreasedRecords.put(productId, productAmount);
+            reducedRecord.put(productId, productAmount);
         }
 
         //generate the order id
@@ -97,15 +101,19 @@ public class OrderServiceImpl implements OrderService {
                 throw new Exception();
             }
         } catch (final Exception e) {
-            rollBackStockDecrease(decreasedRecords);
+            rollBackStockDecrease(reducedRecord);
             throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_INSERT_EXCEPTION);
         }
 
+        //cancel order after 2 hours
         delayService.submitTask(orderId, orderModel.getCreateTime());
+
+        //redis reduced log
+        orderLogService.createOrderLog(orderId, reducedRecord);
 
         //return the decreased data and order data to the producer
         return OrderMsgModel.builder()
-                .decreaseRecords(decreasedRecords)
+                .decreaseRecords(reducedRecord)
                 .orderModel(orderModel)
                 .build();
     }
@@ -243,6 +251,11 @@ public class OrderServiceImpl implements OrderService {
                 throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
             } else {
                 productService.delDetailCache(productId);
+            }
+
+            if (!orderLogService.orderCanceledLog(orderId)) {
+                this.rollBackStockIncrease(rollBackRecords);
+                throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
             }
         }
     }

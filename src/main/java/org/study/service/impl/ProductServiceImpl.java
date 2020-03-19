@@ -301,6 +301,7 @@ public class ProductServiceImpl implements ProductService {
     public boolean reInSale(final Integer productId) {
         final ProductDO condition = new ProductDO().setId(productId)
                 .setStatus(ProductStatus.IN_SALE.getValue());
+        redisService.deleteKey(MyStringUtil.getPermanentKey(productId, PermanentKey.SOLD_OUT_MARK));
         return productMapper.upsertProduct(condition) > 0;
     }
 
