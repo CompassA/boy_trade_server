@@ -11,7 +11,6 @@ import org.study.data.OrderDetailDO;
 import org.study.data.OrderMasterDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.service.DelayService;
 import org.study.service.OrderLogService;
 import org.study.service.OrderService;
 import org.study.service.ProductService;
@@ -51,9 +50,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private SequenceService sequenceService;
-
-    @Autowired
-    private DelayService delayService;
 
     @Autowired
     private OrderLogService orderLogService;
@@ -104,9 +100,6 @@ public class OrderServiceImpl implements OrderService {
             rollBackStockDecrease(reducedRecord);
             throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_INSERT_EXCEPTION);
         }
-
-        //cancel order after 2 hours
-        delayService.submitTask(orderId, orderModel.getCreateTime());
 
         //redis reduced log
         orderLogService.createOrderLog(orderId, reducedRecord);
@@ -241,6 +234,7 @@ public class OrderServiceImpl implements OrderService {
                 rollBackRecords.put(productId, productAmount);
             } else {
                 this.rollBackStockIncrease(rollBackRecords);
+                return;
             }
 
             //mysql

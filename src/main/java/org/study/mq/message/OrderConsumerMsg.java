@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.Map;
 
 /**
@@ -19,13 +20,17 @@ public class OrderConsumerMsg {
 
     private String orderId;
 
+    private Timestamp createTime;
+
     private Map<Integer, Integer> reducedRecord;
 
     public OrderConsumerMsg() {
     }
 
-    public OrderConsumerMsg(String orderId, Map<Integer, Integer> reducedRecord) {
+    public OrderConsumerMsg(String orderId, Map<Integer, Integer> reducedRecord,
+                            Timestamp createTime) {
         this.orderId = orderId;
         this.reducedRecord = reducedRecord;
+        this.createTime = createTime;
     }
 }

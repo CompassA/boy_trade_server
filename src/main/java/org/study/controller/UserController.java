@@ -47,8 +47,7 @@ public class UserController {
     private RedisService redisService;
 
     @PostMapping(value = ApiPath.User.LOGIN)
-    public ServerResponse login(@RequestBody final ServerRequest serverRequest)
-            throws ServerException {
+    public ServerResponse login(@RequestBody ServerRequest serverRequest) throws ServerException {
         //反序列化判空
         final LoginDTO loginDTO = encryptService.deserialize(serverRequest, LoginDTO.class);
         final String account = loginDTO.getAccount();
@@ -71,7 +70,7 @@ public class UserController {
     }
 
     @PostMapping(value = ApiPath.User.REGISTRY)
-    public ServerResponse registry(@RequestBody final ServerRequest data) throws ServerException {
+    public ServerResponse registry(@RequestBody ServerRequest data) throws ServerException {
         //反序列化
         final RegistryDTO registryDTO = encryptService.deserialize(data, RegistryDTO.class);
 
@@ -91,8 +90,7 @@ public class UserController {
     }
 
     @GetMapping(value = ApiPath.User.EXIST)
-    public ServerResponse checkUserName(@RequestParam("name") final String name)
-            throws ServerException {
+    public ServerResponse checkUserName(@RequestParam("name") String name) throws ServerException {
         if (StringUtils.isBlank(name)) {
             throw new ServerException(ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
         }

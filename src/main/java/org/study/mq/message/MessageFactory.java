@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.rocketmq.common.message.Message;
 import org.study.config.MQConfig;
 import org.study.mq.enumdata.MessageQueueTag;
+import org.study.service.model.OrderModel;
 import org.study.service.model.OrderMsgModel;
 
 import java.io.IOException;
@@ -40,8 +41,9 @@ public final class MessageFactory {
 
     public static Message createOrderMsg(final MQConfig config, final OrderMsgModel msgModel,
             final MessageQueueTag tag) throws JsonProcessingException {
+        final OrderModel order = msgModel.getOrderModel();
         final OrderConsumerMsg consumerMsg = new OrderConsumerMsg(
-                msgModel.getOrderModel().getOrderId(), msgModel.getDecreaseRecords());
+                order.getOrderId(), msgModel.getDecreaseRecords(), order.getCreateTime());
         final byte[] body = new ObjectMapper().writeValueAsString(consumerMsg)
                 .getBytes(StandardCharsets.UTF_8);
         return new Message(config.getTopicName(), tag.getValue(), body);

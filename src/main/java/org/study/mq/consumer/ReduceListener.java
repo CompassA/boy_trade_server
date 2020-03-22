@@ -11,6 +11,7 @@ import org.study.dao.ProductSaleMapper;
 import org.study.dao.ProductStockMapper;
 import org.study.mq.message.MessageFactory;
 import org.study.mq.message.OrderConsumerMsg;
+import org.study.service.DelayService;
 import org.study.service.OrderLogService;
 import org.study.service.RedisService;
 import org.study.service.model.enumdata.CacheType;
@@ -38,10 +39,13 @@ public class ReduceListener implements MessageListenerConcurrently {
     @Autowired
     private OrderLogService orderLogService;
 
+    @Autowired
+    private DelayService delayService;
+
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public ConsumeConcurrentlyStatus consumeMessage(final List<MessageExt> msgs,
-                                                    final ConsumeConcurrentlyContext context) {
+    public ConsumeConcurrentlyStatus consumeMessage(
+            final List<MessageExt> msgs, final ConsumeConcurrentlyContext context) {
         try {
             final OrderConsumerMsg msg = MessageFactory.deserializeMsg(
                     msgs.get(0), OrderConsumerMsg.class);
@@ -59,6 +63,10 @@ public class ReduceListener implements MessageListenerConcurrently {
             if (!orderLogService.mysqlReducedLog(msg.getOrderId())) {
                 throw new Exception();
             }
+
+            //cancel order after 2 hours
+            delayService.submitTask(msg.getOrderId(), msg.getCreateTime());
+
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         } catch (Exception ex) {
             ex.printStackTrace();
