@@ -197,7 +197,7 @@ public interface ProductService {
 
     /**
      * 商品详情缓存失效
-     * @param id
+     * @param id 商品id
      */
     void delDetailCache(Integer id);
 }

@@ -129,12 +129,7 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     public Optional<Integer> getPermanentInt(final String key) {
-        return getPermanentStr(key).map(value -> {
-            try {
-                return Integer.parseInt(value);
-            } catch (final NumberFormatException e) {
-                return null;
-            }
-        });
+        final Object res = redisTemplate.opsForValue().get(key);
+        return res instanceof Integer ? Optional.of((Integer) res) : Optional.empty();
     }
 }

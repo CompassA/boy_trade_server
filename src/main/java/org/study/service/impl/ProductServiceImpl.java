@@ -354,7 +354,7 @@ public class ProductServiceImpl implements ProductService {
         final int stock = redisService.getPermanentInt(stockKey).orElse(0);
         final int sales = redisService.getPermanentInt(salesKey).orElse(0);
         final int paidNum = this.getPaidNum(id);
-        return paidNum == sales + stock;
+        return stock == 0 && paidNum == sales;
     }
 
     @Override
