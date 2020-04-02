@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.study.controller.response.ServerRequest;
 import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
@@ -16,8 +18,8 @@ import org.study.service.EncryptService;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
 import org.study.service.UserService;
-import org.study.service.model.enumdata.CacheType;
 import org.study.service.model.UserModel;
+import org.study.service.model.enumdata.CacheType;
 import org.study.util.ModelToViewUtil;
 import org.study.util.MyStringUtil;
 import org.study.view.LoginDTO;
@@ -45,6 +47,9 @@ public class UserController {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private FileController fileController;
 
     @PostMapping(value = ApiPath.User.LOGIN)
     public ServerResponse login(@RequestBody ServerRequest serverRequest) throws ServerException {
@@ -127,5 +132,16 @@ public class UserController {
     public ServerResponse logout(@RequestParam("token") final String token) {
         sessionService.logout(token);
         return ServerResponse.create(null);
+    }
+
+    @PostMapping(value = ApiPath.User.UPDATE_ICON)
+    public ServerResponse uploadIconUrl(
+            @RequestParam("userId") Integer userId, @RequestParam("token") String token,
+            @RequestPart("imgFile") final MultipartFile file) throws ServerException {
+        final ServerResponse response = fileController.uploadFile(userId, token, file);
+        if (!userService.updateIconUrl(userId, (String) response.getBody())) {
+            throw new ServerException(ServerExceptionBean.USER_ICON_URL_LOAD_FAIL_EXCEPTION);
+        }
+        return response;
     }
 }

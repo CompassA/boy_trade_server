@@ -1,6 +1,8 @@
 package org.study.config;
 
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Component;
  * @date 2020/3/9
  */
 @Getter
+@Setter
 @Component
 public class AliPayConfig {
 
@@ -21,7 +24,8 @@ public class AliPayConfig {
 
     private final String notifyUrl = "";
 
-    private final String returnUrl = "http://localhost:8090/order/trade_pay";
+    @Value("${alipay.return-url}")
+    private String returnUrl;
 
     private final String signType = "RSA2";
 

@@ -119,6 +119,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean updateIconUrl(Integer userId, String iconUrl) {
+        final UserDO condition = new UserDO().setUserId(userId).setIconUrl(iconUrl);
+        return userMapper.upsertUser(condition) > 0;
+    }
+
+    @Override
     public Optional<UserVO> queryByPrimaryKey(final Integer userId) {
         final List<UserDO> result = userMapper.selectUser(new UserDO().setUserId(userId));
         if (CollectionUtils.isEmpty(result) || result.size() != 1) {

@@ -20,9 +20,11 @@ public enum ServerExceptionBean implements SystemException {
     /* 查询用户信息失败 */
     USER_QUERY_EXCEPTION(20002, "查询用户信息失败"),
     /* 登录凭证缺失*/
-    USER_NOT_LOGIN_EXCEPTION(20002, "用户未登录"),
+    USER_NOT_LOGIN_EXCEPTION(20003, "用户未登录"),
     /* 非法支付 */
-    USER_TRADE_INVALID_EXCEPTION(20003, "用户状态非法"),
+    USER_TRADE_INVALID_EXCEPTION(20004, "用户状态非法"),
+    /* 头像上传失败 */
+    USER_ICON_URL_LOAD_FAIL_EXCEPTION(20005, "上传头像失败"),
     /* 商品创建失败 */
     PRODUCT_CREATE_EXCEPTION(30000, "商品创建失败"),
     /* 商品查询失败 */

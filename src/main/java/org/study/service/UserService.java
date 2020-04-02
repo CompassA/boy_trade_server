@@ -51,4 +51,12 @@ public interface UserService {
      * @return 用户信息
      */
     List<UserDO> queryByKeys(final Set<Integer> userKeys);
+
+    /**
+     * 更新用户头像
+     * @param userId 用户注解
+     * @param iconUrl 头像url
+     * @return 更新影响行数
+     */
+    boolean updateIconUrl(Integer userId, String iconUrl);
 }

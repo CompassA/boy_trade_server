@@ -57,6 +57,7 @@
         WHERE user_id = #{userId}
               and order_status = #{orderStatus}
               and pay_status = #{payStatus}
+        ORDER BY order_id DESC
     </select>
 
     <select id="selectBySellerId" resultMap="OrderMasterMap">
@@ -64,5 +65,6 @@
         WHERE seller_id = #{sellerId}
               and order_status = #{orderStatus}
               and pay_status = #{payStatus}
+        ORDER BY order_id DESC
     </select>
 </mapper>

@@ -19,6 +19,8 @@ public class ApiPath {
         public static final String SESSION_CHECKING = "/user/session_status";
         /* 用户登出, 删除session */
         public static final String LOGOUT = "/user/logout";
+        /* 更换头像 */
+        public static final String UPDATE_ICON = "/user/update_icon";
     }
 
     public static class Encrypt {
