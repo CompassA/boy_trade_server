@@ -14,6 +14,7 @@ import org.study.data.AddressInfoDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
 import org.study.service.AddressInfoService;
+import org.study.service.SessionService;
 
 /**
  * @author fanqie
@@ -26,10 +27,16 @@ public class AddressInfoController {
     @Autowired
     private AddressInfoService addressInfoService;
 
+    @Autowired
+    private SessionService sessionService;
+
     @GetMapping(ApiPath.AddressInfo.GET_USER_ADDRESS_INFO)
     public ServerResponse getInfo(
             @RequestParam("userId") final Integer userId,
-            @RequestParam("token") final String token) {
+            @RequestParam("token") final String token) throws ServerException {
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
         return ServerResponse.create(addressInfoService.getUserInfoModel(userId));
     }
 
@@ -38,6 +45,9 @@ public class AddressInfoController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestBody final AddressInfoDO info) throws ServerException {
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
         info.setUserId(userId);
         return ServerResponse.create(addressInfoService.addNewInfo(userId, info));
     }
@@ -47,6 +57,9 @@ public class AddressInfoController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestParam("infoId") final Integer infoId) throws ServerException {
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
         return ServerResponse.create(addressInfoService.deleteInfo(userId, infoId));
     }
 
@@ -55,6 +68,9 @@ public class AddressInfoController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestBody final AddressInfoDO info) throws ServerException {
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
         info.setUserId(userId);
         return ServerResponse.create(addressInfoService.updateInfo(userId, info));
     }
@@ -64,13 +80,19 @@ public class AddressInfoController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("infoId") final Integer infoId,
             @RequestParam("token") final String token) throws ServerException {
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
         return ServerResponse.create(addressInfoService.resetDefaultInfo(userId, infoId));
     }
 
     @GetMapping(ApiPath.AddressInfo.DEFAULT_INFO)
     public ServerResponse getDefaultInfo(
             @RequestParam("userId") final Integer userId,
-            @RequestParam("token") final String token) {
+            @RequestParam("token") final String token) throws ServerException {
+        if (!sessionService.isLogin(token, userId)) {
+            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
         return addressInfoService.getDefaultInfo(userId)
                 .map(ServerResponse::create)
                 .orElse(ServerResponse.fail(ServerExceptionBean.WITHOUT_DEFAULT_ADDRESS));

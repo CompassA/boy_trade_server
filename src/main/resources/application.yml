@@ -59,4 +59,4 @@ mq:
   send-timeout: 10000
 
 alipay:
-  return-url: "http://localhost:8090/order/trade_pay"
+  return-url: "http://localhost:8090/api/order/trade_pay"
