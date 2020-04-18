@@ -61,4 +61,8 @@
             #{key}
         </foreach>
     </select>
+
+    <select id="selectByName" resultMap="UserMap">
+        SELECT * FROM user WHERE name = #{name}
+    </select>
 </mapper>

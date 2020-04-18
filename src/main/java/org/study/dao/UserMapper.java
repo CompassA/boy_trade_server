@@ -36,6 +36,13 @@ public interface UserMapper {
     UserDO selectByAccount(@Param("account") final String account);
 
     /**
+     * 根据姓名查询用户
+     * @param name 姓名
+     * @return 用户信息
+     */
+    UserDO selectByName(@Param("name") final String name);
+
+    /**
      * 根据用户名查找用户是否存在
      * @param name 用户名
      * @return 符合查询条件的用户数量

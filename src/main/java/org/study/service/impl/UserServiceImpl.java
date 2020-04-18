@@ -50,7 +50,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserModel> login(final String account, final String password) {
         //用户数据
-        final UserDO userDO = userMapper.selectByAccount(account);
+        UserDO userDO = userMapper.selectByAccount(account);
+        if (Objects.isNull(userDO)) {
+            userDO = userMapper.selectByName(account);
+        }
         if (Objects.isNull(userDO)) {
             return Optional.empty();
         }
