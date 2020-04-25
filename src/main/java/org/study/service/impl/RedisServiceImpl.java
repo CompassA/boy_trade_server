@@ -3,11 +3,16 @@ package org.study.service.impl;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.study.service.RedisService;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -131,5 +136,28 @@ public class RedisServiceImpl implements RedisService {
     public Optional<Integer> getPermanentInt(final String key) {
         final Object res = redisTemplate.opsForValue().get(key);
         return res instanceof Integer ? Optional.of((Integer) res) : Optional.empty();
+    }
+
+    @Override
+    public boolean isMaxAllowed(Integer userId, String opsType, int seconds, int maxOps) {
+        final String opsKey = String.format("limit:%d:%s", userId, opsType);
+        final Long curTime = System.currentTimeMillis();
+
+        final List<Object> res = redisTemplate.executePipelined(new RedisCallback<Long>() {
+            @NotNull
+            @Override
+            public Long doInRedis(final RedisConnection connection) throws DataAccessException {
+                final byte[] key = opsKey.getBytes();
+                connection.zAdd(key, curTime, curTime.toString().getBytes());
+                connection.zRemRangeByScore(key, 0, curTime - seconds * 1000);
+                connection.expire(key, seconds + 1);
+                connection.zCard(key);
+                return null;
+            }
+        });
+
+        return Optional.ofNullable(res.get(3))
+                .map(obj -> (Long) obj)
+                .orElse(0L) <= maxOps;
     }
 }

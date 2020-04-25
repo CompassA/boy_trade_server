@@ -124,4 +124,14 @@ public interface RedisService {
      * @return 存储值
      */
     Optional<Integer> getPermanentInt(final String key);
+
+    /**
+     * z set 限流
+     * @param userId 用户id
+     * @param opsType 操作类型
+     * @param seconds 时间范围
+     * @param maxAllowed 最多做多少次操作
+     * @return 是否超出限制
+     */
+    boolean isMaxAllowed(Integer userId, String opsType, int seconds, int maxAllowed);
 }
