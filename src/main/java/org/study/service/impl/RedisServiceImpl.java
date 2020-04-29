@@ -12,6 +12,7 @@ import org.study.service.RedisService;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -139,25 +140,21 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public boolean isMaxAllowed(Integer userId, String opsType, int seconds, int maxOps) {
+    public boolean isMaxAllowed(final Integer userId, final String opsType,
+            final int seconds, final int maxOps) {
         final String opsKey = String.format("limit:%d:%s", userId, opsType);
-        final Long curTime = System.currentTimeMillis();
+        final long curTime = System.currentTimeMillis();
 
-        final List<Object> res = redisTemplate.executePipelined(new RedisCallback<Long>() {
-            @NotNull
-            @Override
-            public Long doInRedis(final RedisConnection connection) throws DataAccessException {
-                final byte[] key = opsKey.getBytes();
-                connection.zAdd(key, curTime, curTime.toString().getBytes());
-                connection.zRemRangeByScore(key, 0, curTime - seconds * 1000);
-                connection.expire(key, seconds + 1);
-                connection.zCard(key);
-                return null;
-            }
+        final List<Object> res = redisTemplate.executePipelined((RedisConnection connection) -> {
+            final byte[] key = opsKey.getBytes();
+            connection.zAdd(key, curTime, Long.toString(curTime).getBytes());
+            connection.expire(key, seconds + 1);
+            connection.zRemRangeByScore(key, 0, curTime - seconds * 1000);
+            connection.zCard(key);
+            return null;
         });
 
-        return Optional.ofNullable(res.get(3))
-                .map(obj -> (Long) obj)
-                .orElse(0L) <= maxOps;
+        final int cardPos = 3;
+        return maxOps >= Optional.ofNullable(res.get(cardPos)).map(obj -> (Long) obj).orElse(0L);
     }
 }

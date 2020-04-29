@@ -37,32 +37,31 @@ public class RateLimitedTest extends BaseTest {
     public void redisLimitTest() throws InterruptedException {
         final int userId = 10;
         final String opsType = "test";
-        final int windowSeconds = 10;
-        final int maxLimit = 50;
-        int succeed = 0;
-        int failed = 0;
-        for (int i = 0; i < 100; ++i) {
-            boolean res = redisService.isMaxAllowed(userId, opsType, windowSeconds, maxLimit);
-            System.out.println(res);
-            if (res) {
-                succeed++;
-            } else {
-                failed++;
+        final int windowSeconds = 1;
+        final int maxLimit = 2;
+        final int threadNum = 10;
+        final ExecutorService pool = Executors.newFixedThreadPool(threadNum);
+        ((ThreadPoolExecutor) pool).prestartAllCoreThreads();
+        for (int i = 1; i <= 10; ++i) {
+            final CountDownLatch end = new CountDownLatch(threadNum);
+            final int[] succeed = new int[1];
+            final int[] failed = new int[1];
+            final Runnable task = () -> {
+                if (redisService.isMaxAllowed(userId, opsType, windowSeconds, maxLimit)) { ++succeed[0]; }
+                else { ++failed[0]; }
+
+                end.countDown();
+            };
+
+            for (int j = 0; j < threadNum; ++j) {
+                pool.execute(task);
+                Thread.sleep(20);
             }
-            Thread.sleep(100);
+            end.await();
+            System.out.printf("test %d: succeed: %d, failed: %d\n", i, succeed[0], failed[0]);
+            Thread.sleep(1500);
         }
-        Thread.sleep(3000);
-        for (int i = 0; i < 100; ++i) {
-            boolean res = redisService.isMaxAllowed(userId, opsType, windowSeconds, maxLimit);
-            System.out.println(res);
-            if (res) {
-                succeed++;
-            } else {
-                failed++;
-            }
-            Thread.sleep(100);
-        }
-        System.out.printf("succeed: %d, failed: %d\n", succeed, failed);
+
     }
 
     @Test
