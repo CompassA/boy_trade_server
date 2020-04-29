@@ -69,6 +69,10 @@ public enum ServerExceptionBean implements SystemException {
     CART_ADD_EXCEPTION(70003, "无法添加商品, 商品下架或已在购物车中"),
     /* 无法从购物车删除商品 */
     CART_DELETE_EXCEPTION(70004, "删除失败"),
+    /* 发布商品发布限制*/
+    PRODUCT_CREATE_LIMIT_EXCEPTION(80001, "您的操作过于频繁, 请一小时后再试"),
+    /* 订单创建限制 */
+    ORDER_CREATE_LIMIT_EXCEPTION(80002, "前方排队中，稍等"),
     ;
 
     private final Integer errorCode;

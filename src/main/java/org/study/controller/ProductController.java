@@ -16,6 +16,7 @@ import org.study.service.RedisService;
 import org.study.service.SessionService;
 import org.study.service.model.ProductModel;
 import org.study.service.model.enumdata.CacheType;
+import org.study.service.model.enumdata.OpsType;
 import org.study.util.ModelToViewUtil;
 import org.study.util.MyStringUtil;
 import org.study.view.CategoryHomeVO;
@@ -34,6 +35,8 @@ import java.util.Optional;
 @RestController
 @CrossOrigin(allowedHeaders = "*", allowCredentials = "true")
 public class ProductController {
+
+    private static final int CREATE_GAP = 3600;
 
     @Autowired
     private ProductService productService;
@@ -55,6 +58,9 @@ public class ProductController {
         //登录态方可创建
         if (!sessionService.isLogin(token, userId)) {
             throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
+        if (!redisService.isMaxAllowed(userId, OpsType.CREATE_PRODUCT.getVal(), CREATE_GAP, 1)) {
+            throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_LIMIT_EXCEPTION);
         }
 
         final ProductModel productModel = new ProductModel()

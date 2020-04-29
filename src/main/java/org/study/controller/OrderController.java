@@ -15,6 +15,7 @@ import org.study.controller.response.ServerRequest;
 import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
+import org.study.limiter.BucketLimiter;
 import org.study.mq.Producer;
 import org.study.service.EncryptService;
 import org.study.service.OrderService;
@@ -26,6 +27,7 @@ import org.study.util.ModelToViewUtil;
 import org.study.util.ViewToModelUtil;
 import org.study.view.OrderDTO;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -60,6 +62,13 @@ public class OrderController {
     @Autowired
     private LocalCacheBean cache;
 
+    private BucketLimiter orderCreateLimiter;
+
+    @PostConstruct
+    public void init() {
+        orderCreateLimiter = new BucketLimiter(30, 30, 1);
+    }
+
     @PostMapping(value = ApiPath.Order.CREATE)
     public ServerResponse createOrder(
             @RequestParam("userId") final Integer userId,
@@ -68,6 +77,10 @@ public class OrderController {
         //未登录不可下单
         if (!sessionService.isLogin(token, userId)) {
             throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+        }
+        //限流
+        if (!orderCreateLimiter.acquire()) {
+            throw new ServerException(ServerExceptionBean.ORDER_CREATE_LIMIT_EXCEPTION);
         }
 
         //反序列化并校验
