@@ -10,13 +10,13 @@ spring:
       location: "F:\\tmp_images\\"
       resolve-lazily: false
   datasource:
-    url: "jdbc:mysql://47.103.146.40:3306/trade?characterEncoding=utf-8"
+    url: "jdbc:mysql://localhost:3306/trade?characterEncoding=utf-8"
     username: "root"
-    password: "Root@2019"
+    password: "root"
     driver-class-name: "com.mysql.jdbc.Driver"
     type: "com.alibaba.druid.pool.DruidDataSource"
   redis:
-    host: "101.133.161.59"
+    host: "localhost"
     port: 6379
     database: 1
     password: "safaf234vvFAWd234wer432"
@@ -35,13 +35,13 @@ mybatis:
 
 file-load-setting:
   local-image-dictionary: "F:\\images\\"
-  ftp-host: "47.103.146.40"
+  ftp-host: "localhost"
   ftp-port: 21
   ftp-user: "virftp"
   ftp-password: "helloworld"
   ftp-work-path: "/image/"
   ftp-timeout: 1000
-  nginx-resource-url: "http://47.103.146.40:8888"
+  nginx-resource-url: "http://localhost:8888"
 
 logging:
   level:
@@ -49,7 +49,7 @@ logging:
 
 mq:
   name-server:
-    addr: "47.103.146.40:9876"
+    addr: "localhost:9876"
   topic-name: "stock"
   decr-stock-group-name: "decr_stock_group"
   incr-stock-group-name: "incr_stock_group"
