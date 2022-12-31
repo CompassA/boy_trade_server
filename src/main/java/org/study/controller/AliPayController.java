@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.study.aspects.annotation.EnableTokenValidation;
 import org.study.config.AliPayConfig;
 import org.study.controller.response.AliPayFactory;
 import org.study.controller.response.ServerRequest;
@@ -16,7 +17,6 @@ import org.study.error.ServerException;
 import org.study.error.ServerExceptionEnum;
 import org.study.service.EncryptService;
 import org.study.service.OrderService;
-import org.study.service.SessionService;
 import org.study.util.MyTimeUtil;
 import org.study.view.OrderVO;
 
@@ -36,21 +36,16 @@ public class AliPayController {
     private AliPayConfig config;
 
     @Resource
-    private SessionService sessionService;
-
-    @Resource
     private EncryptService encryptService;
 
     @Resource
     private OrderService orderService;
 
+    @EnableTokenValidation
     @PostMapping(ApiPath.Trade.PAY)
     public void trade(@RequestParam("userId") Integer userId, @RequestParam("token") String token,
             @RequestBody ServerRequest encryptedOrderData,
             HttpServletResponse response) throws ServerException {
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
 
         final OrderVO orderVO = encryptService.deserialize(encryptedOrderData, OrderVO.class);
         if (orderService.isOrderExpired(MyTimeUtil.parseStr(orderVO.getCreateTime()))) {

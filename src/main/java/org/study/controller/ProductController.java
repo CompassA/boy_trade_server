@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.study.aspects.annotation.EnableTokenValidation;
 import org.study.cache.LocalCacheBean;
 import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionEnum;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
-import org.study.service.SessionService;
 import org.study.service.model.ProductModel;
 import org.study.service.model.enumdata.CacheType;
 import org.study.service.model.enumdata.OpsType;
@@ -42,23 +42,17 @@ public class ProductController {
     private ProductService productService;
 
     @Resource
-    private SessionService sessionService;
-
-    @Resource
     private RedisService redisService;
 
     @Resource
     private LocalCacheBean cache;
 
+    @EnableTokenValidation
     @PutMapping(value = ApiPath.Product.CREATE)
     public ServerResponse createProduct(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestBody final ProductVO product) throws ServerException {
-        //登录态方可创建
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_NOT_LOGIN_EXCEPTION);
-        }
         if (!redisService.isMaxAllowed(userId, OpsType.CREATE_PRODUCT.getVal(), CREATE_GAP, 1)) {
             throw new ServerException(ServerExceptionEnum.PRODUCT_CREATE_LIMIT_EXCEPTION);
         }
@@ -101,13 +95,11 @@ public class ProductController {
         return ServerResponse.create(page);
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Product.USER_PRODUCTS)
     public ServerResponse getProductByUserId(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_NOT_LOGIN_EXCEPTION);
-        }
         return ServerResponse.create(
                 ModelToViewUtil.getProductViews(productService.selectByUserId(userId)));
     }

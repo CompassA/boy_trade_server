@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.study.aspects.annotation.EnableTokenValidation;
 import org.study.cache.LocalCacheBean;
 import org.study.config.AliPayConfig;
 import org.study.controller.response.ServerRequest;
@@ -19,7 +20,6 @@ import org.study.mq.Producer;
 import org.study.service.EncryptService;
 import org.study.service.OrderService;
 import org.study.service.ProductService;
-import org.study.service.SessionService;
 import org.study.service.model.OrderModel;
 import org.study.service.model.enumdata.OrderStatus;
 import org.study.util.ModelToViewUtil;
@@ -48,9 +48,6 @@ public class OrderController {
     private OrderService orderService;
 
     @Resource
-    private SessionService sessionService;
-
-    @Resource
     private ProductService productService;
 
     @Resource
@@ -69,15 +66,12 @@ public class OrderController {
         orderCreateLimiter = new BucketLimiter(30, 30, 1);
     }
 
+    @EnableTokenValidation
     @PostMapping(value = ApiPath.Order.CREATE)
     public ServerResponse createOrder(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token,
             @RequestBody final ServerRequest encryptData) throws Exception {
-        //未登录不可下单
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_NOT_LOGIN_EXCEPTION);
-        }
         //限流
         if (!orderCreateLimiter.acquire()) {
             throw new ServerException(ServerExceptionEnum.ORDER_CREATE_LIMIT_EXCEPTION);
@@ -104,129 +98,107 @@ public class OrderController {
                 .map(ServerResponse::create)
                 .orElse(ServerResponse.fail(ServerExceptionEnum.ORDER_NOT_EXIST_EXCEPTION));
     }
-    
+
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.CREATED_ORDER_WITH_SELLER)
     public ServerResponse getCreatedOrderWithSeller(
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
-        if (!sessionService.isLogin(token, sellerId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectCreatedOrderWithSeller(sellerId)));
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.PAID_ORDER_WITH_SELLER)
     public ServerResponse getPaidOrderWithSeller(
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
-        if (!sessionService.isLogin(token, sellerId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectPaidOrderWithSeller(sellerId)));
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.SENT_ORDER_WITH_SELLER)
     public ServerResponse getSentOrderWithSeller(
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
-        if (!sessionService.isLogin(token, sellerId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectSentOrderWithSeller(sellerId)));
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.FINISHED_ORDER_WITH_SELLER)
     public ServerResponse getFinishedOrderWithSeller(
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
-        if (!sessionService.isLogin(token, sellerId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectFinishedOrderWithSeller(sellerId)));
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.CREATED_ORDER_WITH_BUYER)
     public ServerResponse getCreatedOrderWithBuyer(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.CREATED, OrderStatus.CREATED)));
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.PAID_ORDER_WITH_BUYER)
     public ServerResponse getPaidOrderWithBuyer(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.PAID, OrderStatus.PAID)));
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.SENT_ORDER_WITH_BUYER)
     public ServerResponse getSentOrderWithBuyer(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.SENT, OrderStatus.PAID)));
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.FINISHED_ORDER_WITH_BUYER)
     public ServerResponse getFinishedOrderWithBuyer(
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.FINISHED, OrderStatus.PAID)));
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.RECEIVED)
     public ServerResponse changeToFinishedStatus(
-            @RequestParam("token") final String token,
             @RequestParam("userId") final Integer userId,
+            @RequestParam("token") final String token,
             @RequestParam("orderId") final String orderId) throws ServerException {
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         return orderService.updateOrderStatus(orderId, OrderStatus.FINISHED, OrderStatus.PAID)
                 ? ServerResponse.create(null)
                 : ServerResponse.fail(ServerExceptionEnum.ORDER_STATUS_EXCEPTION);
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.SENT_STATUS)
     public ServerResponse changeToSentStatus(
-            @RequestParam("token") final String token,
             @RequestParam("userId") final Integer userId,
+            @RequestParam("token") final String token,
             @RequestParam("orderId") final String orderId) throws ServerException {
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         return orderService.updateOrderStatus(orderId, OrderStatus.SENT, OrderStatus.PAID)
                 ? ServerResponse.create(null)
                 : ServerResponse.fail(ServerExceptionEnum.ORDER_STATUS_EXCEPTION);
     }
 
+    @EnableTokenValidation
     @GetMapping(value = ApiPath.Order.CANCEL)
     public ServerResponse changeToCancelStatus(
-            @RequestParam("token") final String token,
             @RequestParam("userId") final Integer userId,
+            @RequestParam("token") final String token,
             @RequestParam("orderId") final String orderId) throws ServerException {
-        if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
-        }
         orderService.cancelOrder(orderId);
         return ServerResponse.create(null);
     }
