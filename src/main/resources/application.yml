@@ -28,10 +28,6 @@ spring:
     throw-exception-if-no-handler-found: true
   resources:
     add-mappings: false
-mybatis:
-  mapper-locations: "classpath:mapper/*.xml"
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 file-load-setting:
   local-image-dictionary: "F:\\images\\"

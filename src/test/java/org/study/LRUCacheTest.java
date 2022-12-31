@@ -11,11 +11,10 @@ import java.util.List;
  * @author fanqie
  * Created on 2020/3/11
  */
-public class LRUCacheTest extends BaseTest {
+public class LRUCacheTest {
 
     @Test
     public void initTest() {
-        LRUFactory.create();
         MyCache<Integer, List<Integer>> cache = LRUFactory.create();
         Assert.assertNotNull(cache);
     }

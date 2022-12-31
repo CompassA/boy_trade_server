@@ -6,9 +6,9 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.dao.OrderLogMapper;
 import org.study.data.OrderLogDO;
+import org.study.test.config.SpringMockTestBase;
 import org.study.util.MyStringUtil;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,10 +17,15 @@ import java.util.Map;
  * @author fanqie
  * Created on 2020/3/15
  */
-public class OrderLogTest extends BaseTest {
+public class OrderLogTest extends SpringMockTestBase {
 
-    @Resource
-    private OrderLogMapper orderLogMapper;
+    private final OrderLogMapper orderLogMapper;
+
+    public OrderLogTest() {
+        super();
+        this.orderLogMapper = this.context.getBean(OrderLogMapper.class);
+    }
+
 
     @Test
     @Transactional(rollbackFor = Exception.class)

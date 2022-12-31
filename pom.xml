@@ -23,6 +23,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <powermock.version>2.0.2</powermock.version>
+    <h2.version>1.4.200</h2.version>
   </properties>
 
   <dependencies>
@@ -140,6 +141,14 @@
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
       <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- h2 -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -10,24 +10,25 @@ import org.study.dao.ProductStockMapper;
 import org.study.data.ProductDO;
 import org.study.data.ProductSaleDO;
 import org.study.data.ProductStockDO;
+import org.study.test.config.SpringMockTestBase;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 
 /**
  * @author fanqie
  * Created on 2020/1/11
  */
-public class ProductTest extends BaseTest {
+public class ProductTest extends SpringMockTestBase {
 
-    @Resource
-    private ProductMapper productMapper;
+    private final ProductMapper productMapper;
+    private final ProductStockMapper productStockMapper;
+    private final ProductSaleMapper productSaleMapper;
 
-    @Resource
-    private ProductStockMapper productStockMapper;
-
-    @Resource
-    private ProductSaleMapper productSaleMapper;
+    public ProductTest() {
+        this.productMapper = this.context.getBean(ProductMapper.class);
+        this.productStockMapper = this.context.getBean(ProductStockMapper.class);
+        this.productSaleMapper = this.context.getBean(ProductSaleMapper.class);
+    }
 
     @Test
     @Transactional

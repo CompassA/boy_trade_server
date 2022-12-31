@@ -16,14 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `trade`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `trade` /*!40100 DEFAULT CHARACTER SET latin1 */;
-
-USE `trade`;
-
---
 -- Table structure for table `address_info`
 --
 
@@ -41,8 +33,8 @@ CREATE TABLE `address_info` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `selected` tinyint(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (`info_id`),
-  KEY `idx_user_id` (`user_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;
+  KEY `address_info_idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Table structure for table `order_detail`
@@ -63,8 +55,8 @@ CREATE TABLE `order_detail` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `owner_id` int(11) NOT NULL,
   PRIMARY KEY (`detail_id`),
-  KEY `idx_order_id` (`order_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5460 DEFAULT CHARSET=utf8mb4;
+  KEY `order_detail_idx_order_id` (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Table structure for table `order_log`
@@ -74,13 +66,13 @@ DROP TABLE IF EXISTS `order_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `order_log` (
-  `order_id` varchar(256) CHARACTER SET utf8mb4 NOT NULL,
+  `order_id` varchar(256) NOT NULL,
   `record` blob NOT NULL,
   `status` tinyint(4) NOT NULL DEFAULT '0',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`order_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -103,8 +95,8 @@ CREATE TABLE `order_master` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`order_id`),
-  KEY `idx_user_id` (`user_id`) USING BTREE,
-  KEY `idx_seller_id` (`seller_id`) USING BTREE
+  KEY `order_master_idx_user_id` (`user_id`) USING BTREE,
+  KEY `order_master_idx_seller_id` (`seller_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -126,8 +118,8 @@ CREATE TABLE `product` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`update_time`),
-  KEY `idx_user_id` (`user_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8mb4;
+  KEY `product_idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Table structure for table `product_sale`
@@ -143,8 +135,8 @@ CREATE TABLE `product_sale` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `sales` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uni_product_id` (`product_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `product_sale_uni_product_id` (`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Table structure for table `product_stock`
@@ -160,8 +152,8 @@ CREATE TABLE `product_stock` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uni_product_id` (`product_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `product_stock_uni_product_id` (`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Table structure for table `sequence_info`
@@ -177,7 +169,7 @@ CREATE TABLE `sequence_info` (
   `min_value` int(11) NOT NULL DEFAULT '0',
   `max_value` int(11) NOT NULL DEFAULT '999999',
   PRIMARY KEY (`sequence_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Table structure for table `user`
@@ -194,9 +186,9 @@ CREATE TABLE `user` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `icon_url` varchar(512) NOT NULL DEFAULT '' COMMENT '用户头像',
   PRIMARY KEY (`user_id`),
-  UNIQUE KEY `uni_account` (`account`),
-  UNIQUE KEY `uni_name` (`name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4;
+  UNIQUE KEY `user_uni_account` (`account`),
+  UNIQUE KEY `user_uni_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Table structure for table `user_comment`
@@ -213,7 +205,7 @@ CREATE TABLE `user_comment` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`comments_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Table structure for table `user_password`

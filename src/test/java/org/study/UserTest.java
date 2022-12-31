@@ -9,9 +9,9 @@ import org.study.dao.UserPasswordMapper;
 import org.study.data.UserDO;
 import org.study.data.UserPasswordDO;
 import org.study.service.model.UserModel;
+import org.study.test.config.SpringMockTestBase;
 import org.study.util.DataToModelUtil;
 
-import javax.annotation.Resource;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -19,13 +19,16 @@ import java.util.Optional;
  * @author fanqie
  * Created on 2019/12/8
  */
-public class UserTest extends BaseTest {
+public class UserTest extends SpringMockTestBase {
 
-    @Resource
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
+    private final UserPasswordMapper userPasswordMapper;
 
-    @Resource
-    private UserPasswordMapper userPasswordMapper;
+    public UserTest() {
+        super();
+        this.userMapper = this.context.getBean(UserMapper.class);
+        this.userPasswordMapper = this.context.getBean(UserPasswordMapper.class);
+    }
 
     @Test
     @Transactional

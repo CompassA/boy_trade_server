@@ -8,7 +8,6 @@ import org.study.service.impl.EncryptServiceImpl;
 import org.study.util.MyStringUtil;
 import org.study.view.UserVO;
 
-import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.Objects;
@@ -17,10 +16,9 @@ import java.util.Objects;
  * @author fanqie
  * Created on 2020/1/7
  */
-public class EncryptTest extends BaseTest {
+public class EncryptTest {
 
-    @Resource
-    private EncryptServiceImpl encryptServiceImpl;
+    private EncryptServiceImpl encryptServiceImpl = new EncryptServiceImpl();
 
     @Test
     public void publicEncryptTest() throws ServerException {
