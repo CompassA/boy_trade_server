@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * @author fanqie
- * @date 2020/3/18
+ * Created on 2020/3/18
  */
 @Getter
 public class OrderLogModel {

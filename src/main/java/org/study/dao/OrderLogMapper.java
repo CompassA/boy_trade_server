@@ -6,7 +6,7 @@ import org.study.data.OrderLogDO;
 
 /**
  * @author fanqie
- * @date 2020/3/15
+ * Created on 2020/3/15
  */
 @Mapper
 public interface OrderLogMapper {

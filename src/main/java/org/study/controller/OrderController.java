@@ -2,7 +2,6 @@ package org.study.controller;
 
 import com.alipay.api.internal.util.AlipaySignature;
 import com.google.common.collect.Maps;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +27,7 @@ import org.study.util.ViewToModelUtil;
 import org.study.view.OrderDTO;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -35,31 +35,31 @@ import java.util.Optional;
 
 /**
  * @author fanqie
- * @date 2020/1/26
+ * Created on 2020/1/26
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
 public class OrderController {
 
-    @Autowired
+    @Resource
     private EncryptService encryptService;
 
-    @Autowired
+    @Resource
     private OrderService orderService;
 
-    @Autowired
+    @Resource
     private SessionService sessionService;
 
-    @Autowired
+    @Resource
     private ProductService productService;
 
-    @Autowired
+    @Resource
     private Producer producer;
 
-    @Autowired
+    @Resource
     private AliPayConfig aliPayConfig;
 
-    @Autowired
+    @Resource
     private LocalCacheBean cache;
 
     private BucketLimiter orderCreateLimiter;

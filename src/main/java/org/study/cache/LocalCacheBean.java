@@ -2,7 +2,6 @@ package org.study.cache;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
@@ -15,6 +14,7 @@ import org.study.view.PageVO;
 import org.study.view.ProductVO;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,17 +23,17 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author fanqie
- * @date 2020/3/12
+ * Created on 2020/3/12
  */
 @Component
 public class LocalCacheBean {
 
     private static final Integer HOME_PAGE_CACHE_KEY = 0;
 
-    @Autowired
+    @Resource
     private ProductService productService;
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
     private MyCache<Integer, PageVO> mainPageCache;

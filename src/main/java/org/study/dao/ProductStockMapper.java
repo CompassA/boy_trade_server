@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @author fanqie
- * @date 2020/1/11
+ * Created on 2020/1/11
  */
 public interface ProductStockMapper {
 

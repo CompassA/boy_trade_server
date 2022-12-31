@@ -4,7 +4,6 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,27 +20,28 @@ import org.study.service.SessionService;
 import org.study.util.MyTimeUtil;
 import org.study.view.OrderVO;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
  * @author fanqie
- * @date 2020/3/9
+ * Created on 2020/3/9
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
 public class AliPayController {
 
-    @Autowired
+    @Resource
     private AliPayConfig config;
 
-    @Autowired
+    @Resource
     private SessionService sessionService;
 
-    @Autowired
+    @Resource
     private EncryptService encryptService;
 
-    @Autowired
+    @Resource
     private OrderService orderService;
 
     @PostMapping(ApiPath.Trade.PAY)

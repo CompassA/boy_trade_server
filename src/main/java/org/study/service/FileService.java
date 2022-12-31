@@ -6,7 +6,7 @@ import org.study.service.model.UserModel;
 
 /**
  * @author fanqie
- * @date 2020/1/23
+ * Created on 2020/1/23
  */
 public interface FileService {
 

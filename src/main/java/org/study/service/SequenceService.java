@@ -4,7 +4,7 @@ import org.study.error.ServerException;
 
 /**
  * @author fanqie
- * @date 2020/1/26
+ * Created on 2020/1/26
  */
 public interface SequenceService {
 

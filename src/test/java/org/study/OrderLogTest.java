@@ -2,24 +2,24 @@ package org.study;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.dao.OrderLogMapper;
 import org.study.data.OrderLogDO;
 import org.study.util.MyStringUtil;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author fanqie
- * @date 2020/3/15
+ * Created on 2020/3/15
  */
 public class OrderLogTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private OrderLogMapper orderLogMapper;
 
     @Test

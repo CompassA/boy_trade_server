@@ -1,6 +1,5 @@
 package org.study.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,13 +23,14 @@ import org.study.view.HomePageVO;
 import org.study.view.PageVO;
 import org.study.view.ProductVO;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * @author fanqie
- * @date 2020/1/12
+ * Created on 2020/1/12
  */
 @RestController
 @CrossOrigin(allowedHeaders = "*", allowCredentials = "true")
@@ -38,16 +38,16 @@ public class ProductController {
 
     private static final int CREATE_GAP = 3600;
 
-    @Autowired
+    @Resource
     private ProductService productService;
 
-    @Autowired
+    @Resource
     private SessionService sessionService;
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
-    @Autowired
+    @Resource
     private LocalCacheBean cache;
 
     @PutMapping(value = ApiPath.Product.CREATE)

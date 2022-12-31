@@ -6,7 +6,6 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.exception.RemotingException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.config.MQConfig;
@@ -19,20 +18,21 @@ import org.study.service.model.OrderModel;
 import org.study.service.model.OrderMsgModel;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * @author fanqie
- * @date 2020/3/1
+ * Created on 2020/3/1
  */
 @Component
 public class Producer {
 
     private DefaultMQProducer producer;
 
-    @Autowired
+    @Resource
     private MQConfig mqConfig;
 
-    @Autowired
+    @Resource
     private OrderService orderService;
 
     @PostConstruct

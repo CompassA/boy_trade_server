@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * 字符转码工具
  * @author fanqie
- * @date 2020/1/9
+ * Created on 2020/1/9
  */
 public final class MyStringUtil {
 

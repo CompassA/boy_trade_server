@@ -2,7 +2,6 @@ package org.study;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.dao.UserMapper;
@@ -12,19 +11,20 @@ import org.study.data.UserPasswordDO;
 import org.study.service.model.UserModel;
 import org.study.util.DataToModelUtil;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
  * @author fanqie
- * @date 2019/12/8
+ * Created on 2019/12/8
  */
 public class UserTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private UserPasswordMapper userPasswordMapper;
 
     @Test

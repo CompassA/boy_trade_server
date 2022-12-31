@@ -1,7 +1,6 @@
 package org.study.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,29 +25,30 @@ import org.study.view.LoginDTO;
 import org.study.view.RegistryDTO;
 import org.study.view.UserVO;
 
+import javax.annotation.Resource;
 import java.util.Optional;
 
 /**
  * @author fanqie
- * @date 2019/12/8
+ * Created on 2019/12/8
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
 public class UserController {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private SessionService sessionService;
 
-    @Autowired
+    @Resource
     private EncryptService encryptService;
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
-    @Autowired
+    @Resource
     private FileController fileController;
 
     @PostMapping(value = ApiPath.User.LOGIN)

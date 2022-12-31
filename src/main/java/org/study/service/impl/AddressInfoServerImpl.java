@@ -1,6 +1,5 @@
 package org.study.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.dao.AddressInfoMapper;
@@ -11,16 +10,17 @@ import org.study.service.AddressInfoService;
 import org.study.service.model.AddressInfoModel;
 import org.study.util.DataToModelUtil;
 
+import javax.annotation.Resource;
 import java.util.Optional;
 
 /**
  * @author fanqie
- * @date 2020/2/7
+ * Created on 2020/2/7
  */
 @Service
 public class AddressInfoServerImpl implements AddressInfoService {
 
-    @Autowired
+    @Resource
     private AddressInfoMapper infoMapper;
 
     @Override

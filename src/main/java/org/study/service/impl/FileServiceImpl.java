@@ -3,15 +3,15 @@ package org.study.service.impl;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.study.config.FileServiceConfig;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.service.model.UserModel;
 import org.study.service.FileService;
+import org.study.service.model.UserModel;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.util.UUID;
  * ftp图片主目录 /image/
  * nginx代理这个资源
  * @author fanqie
- * @date 2020/1/19
+ * Created on 2020/1/19
  */
 @Service
 public class FileServiceImpl implements FileService {
@@ -31,7 +31,7 @@ public class FileServiceImpl implements FileService {
 
     private static final String PNG_SUFFIX = ".png";
 
-    @Autowired
+    @Resource
     private FileServiceConfig config;
 
     @Override

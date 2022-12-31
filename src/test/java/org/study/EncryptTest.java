@@ -2,24 +2,24 @@ package org.study;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.study.error.ServerException;
 import org.study.controller.response.ServerRequest;
+import org.study.error.ServerException;
 import org.study.service.impl.EncryptServiceImpl;
 import org.study.util.MyStringUtil;
 import org.study.view.UserVO;
 
+import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 import java.util.Objects;
 
 /**
  * @author fanqie
- * @date 2020/1/7
+ * Created on 2020/1/7
  */
 public class EncryptTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private EncryptServiceImpl encryptServiceImpl;
 
     @Test

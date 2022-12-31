@@ -4,7 +4,6 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.dao.ProductSaleMapper;
@@ -17,29 +16,30 @@ import org.study.service.RedisService;
 import org.study.service.model.enumdata.CacheType;
 import org.study.util.MyStringUtil;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @author fanqie
- * @date 2020/3/19
+ * Created on 2020/3/19
  */
 @Component
 public class ReduceListener implements MessageListenerConcurrently {
 
-    @Autowired
+    @Resource
     private ProductSaleMapper saleMapper;
 
-    @Autowired
+    @Resource
     private ProductStockMapper stockMapper;
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
-    @Autowired
+    @Resource
     private OrderLogService orderLogService;
 
-    @Autowired
+    @Resource
     private DelayService delayService;
 
     @Override

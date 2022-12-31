@@ -1,6 +1,5 @@
 package org.study.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,20 +15,21 @@ import org.study.service.SessionService;
 import org.study.util.ModelToViewUtil;
 import org.study.view.CartDTO;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * @author fanqie
- * @date 2020/2/9
+ * Created on 2020/2/9
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
 public class CartController {
 
-    @Autowired
+    @Resource
     private CartService cartService;
 
-    @Autowired
+    @Resource
     private SessionService sessionService;
 
     @GetMapping(ApiPath.Cart.GET)

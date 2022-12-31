@@ -4,7 +4,7 @@ import lombok.Getter;
 
 /**
  * @author fanqie
- * @date 2020/3/4
+ * Created on 2020/3/4
  */
 @Getter
 public enum ProductStatus {

@@ -18,6 +18,7 @@ import org.study.service.model.enumdata.PermanentKey;
 import org.study.util.MyStringUtil;
 import org.study.view.CartDTO;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,18 +27,18 @@ import java.util.stream.Collectors;
 /**
  * key: userId; hashKey: productId; val: num
  * @author fanqie
- * @date 2020/2/9
+ * Created on 2020/2/9
  */
 @Service
 public class CartServiceImpl implements CartService {
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
-    @Autowired
+    @Resource
     private ProductService productService;
 
-    @Autowired
+    @Resource
     private UserService userService;
 
     @Override

@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author fanqie
- * @date 2020/1/4
+ * Created on 2020/1/4
  */
 public final class DataToModelUtil {
 

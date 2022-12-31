@@ -8,11 +8,11 @@ import org.study.view.CartDTO;
 
 /**
  * @author fanqie
- * @date 2020/2/9
+ * Created on 2020/2/9
  */
 public class RedisTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private RedisTemplate<Object, Object> redisTemplate;
 
     @Test

@@ -33,7 +33,7 @@ import java.util.Base64.Encoder;
  * 加密链路： 待加密数据 -> base64转换为byte数组 -> byte加密 -> base64转换为加密字符串
  * 解密链路： base64将加密字符串转换为加密的byte数组 -> byte解密 -> base64转换为字符串
  * @author fanqie
- * @date 2020/1/6
+ * Created on 2020/1/6
  */
 @Component
 public class EncryptServiceImpl implements EncryptService {

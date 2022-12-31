@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * @author fanqie
- * @date 2020/3/11
+ * Created on 2020/3/11
  */
 public class LocalLRU<K, V> extends LinkedHashMap<K, V> implements MyCache<K, V> {
 

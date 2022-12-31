@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author fanqie
- * @date 2020/1/4
+ * Created on 2020/1/4
  */
 @Getter
 public class ServerException extends Exception implements SystemException {

@@ -1,25 +1,24 @@
 package org.study.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.service.model.UserModel;
-import org.study.controller.response.ServerResponse;
 import org.study.service.FileService;
 import org.study.service.SessionService;
+import org.study.service.model.UserModel;
 
+import javax.annotation.Resource;
 import java.util.Optional;
 
 /**
  * @author fanqie
- * @date 2020/1/19
+ * Created on 2020/1/19
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
@@ -27,10 +26,10 @@ public class FileController {
 
     private static final int MAX_FILE_SIZE = 3 * 1024 * 1024;
 
-    @Autowired
+    @Resource
     private SessionService sessionService;
 
-    @Autowired
+    @Resource
     private FileService fileService;
 
     @PostMapping(value = ApiPath.LoadingFile.UPLOAD)

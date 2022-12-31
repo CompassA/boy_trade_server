@@ -1,7 +1,6 @@
 package org.study.service.impl;
 
 import com.google.common.collect.Maps;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -27,6 +26,7 @@ import org.study.util.ModelToDataUtil;
 import org.study.util.MyTimeUtil;
 import org.study.view.UserVO;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -37,27 +37,27 @@ import java.util.Set;
 
 /**
  * @author fanqie
- * @date 2020/1/26
+ * Created on 2020/1/26
  */
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private ProductService productService;
 
-    @Autowired
+    @Resource
     private SequenceService sequenceService;
 
-    @Autowired
+    @Resource
     private OrderLogService orderLogService;
 
-    @Autowired
+    @Resource
     private OrderMasterMapper orderMasterMapper;
 
-    @Autowired
+    @Resource
     private OrderDetailMapper orderDetailMapper;
 
     @Override

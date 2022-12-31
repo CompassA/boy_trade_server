@@ -1,6 +1,5 @@
 package org.study.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -10,14 +9,15 @@ import org.study.data.UserDO;
 import org.study.data.UserPasswordDO;
 import org.study.error.ServerException;
 import org.study.error.ServerExceptionBean;
-import org.study.service.model.UserModel;
 import org.study.service.UserService;
+import org.study.service.model.UserModel;
 import org.study.util.DataToModelUtil;
 import org.study.util.ModelToDataUtil;
 import org.study.validation.ValidationResult;
 import org.study.validation.ValidatorImpl;
 import org.study.view.UserVO;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,20 +25,20 @@ import java.util.Set;
 
 /**
  * @author fanqie
- * @date 2020/1/4
+ * Created on 2020/1/4
  */
 @Service
 public class UserServiceImpl implements UserService {
 
     private static final long ACCOUNT_BASE_NUM = 1000000;
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private UserPasswordMapper userPasswordMapper;
 
-    @Autowired
+    @Resource
     private ValidatorImpl validator;
 
     /**

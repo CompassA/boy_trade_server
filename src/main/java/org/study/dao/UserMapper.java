@@ -9,7 +9,7 @@ import java.util.Set;
 
 /**
  * @author fanqie
- * @date 2019/12/8
+ * Created on 2019/12/8
  */
 @Mapper
 public interface UserMapper {

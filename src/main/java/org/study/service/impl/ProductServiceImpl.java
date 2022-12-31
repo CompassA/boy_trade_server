@@ -1,6 +1,5 @@
 package org.study.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.dao.ProductMapper;
@@ -25,6 +24,7 @@ import org.study.util.MyStringUtil;
 import org.study.validation.ValidationResult;
 import org.study.validation.ValidatorImpl;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -32,27 +32,27 @@ import java.util.Optional;
 
 /**
  * @author fanqie
- * @date 2020/1/12
+ * Created on 2020/1/12
  */
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
+    @Resource
     private ProductMapper productMapper;
 
-    @Autowired
+    @Resource
     private ProductSaleMapper saleMapper;
 
-    @Autowired
+    @Resource
     private ProductStockMapper stockMapper;
 
-    @Autowired
+    @Resource
     private ValidatorImpl validator;
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
-    @Autowired
+    @Resource
     private Producer producer;
 
     @Override

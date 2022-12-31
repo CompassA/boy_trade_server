@@ -1,6 +1,5 @@
 package org.study.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,18 +15,20 @@ import org.study.error.ServerExceptionBean;
 import org.study.service.AddressInfoService;
 import org.study.service.SessionService;
 
+import javax.annotation.Resource;
+
 /**
  * @author fanqie
- * @date 2020/2/7
+ * Created on 2020/2/7
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
 public class AddressInfoController {
 
-    @Autowired
+    @Resource
     private AddressInfoService addressInfoService;
 
-    @Autowired
+    @Resource
     private SessionService sessionService;
 
     @GetMapping(ApiPath.AddressInfo.GET_USER_ADDRESS_INFO)

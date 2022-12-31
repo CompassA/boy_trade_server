@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author fanqie
- * @date 2020/2/1
+ * Created on 2020/2/1
  */
 public interface RedisService {
 

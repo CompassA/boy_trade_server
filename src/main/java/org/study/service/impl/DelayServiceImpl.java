@@ -1,6 +1,5 @@
 package org.study.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.study.error.ServerException;
 import org.study.service.DelayService;
@@ -9,19 +8,20 @@ import org.study.service.model.DelayTask;
 import org.study.util.MyTimeUtil;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.util.concurrent.DelayQueue;
 
 /**
  * @author fanqie
- * @date 2020/3/10
+ * Created on 2020/3/10
  */
 @Service
 public class DelayServiceImpl implements Runnable, DelayService {
 
     private DelayQueue<DelayTask<String>> tasks;
 
-    @Autowired
+    @Resource
     private OrderService orderService;
 
     @PostConstruct

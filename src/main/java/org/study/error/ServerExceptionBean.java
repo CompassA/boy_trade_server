@@ -2,7 +2,7 @@ package org.study.error;
 
 /**
  * @author fanqie
- * @date 2020/1/4
+ * Created on 2020/1/4
  */
 public enum ServerExceptionBean implements SystemException {
     /* 参数异常 */

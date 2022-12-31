@@ -4,7 +4,7 @@ import lombok.Getter;
 
 /**
  * @author fanqie
- * @date 2020/2/6
+ * Created on 2020/2/6
  */
 @Getter
 public enum CacheType {

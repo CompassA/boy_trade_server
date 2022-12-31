@@ -1,6 +1,5 @@
 package org.study.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,18 +10,19 @@ import org.study.error.ServerExceptionBean;
 import org.study.service.SequenceService;
 import org.study.util.MyStringUtil;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
  * @author fanqie
- * @date 2020/1/26
+ * Created on 2020/1/26
  */
 @Service
 public class SequenceServiceImpl implements SequenceService {
 
-    @Autowired
+    @Resource
     private SequenceInfoMapper sequenceInfoMapper;
 
     @Override

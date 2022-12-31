@@ -1,23 +1,23 @@
 package org.study.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
 import org.study.service.model.UserModel;
 
+import javax.annotation.Resource;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author fanqie
- * @date 2020/1/29
+ * Created on 2020/1/29
  */
 @Service
 public class SessionServiceImpl implements SessionService {
 
-    @Autowired
+    @Resource
     private RedisService service;
 
     @Override
