@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author fanqie
- * @date 2020/1/29
+ * Created on 2020/1/29
  */
 @Component
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 3600)

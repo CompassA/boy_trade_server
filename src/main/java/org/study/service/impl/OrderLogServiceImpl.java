@@ -1,7 +1,6 @@
 package org.study.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.study.dao.OrderLogMapper;
 import org.study.data.OrderLogDO;
@@ -9,18 +8,19 @@ import org.study.service.OrderLogService;
 import org.study.service.model.OrderLogModel;
 import org.study.util.MyStringUtil;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
 /**
  * @author fanqie
- * @date 2020/3/18
+ * Created on 2020/3/18
  */
 @Service
 public class OrderLogServiceImpl implements OrderLogService {
 
-    @Autowired
+    @Resource
     private OrderLogMapper orderLogMapper;
 
     @Override

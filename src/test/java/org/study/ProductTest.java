@@ -2,7 +2,6 @@ package org.study;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.dao.ProductMapper;
@@ -12,21 +11,22 @@ import org.study.data.ProductDO;
 import org.study.data.ProductSaleDO;
 import org.study.data.ProductStockDO;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 
 /**
  * @author fanqie
- * @date 2020/1/11
+ * Created on 2020/1/11
  */
 public class ProductTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private ProductMapper productMapper;
 
-    @Autowired
+    @Resource
     private ProductStockMapper productStockMapper;
 
-    @Autowired
+    @Resource
     private ProductSaleMapper productSaleMapper;
 
     @Test

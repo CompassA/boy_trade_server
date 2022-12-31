@@ -6,12 +6,11 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.exception.RemotingException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.config.MQConfig;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.mq.enumdata.MessageQueueTag;
 import org.study.mq.message.MessageFactory;
 import org.study.service.OrderService;
@@ -19,20 +18,21 @@ import org.study.service.model.OrderModel;
 import org.study.service.model.OrderMsgModel;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * @author fanqie
- * @date 2020/3/1
+ * Created on 2020/3/1
  */
 @Component
 public class Producer {
 
     private DefaultMQProducer producer;
 
-    @Autowired
+    @Resource
     private MQConfig mqConfig;
 
-    @Autowired
+    @Resource
     private OrderService orderService;
 
     @PostConstruct
@@ -60,7 +60,7 @@ public class Producer {
         } catch (JsonProcessingException | MQClientException | InterruptedException |
                 RemotingException | MQBrokerException e) {
             orderService.rollBackStockDecrease(orderMsgModel.getDecreaseRecords());
-            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
         }
     }
 

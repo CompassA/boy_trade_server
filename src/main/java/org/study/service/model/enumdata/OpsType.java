@@ -4,7 +4,7 @@ import lombok.Getter;
 
 /**
  * @author fanqie
- * @date 2020/4/29
+ * Created on 2020/4/29
  */
 @Getter
 public enum OpsType {

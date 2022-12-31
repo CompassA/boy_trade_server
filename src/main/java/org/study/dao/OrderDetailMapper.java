@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * @author fanqie
- * @date 2020/1/26
+ * Created on 2020/1/26
  */
 @Mapper
 public interface OrderDetailMapper {

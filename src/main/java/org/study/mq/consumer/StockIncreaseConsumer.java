@@ -7,7 +7,6 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.MessageExt;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.study.config.MQConfig;
 import org.study.dao.ProductStockMapper;
@@ -16,11 +15,12 @@ import org.study.mq.message.MessageFactory;
 import org.study.mq.message.StockMessage;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * @author fanqie
- * @date 2020/3/2
+ * Created on 2020/3/2
  */
 @Component
 @Deprecated
@@ -28,10 +28,10 @@ public class StockIncreaseConsumer {
 
     private DefaultMQPushConsumer consumer;
 
-    @Autowired
+    @Resource
     private MQConfig config;
 
-    @Autowired
+    @Resource
     private ProductStockMapper stockMapper;
 
     @PostConstruct

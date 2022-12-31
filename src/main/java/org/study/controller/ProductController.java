@@ -1,6 +1,5 @@
 package org.study.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.study.cache.LocalCacheBean;
 import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
@@ -24,13 +23,14 @@ import org.study.view.HomePageVO;
 import org.study.view.PageVO;
 import org.study.view.ProductVO;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * @author fanqie
- * @date 2020/1/12
+ * Created on 2020/1/12
  */
 @RestController
 @CrossOrigin(allowedHeaders = "*", allowCredentials = "true")
@@ -38,16 +38,16 @@ public class ProductController {
 
     private static final int CREATE_GAP = 3600;
 
-    @Autowired
+    @Resource
     private ProductService productService;
 
-    @Autowired
+    @Resource
     private SessionService sessionService;
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
-    @Autowired
+    @Resource
     private LocalCacheBean cache;
 
     @PutMapping(value = ApiPath.Product.CREATE)
@@ -57,10 +57,10 @@ public class ProductController {
             @RequestBody final ProductVO product) throws ServerException {
         //登录态方可创建
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_NOT_LOGIN_EXCEPTION);
         }
         if (!redisService.isMaxAllowed(userId, OpsType.CREATE_PRODUCT.getVal(), CREATE_GAP, 1)) {
-            throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_LIMIT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.PRODUCT_CREATE_LIMIT_EXCEPTION);
         }
 
         final ProductModel productModel = new ProductModel()
@@ -74,7 +74,7 @@ public class ProductController {
         final ProductModel modelStatus = productService.create(productModel);
         final Optional<ProductVO> productVO = ModelToViewUtil.getProductVO(modelStatus);
         if (!productVO.isPresent()) {
-            throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.PRODUCT_CREATE_EXCEPTION);
         }
         cache.invalidatePageCache();
         return ServerResponse.create(productVO.get());
@@ -106,7 +106,7 @@ public class ProductController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_NOT_LOGIN_EXCEPTION);
         }
         return ServerResponse.create(
                 ModelToViewUtil.getProductViews(productService.selectByUserId(userId)));
@@ -129,7 +129,7 @@ public class ProductController {
                     productVO.setPaidNum(productService.getPaidNum(productId));
                     redisService.cacheDataWithoutLocalCache(key, productVO);
                     return ServerResponse.create(productVO);
-                }).orElse(ServerResponse.fail(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION));
+                }).orElse(ServerResponse.fail(ServerExceptionEnum.PRODUCT_NOT_EXIST_EXCEPTION));
     }
 
     @GetMapping(ApiPath.Product.HOME_PRODUCTS)

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import org.study.controller.response.ServerRequest;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.service.EncryptService;
 import org.study.util.MyStringUtil;
 
@@ -33,7 +33,7 @@ import java.util.Base64.Encoder;
  * 加密链路： 待加密数据 -> base64转换为byte数组 -> byte加密 -> base64转换为加密字符串
  * 解密链路： base64将加密字符串转换为加密的byte数组 -> byte解密 -> base64转换为字符串
  * @author fanqie
- * @date 2020/1/6
+ * Created on 2020/1/6
  */
 @Component
 public class EncryptServiceImpl implements EncryptService {
@@ -82,7 +82,7 @@ public class EncryptServiceImpl implements EncryptService {
             //反序列化
             return new ObjectMapper().readValue(MyStringUtil.base64ToUtf8(dataStr), type);
         } catch (final Exception ex) {
-            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -139,7 +139,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -154,7 +154,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -172,7 +172,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -192,7 +192,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -205,7 +205,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -218,7 +218,7 @@ public class EncryptServiceImpl implements EncryptService {
             return cipher.doFinal(data);
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 
@@ -235,7 +235,7 @@ public class EncryptServiceImpl implements EncryptService {
             return encoder.encodeToString(md5.digest(data.getBytes(StandardCharsets.UTF_8)));
         } catch (final Exception e) {
             e.printStackTrace();
-            throw new ServerException(ServerExceptionBean.ENCRYPT_DECRYPT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ENCRYPT_DECRYPT_EXCEPTION);
         }
     }
 

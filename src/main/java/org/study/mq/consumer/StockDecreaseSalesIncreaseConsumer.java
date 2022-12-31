@@ -2,26 +2,26 @@ package org.study.mq.consumer;
 
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.study.config.MQConfig;
 import org.study.mq.enumdata.MessageQueueTag;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * @author fanqie
- * @date 2020/3/3
+ * Created on 2020/3/3
  */
 @Component
 public class StockDecreaseSalesIncreaseConsumer {
 
     private DefaultMQPushConsumer consumer;
 
-    @Autowired
+    @Resource
     private MQConfig config;
 
-    @Autowired
+    @Resource
     private ReduceListener listener;
 
     @PostConstruct

@@ -2,17 +2,18 @@ package org.study;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.study.view.CartDTO;
 
+import javax.annotation.Resource;
+
 /**
  * @author fanqie
- * @date 2020/2/9
+ * Created on 2020/2/9
  */
 public class RedisTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private RedisTemplate<Object, Object> redisTemplate;
 
     @Test

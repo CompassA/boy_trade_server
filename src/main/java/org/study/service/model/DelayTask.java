@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author fanqie
- * @date 2020/3/10
+ * Created on 2020/3/10
  */
 @Getter
 public class DelayTask<T> implements Delayed {

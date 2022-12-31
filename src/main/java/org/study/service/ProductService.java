@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * @author fanqie
- * @date 2020/1/12
+ * Created on 2020/1/12
  */
 public interface ProductService {
 

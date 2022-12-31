@@ -4,7 +4,6 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,34 +13,35 @@ import org.study.config.AliPayConfig;
 import org.study.controller.response.AliPayFactory;
 import org.study.controller.response.ServerRequest;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.service.EncryptService;
 import org.study.service.OrderService;
 import org.study.service.SessionService;
 import org.study.util.MyTimeUtil;
 import org.study.view.OrderVO;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
  * @author fanqie
- * @date 2020/3/9
+ * Created on 2020/3/9
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
 public class AliPayController {
 
-    @Autowired
+    @Resource
     private AliPayConfig config;
 
-    @Autowired
+    @Resource
     private SessionService sessionService;
 
-    @Autowired
+    @Resource
     private EncryptService encryptService;
 
-    @Autowired
+    @Resource
     private OrderService orderService;
 
     @PostMapping(ApiPath.Trade.PAY)
@@ -49,12 +49,12 @@ public class AliPayController {
             @RequestBody ServerRequest encryptedOrderData,
             HttpServletResponse response) throws ServerException {
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
 
         final OrderVO orderVO = encryptService.deserialize(encryptedOrderData, OrderVO.class);
         if (orderService.isOrderExpired(MyTimeUtil.parseStr(orderVO.getCreateTime()))) {
-            throw new ServerException(ServerExceptionBean.ORDER_EXPIRED_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ORDER_EXPIRED_EXCEPTION);
         }
         try {
             final AlipayClient client = AliPayFactory.getClient(config);

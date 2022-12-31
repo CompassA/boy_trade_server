@@ -2,9 +2,9 @@ package org.study.error;
 
 /**
  * @author fanqie
- * @date 2020/1/4
+ * Created on 2020/1/4
  */
-public enum ServerExceptionBean implements SystemException {
+public enum ServerExceptionEnum implements SystemException {
     /* 参数异常 */
     PARAMETER_VALIDATION_EXCEPTION(10000, "参数不合法"),
     /* 加密信息异常 */
@@ -25,6 +25,8 @@ public enum ServerExceptionBean implements SystemException {
     USER_TRADE_INVALID_EXCEPTION(20004, "用户状态非法"),
     /* 头像上传失败 */
     USER_ICON_URL_LOAD_FAIL_EXCEPTION(20005, "上传头像失败"),
+    /* 登录校验参数有误 */
+    TOKEN_VALIDATION_PARAM_FAILURE(20006, "登录校验参数异常"),
     /* 商品创建失败 */
     PRODUCT_CREATE_EXCEPTION(30000, "商品创建失败"),
     /* 商品查询失败 */
@@ -79,7 +81,7 @@ public enum ServerExceptionBean implements SystemException {
 
     private final String message;
 
-    ServerExceptionBean(final Integer errorCode, final String message) {
+    ServerExceptionEnum(final Integer errorCode, final String message) {
         this.errorCode = errorCode;
         this.message = message;
     }

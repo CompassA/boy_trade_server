@@ -2,7 +2,7 @@ package org.study.cache;
 
 /**
  * @author fanqie
- * @date 2020/3/11
+ * Created on 2020/3/11
  */
 public final class LRUFactory {
 

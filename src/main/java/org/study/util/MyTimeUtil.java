@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * @author fanqie
- * @date 2020/1/29
+ * Created on 2020/1/29
  */
 public final class MyTimeUtil {
 

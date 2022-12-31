@@ -13,7 +13,7 @@ import org.study.data.ProductStockDO;
 import org.study.data.UserDO;
 import org.study.data.UserPasswordDO;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.service.model.AddressInfoModel;
 import org.study.service.model.OrderDetailModel;
 import org.study.service.model.OrderModel;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author fanqie
- * @date 2020/1/4
+ * Created on 2020/1/4
  */
 public final class DataToModelUtil {
 
@@ -180,7 +180,7 @@ public final class DataToModelUtil {
         if (models.size() == orderMasters.size()) {
             return models;
         }
-        throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+        throw new ServerException(ServerExceptionEnum.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
     }
 
     /** 没有拼装销量、库存、付款数 */
@@ -222,6 +222,6 @@ public final class DataToModelUtil {
         if (models.isPresent()) {
             return models.get();
         }
-        throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+        throw new ServerException(ServerExceptionEnum.PRODUCT_NOT_EXIST_EXCEPTION);
     }
 }

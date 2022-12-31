@@ -5,7 +5,7 @@ import org.study.error.ServerException;
 
 /**
  * @author fanqie
- * @date 2020/1/8
+ * Created on 2020/1/8
  */
 public interface EncryptService {
 

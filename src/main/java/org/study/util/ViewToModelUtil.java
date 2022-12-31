@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author fanqie
- * @date 2020/1/12
+ * Created on 2020/1/12
  */
 public final class ViewToModelUtil {
 

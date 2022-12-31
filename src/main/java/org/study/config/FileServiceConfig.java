@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 /**
  * 文件上传配置
  * @author fanqie
- * @date 2020/1/19
+ * Created on 2020/1/19
  */
 @Getter
 @Setter

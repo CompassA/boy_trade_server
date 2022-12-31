@@ -5,7 +5,7 @@ import lombok.Getter;
 /**
  * redis中持久存储的数据类型
  * @author fanqie
- * @date 2020/3/2
+ * Created on 2020/3/2
  */
 @Getter
 public enum PermanentKey {

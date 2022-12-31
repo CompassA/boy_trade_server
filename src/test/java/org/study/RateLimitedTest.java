@@ -2,24 +2,22 @@ package org.study;
 
 import com.google.common.util.concurrent.RateLimiter;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.study.limiter.BucketLimiter;
 import org.study.service.RedisService;
 
+import javax.annotation.Resource;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author fanqie
- * @date 2020/3/6
+ * Created on 2020/3/6
  */
 public class RateLimitedTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
     @Test

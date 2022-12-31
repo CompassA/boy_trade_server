@@ -8,7 +8,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * @author fanqie
- * @date 2019/12/8
+ * Created on 2019/12/8
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest

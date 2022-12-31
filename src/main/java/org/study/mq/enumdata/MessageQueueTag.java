@@ -5,7 +5,7 @@ import lombok.Getter;
 /**
  * 消息Tag类型
  * @author fanqie
- * @date 2020/3/2
+ * Created on 2020/3/2
  */
 @Getter
 public enum MessageQueueTag {

@@ -2,17 +2,13 @@ package org.study.service.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.study.service.RedisService;
 
 import javax.annotation.PostConstruct;
-import javax.validation.constraints.NotNull;
-import java.time.Duration;
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -20,14 +16,14 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author fanqie
- * @date 2020/2/1
+ * Created on 2020/2/1
  */
 @Service
 public class RedisServiceImpl implements RedisService {
 
     private Cache<String, Object> localCache;
 
-    @Autowired
+    @Resource
     private RedisTemplate<Object, Object> redisTemplate;
 
     @PostConstruct

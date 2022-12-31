@@ -1,7 +1,6 @@
 package org.study.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.study.controller.response.ServerRequest;
 import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.service.EncryptService;
 import org.study.service.RedisService;
 import org.study.service.SessionService;
@@ -26,29 +25,30 @@ import org.study.view.LoginDTO;
 import org.study.view.RegistryDTO;
 import org.study.view.UserVO;
 
+import javax.annotation.Resource;
 import java.util.Optional;
 
 /**
  * @author fanqie
- * @date 2019/12/8
+ * Created on 2019/12/8
  */
 @RestController
 @CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
 public class UserController {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private SessionService sessionService;
 
-    @Autowired
+    @Resource
     private EncryptService encryptService;
 
-    @Autowired
+    @Resource
     private RedisService redisService;
 
-    @Autowired
+    @Resource
     private FileController fileController;
 
     @PostMapping(value = ApiPath.User.LOGIN)
@@ -58,7 +58,7 @@ public class UserController {
         final String account = loginDTO.getAccount();
         final String password = loginDTO.getPassword();
         if (StringUtils.isBlank(account) || StringUtils.isBlank(password)) {
-            throw new ServerException(ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.PARAMETER_VALIDATION_EXCEPTION);
         }
         final String encryptPassword = encryptService.encryptByMd5(password);
 
@@ -71,7 +71,7 @@ public class UserController {
                             return userVO;
                         }))
                 .map(ServerResponse::create)
-                .orElse(ServerResponse.fail(ServerExceptionBean.USER_LOGIN_EXCEPTION));
+                .orElse(ServerResponse.fail(ServerExceptionEnum.USER_LOGIN_EXCEPTION));
     }
 
     @PostMapping(value = ApiPath.User.REGISTRY)
@@ -91,13 +91,13 @@ public class UserController {
                     final String token = sessionService.putUserModel(userModel);
                     userVO.setToken(token);
                     return ServerResponse.create(userVO);
-                }).orElse(ServerResponse.fail(ServerExceptionBean.USER_REGISTRY_EXCEPTION));
+                }).orElse(ServerResponse.fail(ServerExceptionEnum.USER_REGISTRY_EXCEPTION));
     }
 
     @GetMapping(value = ApiPath.User.EXIST)
     public ServerResponse checkUserName(@RequestParam("name") String name) throws ServerException {
         if (StringUtils.isBlank(name)) {
-            throw new ServerException(ServerExceptionBean.PARAMETER_VALIDATION_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.PARAMETER_VALIDATION_EXCEPTION);
         }
         return ServerResponse.create(userService.isUserNameExists(name));
     }
@@ -118,7 +118,7 @@ public class UserController {
             redisService.cacheData(key, userInfo.get());
             return ServerResponse.create(userInfo.get());
         }
-        throw new ServerException(ServerExceptionBean.USER_QUERY_EXCEPTION);
+        throw new ServerException(ServerExceptionEnum.USER_QUERY_EXCEPTION);
     }
 
     @GetMapping(value = ApiPath.User.SESSION_CHECKING)
@@ -140,7 +140,7 @@ public class UserController {
             @RequestPart("imgFile") final MultipartFile file) throws ServerException {
         final ServerResponse response = fileController.uploadFile(userId, token, file);
         if (!userService.updateIconUrl(userId, (String) response.getBody())) {
-            throw new ServerException(ServerExceptionBean.USER_ICON_URL_LOAD_FAIL_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_ICON_URL_LOAD_FAIL_EXCEPTION);
         }
         return response;
     }
