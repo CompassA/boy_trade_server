@@ -3,11 +3,10 @@ package org.study.service.impl;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.study.data.UserDO;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.service.CartService;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
@@ -103,7 +102,7 @@ public class CartServiceImpl implements CartService {
                     .setProductsMap(productMap);
         } catch (final NumberFormatException | ClassCastException e) {
             redisService.deleteKey(key);
-            throw new ServerException(ServerExceptionBean.CART_DATA_FORMAT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.CART_DATA_FORMAT_EXCEPTION);
         }
     }
 

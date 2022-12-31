@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.study.dao.SequenceInfoMapper;
 import org.study.data.SequenceInfoDO;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.service.SequenceService;
 import org.study.util.MyStringUtil;
 
@@ -43,7 +43,7 @@ public class SequenceServiceImpl implements SequenceService {
         //6位订单编号
         final SequenceInfoDO sequenceInfoDO = sequenceInfoMapper.selectSequenceInfo(sequenceId);
         if (Objects.isNull(sequenceInfoDO)) {
-            throw new ServerException(ServerExceptionBean.SEQUENCE_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.SEQUENCE_EXCEPTION);
         }
         int newValue = sequenceInfoDO.getCurrentValue() + sequenceInfoDO.getStep();
         if (newValue > sequenceInfoDO.getMaxValue()) {
@@ -62,7 +62,7 @@ public class SequenceServiceImpl implements SequenceService {
     public String getCurrentValue(final Integer sequenceId) throws ServerException {
         final Integer currentValue = sequenceInfoMapper.selectCurrentValue(sequenceId);
         if (currentValue == null) {
-            throw new ServerException(ServerExceptionBean.SEQUENCE_NOT_EXIST_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.SEQUENCE_NOT_EXIST_EXCEPTION);
         }
         return String.format("%06d", currentValue);
     }

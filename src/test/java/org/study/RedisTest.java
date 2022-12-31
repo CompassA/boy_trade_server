@@ -2,9 +2,10 @@ package org.study;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.study.view.CartDTO;
+
+import javax.annotation.Resource;
 
 /**
  * @author fanqie

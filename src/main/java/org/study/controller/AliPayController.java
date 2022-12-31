@@ -13,7 +13,7 @@ import org.study.config.AliPayConfig;
 import org.study.controller.response.AliPayFactory;
 import org.study.controller.response.ServerRequest;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.service.EncryptService;
 import org.study.service.OrderService;
 import org.study.service.SessionService;
@@ -49,12 +49,12 @@ public class AliPayController {
             @RequestBody ServerRequest encryptedOrderData,
             HttpServletResponse response) throws ServerException {
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
 
         final OrderVO orderVO = encryptService.deserialize(encryptedOrderData, OrderVO.class);
         if (orderService.isOrderExpired(MyTimeUtil.parseStr(orderVO.getCreateTime()))) {
-            throw new ServerException(ServerExceptionBean.ORDER_EXPIRED_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ORDER_EXPIRED_EXCEPTION);
         }
         try {
             final AlipayClient client = AliPayFactory.getClient(config);

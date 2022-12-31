@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.study.config.MQConfig;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.mq.enumdata.MessageQueueTag;
 import org.study.mq.message.MessageFactory;
 import org.study.service.OrderService;
@@ -60,7 +60,7 @@ public class Producer {
         } catch (JsonProcessingException | MQClientException | InterruptedException |
                 RemotingException | MQBrokerException e) {
             orderService.rollBackStockDecrease(orderMsgModel.getDecreaseRecords());
-            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
         }
     }
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.service.FileService;
 import org.study.service.SessionService;
 import org.study.service.model.UserModel;
@@ -39,11 +39,11 @@ public class FileController {
             @RequestPart("imgFile") final MultipartFile file) throws ServerException {
         //登录校验
         if (!sessionService.isLogin(token, userId) || file.getSize() > MAX_FILE_SIZE) {
-            throw new ServerException(ServerExceptionBean.FILE_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.FILE_EXCEPTION);
         }
         final Optional<UserModel> user = sessionService.getUserModel(token);
         if (!user.isPresent()) {
-            throw new ServerException(ServerExceptionBean.FILE_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.FILE_EXCEPTION);
         }
         //上传文件并返回url
         final String url = fileService.uploadFile(file, user.get());

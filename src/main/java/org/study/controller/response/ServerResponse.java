@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.study.error.ControllerExceptionHandler;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ public class ServerResponse {
         return create(body, SUCCESS_STATUS);
     }
 
-    public static ServerResponse fail(final ServerExceptionBean errorInfo) {
+    public static ServerResponse fail(final ServerExceptionEnum errorInfo) {
         final Map<String, Object> errorInfoMap = Maps.newHashMap();
         errorInfoMap.put(ControllerExceptionHandler.ERROR_PROPERTY_NAME, errorInfo.getErrorCode());
         errorInfoMap.put(ControllerExceptionHandler.MSG_PROPERTY_NAME, errorInfo.getMessage());

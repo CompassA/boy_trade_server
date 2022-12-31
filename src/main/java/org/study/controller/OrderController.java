@@ -13,7 +13,7 @@ import org.study.config.AliPayConfig;
 import org.study.controller.response.ServerRequest;
 import org.study.controller.response.ServerResponse;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.limiter.BucketLimiter;
 import org.study.mq.Producer;
 import org.study.service.EncryptService;
@@ -76,25 +76,25 @@ public class OrderController {
             @RequestBody final ServerRequest encryptData) throws Exception {
         //未登录不可下单
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_NOT_LOGIN_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_NOT_LOGIN_EXCEPTION);
         }
         //限流
         if (!orderCreateLimiter.acquire()) {
-            throw new ServerException(ServerExceptionBean.ORDER_CREATE_LIMIT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ORDER_CREATE_LIMIT_EXCEPTION);
         }
 
         //反序列化并校验
         final OrderDTO orderDTO = encryptService.deserialize(encryptData, OrderDTO.class);
         final Optional<OrderModel> orderModel = ViewToModelUtil.getOrderModel(orderDTO);
         if (!orderModel.isPresent()) {
-            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ORDER_FAIL_BY_SYSTEM_EXCEPTION);
         }
 
         //创建订单并返回前端订单状态
         final OrderModel result = producer.createOrder(orderModel.get());
         return ModelToViewUtil.getOrderVO(result)
                 .map(ServerResponse::create)
-                .orElse(ServerResponse.fail(ServerExceptionBean.ORDER_FAIL_BY_SYSTEM_EXCEPTION));
+                .orElse(ServerResponse.fail(ServerExceptionEnum.ORDER_FAIL_BY_SYSTEM_EXCEPTION));
     }
 
     @GetMapping(value = ApiPath.Order.QUERY_BY_ORDER_ID)
@@ -102,7 +102,7 @@ public class OrderController {
         return orderService.selectOrderById(orderId)
                 .flatMap(ModelToViewUtil::getOrderVO)
                 .map(ServerResponse::create)
-                .orElse(ServerResponse.fail(ServerExceptionBean.ORDER_NOT_EXIST_EXCEPTION));
+                .orElse(ServerResponse.fail(ServerExceptionEnum.ORDER_NOT_EXIST_EXCEPTION));
     }
     
     @GetMapping(value = ApiPath.Order.CREATED_ORDER_WITH_SELLER)
@@ -110,7 +110,7 @@ public class OrderController {
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
         if (!sessionService.isLogin(token, sellerId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectCreatedOrderWithSeller(sellerId)));
@@ -121,7 +121,7 @@ public class OrderController {
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
         if (!sessionService.isLogin(token, sellerId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectPaidOrderWithSeller(sellerId)));
@@ -132,7 +132,7 @@ public class OrderController {
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
         if (!sessionService.isLogin(token, sellerId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectSentOrderWithSeller(sellerId)));
@@ -143,7 +143,7 @@ public class OrderController {
             @RequestParam("sellerId") final Integer sellerId,
             @RequestParam("token") final String token) throws ServerException {
         if (!sessionService.isLogin(token, sellerId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectFinishedOrderWithSeller(sellerId)));
@@ -154,7 +154,7 @@ public class OrderController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.CREATED, OrderStatus.CREATED)));
@@ -165,7 +165,7 @@ public class OrderController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.PAID, OrderStatus.PAID)));
@@ -176,7 +176,7 @@ public class OrderController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.SENT, OrderStatus.PAID)));
@@ -187,7 +187,7 @@ public class OrderController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("token") final String token) throws ServerException {
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         return ServerResponse.create(ModelToViewUtil.orderModelsToViews(
                 orderService.selectByUserId(userId, OrderStatus.FINISHED, OrderStatus.PAID)));
@@ -199,11 +199,11 @@ public class OrderController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("orderId") final String orderId) throws ServerException {
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         return orderService.updateOrderStatus(orderId, OrderStatus.FINISHED, OrderStatus.PAID)
                 ? ServerResponse.create(null)
-                : ServerResponse.fail(ServerExceptionBean.ORDER_STATUS_EXCEPTION);
+                : ServerResponse.fail(ServerExceptionEnum.ORDER_STATUS_EXCEPTION);
     }
 
     @GetMapping(value = ApiPath.Order.SENT_STATUS)
@@ -212,11 +212,11 @@ public class OrderController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("orderId") final String orderId) throws ServerException {
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         return orderService.updateOrderStatus(orderId, OrderStatus.SENT, OrderStatus.PAID)
                 ? ServerResponse.create(null)
-                : ServerResponse.fail(ServerExceptionBean.ORDER_STATUS_EXCEPTION);
+                : ServerResponse.fail(ServerExceptionEnum.ORDER_STATUS_EXCEPTION);
     }
 
     @GetMapping(value = ApiPath.Order.CANCEL)
@@ -225,7 +225,7 @@ public class OrderController {
             @RequestParam("userId") final Integer userId,
             @RequestParam("orderId") final String orderId) throws ServerException {
         if (!sessionService.isLogin(token, userId)) {
-            throw new ServerException(ServerExceptionBean.USER_TRADE_INVALID_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_TRADE_INVALID_EXCEPTION);
         }
         orderService.cancelOrder(orderId);
         return ServerResponse.create(null);

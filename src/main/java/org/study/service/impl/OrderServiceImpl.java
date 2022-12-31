@@ -9,7 +9,7 @@ import org.study.dao.OrderMasterMapper;
 import org.study.data.OrderDetailDO;
 import org.study.data.OrderMasterDO;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.service.OrderLogService;
 import org.study.service.OrderService;
 import org.study.service.ProductService;
@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
             final Integer productAmount = orderUsefulData.getProductAmount(productId);
             if (!productService.decreaseStockIncreaseSales(productId, productAmount)) {
                 rollBackStockDecrease(reducedRecord);
-                throw new ServerException(ServerExceptionBean.PRODUCT_STOCK_NOT_ENOUGH_EXCEPTION);
+                throw new ServerException(ServerExceptionEnum.PRODUCT_STOCK_NOT_ENOUGH_EXCEPTION);
             }
             reducedRecord.put(productId, productAmount);
         }
@@ -98,7 +98,7 @@ public class OrderServiceImpl implements OrderService {
             }
         } catch (final Exception e) {
             rollBackStockDecrease(reducedRecord);
-            throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_INSERT_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ORDER_FAIL_BY_INSERT_EXCEPTION);
         }
 
         //redis reduced log
@@ -123,7 +123,7 @@ public class OrderServiceImpl implements OrderService {
         //validate buyer presence
         final Optional<UserVO> userVO = userService.queryByPrimaryKey(orderModel.getUserId());
         if (!userVO.isPresent()) {
-            throw new ServerException(ServerExceptionBean.USER_QUERY_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.USER_QUERY_EXCEPTION);
         }
 
         final Map<Integer, Integer> amountMap = Maps.newHashMap();
@@ -136,18 +136,18 @@ public class OrderServiceImpl implements OrderService {
             //check if the product was sold out
             if (ProductStatus.SOLD_OUT.getValue() == productModel.getPayStatus() ||
                     productService.isSoldOut(productId)) {
-                throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_SOLD_OUT_EXCEPTION);
+                throw new ServerException(ServerExceptionEnum.ORDER_FAIL_BY_SOLD_OUT_EXCEPTION);
             }
 
             //validate the owner of the product
             if (!productModel.getUserId().equals(productDetail.getOwnerId())) {
-                throw new ServerException(ServerExceptionBean.PRODUCT_OWNER_EXCEPTION);
+                throw new ServerException(ServerExceptionEnum.PRODUCT_OWNER_EXCEPTION);
             }
 
             //validate the product amount in order
             final int amount = productDetail.getProductAmount();
             if (amount < 1) {
-                throw new ServerException(ServerExceptionBean.ORDER_FAIL_BY_AMOUNT_EXCEPTION);
+                throw new ServerException(ServerExceptionEnum.ORDER_FAIL_BY_AMOUNT_EXCEPTION);
             }
 
             //calculate the total price of the order
@@ -216,7 +216,7 @@ public class OrderServiceImpl implements OrderService {
         //validate the order
         final List<OrderDetailDO> details = orderDetailMapper.selectDetailByOrderId(orderId);
         if (CollectionUtils.isEmpty(details)) {
-            throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.ORDER_CANCEL_EXCEPTION);
         }
 
         //change order status
@@ -242,14 +242,14 @@ public class OrderServiceImpl implements OrderService {
                     !productService.increaseStock(productId, productAmount) ||
                     !productService.reInSale(productId)) {
                 this.rollBackStockIncrease(rollBackRecords);
-                throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
+                throw new ServerException(ServerExceptionEnum.ORDER_CANCEL_EXCEPTION);
             } else {
                 productService.delDetailCache(productId);
             }
 
             if (!orderLogService.orderCanceledLog(orderId)) {
                 this.rollBackStockIncrease(rollBackRecords);
-                throw new ServerException(ServerExceptionBean.ORDER_CANCEL_EXCEPTION);
+                throw new ServerException(ServerExceptionEnum.ORDER_CANCEL_EXCEPTION);
             }
         }
     }

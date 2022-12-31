@@ -9,7 +9,7 @@ import org.study.data.ProductDO;
 import org.study.data.ProductSaleDO;
 import org.study.data.ProductStockDO;
 import org.study.error.ServerException;
-import org.study.error.ServerExceptionBean;
+import org.study.error.ServerExceptionEnum;
 import org.study.mq.Producer;
 import org.study.service.ProductService;
 import org.study.service.RedisService;
@@ -61,14 +61,14 @@ public class ProductServiceImpl implements ProductService {
         //校验
         final ValidationResult result = validator.validate(productModel);
         if (result.hasErrors() || MyMathUtil.isZeroOrNegative(productModel.getPrice())) {
-            throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.PRODUCT_CREATE_EXCEPTION);
         }
 
         //ProductModel拆分为ProductDO、StockDO、SalesDO
         final Optional<ProductDO> productDO = ModelToDataUtil.getProductDO(productModel);
         final Optional<ProductStockDO> stockDO = ModelToDataUtil.getStockDO(productModel);
         if (!productDO.isPresent() || !stockDO.isPresent()) {
-            throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
+            throw new ServerException(ServerExceptionEnum.PRODUCT_CREATE_EXCEPTION);
         }
 
         //product入库并返回主键
@@ -97,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
         if (productStatus.isPresent()) {
             return productStatus.get();
         }
-        throw new ServerException(ServerExceptionBean.PRODUCT_CREATE_EXCEPTION);
+        throw new ServerException(ServerExceptionEnum.PRODUCT_CREATE_EXCEPTION);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class ProductServiceImpl implements ProductService {
         if (model.isPresent()) {
             return model.get();
         }
-        throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+        throw new ServerException(ServerExceptionEnum.PRODUCT_NOT_EXIST_EXCEPTION);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class ProductServiceImpl implements ProductService {
         } else {
             productInfo = productMapper.selectByPrimaryKey(productId);
             if (productInfo == null) {
-                throw new ServerException(ServerExceptionBean.PRODUCT_NOT_EXIST_EXCEPTION);
+                throw new ServerException(ServerExceptionEnum.PRODUCT_NOT_EXIST_EXCEPTION);
             }
             redisService.cacheData(key, productInfo);
         }
