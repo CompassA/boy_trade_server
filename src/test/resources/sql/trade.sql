@@ -223,4 +223,18 @@ CREATE TABLE `user_password` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+
+
+CREATE TABLE IF NOT EXISTS `sequence`(
+    id INT NOT NULL,
+    name VARCHAR(64) NOT NULL,
+    value BIGINT NOT NULL DEFAULT 0,
+    step BIGINT NOT NULL DEFAULT 100,
+    create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY(id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `sequence`(id, name) VALUES (1, 'order_sequence');
+
 -- Dump completed on 2020-06-05 11:18:54

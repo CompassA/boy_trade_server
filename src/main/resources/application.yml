@@ -39,9 +39,9 @@ file-load-setting:
   ftp-timeout: 1000
   nginx-resource-url: "http://localhost:8888"
 
-logging:
-  level:
-    org.study.dao: debug
+#logging:
+#  level:
+#    org.study.dao: debug
 
 mq:
   name-server:

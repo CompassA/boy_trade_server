@@ -1,6 +1,5 @@
 package org.study.dao;
 
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.study.data.SequenceInfoDO;
 
@@ -8,7 +7,7 @@ import org.study.data.SequenceInfoDO;
  * @author fanqie
  * Created on 2020/1/26
  */
-@Mapper
+@Deprecated
 public interface SequenceInfoMapper {
 
     /**

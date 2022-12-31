@@ -2,6 +2,7 @@ package org.study.test.config;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.study.config.MyBatisConfiguration;
+import org.study.config.SequenceConfiguration;
 
 /**
  * @author Tomato
@@ -14,6 +15,7 @@ public class SpringMockTestBase {
     public SpringMockTestBase() {
         this.context = new AnnotationConfigApplicationContext(
                 MyBatisConfiguration.class,
-                H2DataSourceConfiguration.class);
+                H2DataSourceConfiguration.class,
+                SequenceConfiguration.class);
     }
 }
