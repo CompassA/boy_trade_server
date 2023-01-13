@@ -28,10 +28,6 @@ spring:
     throw-exception-if-no-handler-found: true
   resources:
     add-mappings: false
-mybatis:
-  mapper-locations: "classpath:mapper/*.xml"
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 file-load-setting:
   local-image-dictionary: "F:\\images\\"
@@ -43,9 +39,9 @@ file-load-setting:
   ftp-timeout: 1000
   nginx-resource-url: "http://localhost:8888"
 
-logging:
-  level:
-    org.study.dao: debug
+#logging:
+#  level:
+#    org.study.dao: debug
 
 mq:
   name-server:
